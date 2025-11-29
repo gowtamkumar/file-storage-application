@@ -1,6 +1,6 @@
-import dbConnect from '@/lib/db';
-import Subscription from '@/models/Subscription';
-import { NextResponse } from 'next/server';
+import dbConnect from "@/lib/db";
+import Subscription from "@/models/Subscription";
+import { NextResponse } from "next/server";
 
 // POST - Handle successful payment
 export async function POST(request) {
@@ -30,28 +30,25 @@ export async function POST(request) {
       value_c: transactionId,
     } = data;
 
-    console.log("data", data);
-    
-
     // Determine base URL
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
     // Verify payment with SSLCommerz
     const store_id = process.env.SSLCOMMERZ_STORE_ID;
     const store_passwd = process.env.SSLCOMMERZ_STORE_PASSWORD;
-    const is_live = process.env.SSLCOMMERZ_IS_LIVE === 'true';
+    const is_live = process.env.SSLCOMMERZ_IS_LIVE === "true";
 
     // Validation URL based on environment
     const validation_url = is_live
       ? `https://securepay.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${store_id}&store_passwd=${store_passwd}&format=json`
       : `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${store_id}&store_passwd=${store_passwd}&format=json`;
 
-    console.log('Validating payment with SSLCommerz...');
-    
+    console.log("Validating payment with SSLCommerz...");
+
     const validationRes = await fetch(validation_url);
     const validation = await validationRes.json();
 
-    if (validation.status === 'VALID' || validation.status === 'VALIDATED') {
+    if (validation.status === "VALID" || validation.status === "VALIDATED") {
       // Plan configuration
       const planConfig = {
         free: {
@@ -99,14 +96,26 @@ export async function POST(request) {
       const config = planConfig[plan];
       const endDate = new Date();
       endDate.setMonth(endDate.getMonth() + 1);
-      
-      console.log("amount", amount);
+
+      // Define plan prices in USD
+      const planPrices = {
+        free: 0,
+        basic: 9.99,
+        pro: 29.99,
+        enterprise: 99.99,
+      };
+
+      const usdAmount = planPrices[plan] || 0;
+
+      console.log("Gateway amount (BDT):", amount);
+      console.log("Stored amount (USD):", usdAmount);
+
       // Update or create subscription
       await Subscription.findOneAndUpdate(
         { userId },
         {
           plan,
-          status: 'active',
+          status: "active",
           startDate: new Date(),
           endDate,
           storageLimit: config.storageLimit,
@@ -114,9 +123,11 @@ export async function POST(request) {
           features: config.features,
           paymentInfo: {
             transactionId: tran_id,
-            amount: parseFloat(amount),
-            currency,
-            paymentMethod: card_type || 'Unknown',
+            amount: usdAmount, // Store USD amount for revenue calculation
+            currency: "USD", // We treat the subscription as USD
+            gatewayAmount: parseFloat(amount), // Store original BDT amount for audit
+            gatewayCurrency: currency, // Store original currency (BDT)
+            paymentMethod: card_type || "Unknown",
             lastPaymentDate: new Date(tran_date),
             validationId: val_id,
             bankTransactionId: bank_tran_id,
@@ -131,9 +142,6 @@ export async function POST(request) {
         { upsert: true, new: true }
       );
 
-
-      
-
       // Redirect to success page
       return NextResponse.redirect(
         `${baseUrl}/user/subscription?payment=success&plan=${plan}`
@@ -145,8 +153,8 @@ export async function POST(request) {
       );
     }
   } catch (error) {
-    console.error('Payment success handler error:', error);
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    console.error("Payment success handler error:", error);
+    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
     return NextResponse.redirect(
       `${baseUrl}/pricing?payment=error&reason=${error.message}`
     );
