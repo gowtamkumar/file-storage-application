@@ -1,4 +1,5 @@
 import AuthProvider from "@/components/AuthProvider";
+import NavBar from "@/components/NavBar";
 import StyledComponentsRegistry from "@/lib/AntdRegistry";
 import { ConfigProvider } from "antd";
 import { Inter } from "next/font/google";
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
             }}
           >
             <AuthProvider>
+            <NavBar/>
               {children}
             </AuthProvider>
           </ConfigProvider>

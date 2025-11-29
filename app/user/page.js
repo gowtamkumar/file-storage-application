@@ -308,6 +308,16 @@ export default function UserDashboard() {
           </div>
           <Space size="large">
             <Button
+              onClick={() => router.push('/docs/api')}
+              style={{ 
+                borderRadius: '8px',
+                height: '40px',
+                fontWeight: 500
+              }}
+            >
+              API Docs
+            </Button>
+            <Button
               onClick={() => router.push('/pricing')}
               style={{ 
                 borderRadius: '8px',
@@ -500,6 +510,13 @@ export default function UserDashboard() {
           </div>
           <Paragraph type="secondary" style={{ marginTop: '16px', marginBottom: 0, fontSize: '13px' }}>
             Use this key in the <code style={{ background: '#f0f0f0', padding: '2px 6px', borderRadius: '4px' }}>x-api-key</code> header to upload files from other applications.
+            <Button 
+              type="link" 
+              onClick={() => router.push('/docs/api')}
+              style={{ padding: '0 4px', height: 'auto' }}
+            >
+              View Documentation
+            </Button>
           </Paragraph>
         </Card>
 

@@ -3,7 +3,6 @@ import dbConnect from '@/lib/db';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
-const SSLCommerzPayment = require('sslcommerz-lts');
 
 // POST - Initialize payment for subscription
 export async function POST(request) {
@@ -63,6 +62,8 @@ export async function POST(request) {
       ? 'https://securepay.sslcommerz.com/gwprocess/v4/api.php'
       : 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php';
 
+      console.log("amount", amount);
+
     const formData = new URLSearchParams();
     formData.append('store_id', store_id);
     formData.append('store_passwd', store_passwd);
@@ -97,6 +98,8 @@ export async function POST(request) {
     });
 
     const result = await response.json();
+    console.log("result", result);
+    
 
     if (result.status === 'SUCCESS') {
       return NextResponse.json({

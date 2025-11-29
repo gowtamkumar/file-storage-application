@@ -10,19 +10,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
-      <nav className="flex justify-between items-center p-6 bg-white shadow-sm">
-        <div className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-          <CloudUploadOutlined /> FileStore
-        </div>
-        <Space>
-          <Link href="/login">
-            <Button type="text">Login</Button>
-          </Link>
-          <Link href="/register">
-            <Button type="primary">Get Started</Button>
-          </Link>
-        </Space>
-      </nav>
+
 
       {/* Hero Section */}
       <main className="flex-grow flex flex-col items-center justify-center text-center px-4 bg-gradient-to-b from-blue-50 to-white">

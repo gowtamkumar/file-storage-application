@@ -2,8 +2,6 @@ import dbConnect from '@/lib/db';
 import Subscription from '@/models/Subscription';
 import { NextResponse } from 'next/server';
 
-const SSLCommerzPayment = require('sslcommerz-lts');
-
 // POST - Handle successful payment
 export async function POST(request) {
   await dbConnect();
@@ -31,6 +29,9 @@ export async function POST(request) {
       value_b: plan,
       value_c: transactionId,
     } = data;
+
+    console.log("data", data);
+    
 
     // Determine base URL
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
@@ -98,7 +99,8 @@ export async function POST(request) {
       const config = planConfig[plan];
       const endDate = new Date();
       endDate.setMonth(endDate.getMonth() + 1);
-
+      
+      console.log("amount", amount);
       // Update or create subscription
       await Subscription.findOneAndUpdate(
         { userId },
@@ -128,6 +130,9 @@ export async function POST(request) {
         },
         { upsert: true, new: true }
       );
+
+
+      
 
       // Redirect to success page
       return NextResponse.redirect(
