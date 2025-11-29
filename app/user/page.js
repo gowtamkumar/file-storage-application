@@ -3,12 +3,14 @@
 import { CloudUploadOutlined, CopyOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, Card, Input, message, Modal, Popconfirm, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const { Title, Text, Paragraph } = Typography;
 
 export default function UserDashboard() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -16,9 +18,11 @@ export default function UserDashboard() {
   const [keyLoading, setKeyLoading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
+  const [subscription, setSubscription] = useState(null);
 
   useEffect(() => {
     fetchFiles();
+    fetchSubscription();
   }, []);
 
   const fetchFiles = async () => {
@@ -36,7 +40,39 @@ export default function UserDashboard() {
     }
   };
 
+  const fetchSubscription = async () => {
+    try {
+      const res = await fetch('/api/subscription');
+      const data = await res.json();
+      if (data.success) {
+        setSubscription(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch subscription');
+    }
+  };
+
   const handleUpload = async ({ file, onSuccess, onError }) => {
+    // Check subscription limits before upload
+    if (subscription) {
+      const currentStorage = files.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024); // in MB
+      const fileSize = file.size / (1024 * 1024); // in MB
+
+      // Check file count limit
+      if (subscription.fileLimit !== -1 && files.length >= subscription.fileLimit) {
+        message.error(`File limit reached! Upgrade your plan to upload more files.`);
+        onError(new Error('File limit reached'));
+        return;
+      }
+
+      // Check storage limit
+      if (subscription.storageLimit !== -1 && (currentStorage + fileSize) > subscription.storageLimit) {
+        message.error(`Storage limit exceeded! Upgrade your plan for more storage.`);
+        onError(new Error('Storage limit exceeded'));
+        return;
+      }
+    }
+
     const formData = new FormData();
     formData.append('file', file);
     setUploading(true);
@@ -51,6 +87,7 @@ export default function UserDashboard() {
         message.success(`${file.name} uploaded successfully`);
         onSuccess(data.data);
         fetchFiles();
+        fetchSubscription(); // Refresh subscription to update usage
       } else {
         message.error(`${file.name} upload failed.`);
         onError(new Error('Upload failed'));
@@ -286,6 +323,104 @@ export default function UserDashboard() {
             </Button>
           </Space>
         </div>
+
+        {/* Subscription Info Card */}
+        {subscription && (
+          <Card 
+            style={{ 
+              marginBottom: '24px',
+              borderRadius: '16px',
+              border: 'none',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)'
+            }}
+            bodyStyle={{ padding: '28px' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+              <div style={{ flex: 1, minWidth: '250px' }}>
+                <div style={{ marginBottom: '16px' }}>
+                  <Space align="center">
+                    {subscription.plan === 'pro' || subscription.plan === 'enterprise' ? (
+                      <CrownOutlined style={{ fontSize: '24px', color: '#ffd700' }} />
+                    ) : (
+                      <RocketOutlined style={{ fontSize: '24px', color: '#667eea' }} />
+                    )}
+                    <div>
+                      <Title level={4} style={{ margin: 0, textTransform: 'capitalize' }}>
+                        {subscription.plan} Plan
+                      </Title>
+                      <Text type="secondary" style={{ fontSize: '13px' }}>
+                        {subscription.status === 'active' ? 'Active' : subscription.status}
+                      </Text>
+                    </div>
+                  </Space>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <Text strong>Storage Used</Text>
+                    <Text>
+                      {(files.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB / 
+                      {subscription.storageLimit === -1 ? ' Unlimited' : ` ${subscription.storageLimit} MB`}
+                    </Text>
+                  </div>
+                  <Progress 
+                    percent={subscription.storageLimit === -1 ? 0 : 
+                      Math.min(100, (files.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024) / subscription.storageLimit * 100))}
+                    strokeColor={{
+                      '0%': '#667eea',
+                      '100%': '#764ba2',
+                    }}
+                    status={files.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024) >= subscription.storageLimit * 0.9 ? 'exception' : 'active'}
+                  />
+                </div>
+
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <Text strong>Files</Text>
+                    <Text>
+                      {files.length} / {subscription.fileLimit === -1 ? 'Unlimited' : subscription.fileLimit}
+                    </Text>
+                  </div>
+                  <Progress 
+                    percent={subscription.fileLimit === -1 ? 0 : Math.min(100, (files.length / subscription.fileLimit * 100))}
+                    strokeColor={{
+                      '0%': '#667eea',
+                      '100%': '#764ba2',
+                    }}
+                    status={files.length >= subscription.fileLimit * 0.9 ? 'exception' : 'active'}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end' }}>
+                <Button
+                  type="primary"
+                  icon={<RocketOutlined />}
+                  size="large"
+                  onClick={() => router.push('/pricing')}
+                  style={{
+                    borderRadius: '10px',
+                    height: '48px',
+                    padding: '0 32px',
+                    fontWeight: 600,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    border: 'none',
+                    boxShadow: '0 4px 16px rgba(102, 126, 234, 0.4)',
+                  }}
+                >
+                  {subscription.plan === 'free' ? 'Upgrade Plan' : 'Change Plan'}
+                </Button>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  {subscription.features.apiAccess && '✓ API Access • '}
+                  {subscription.features.customBranding && '✓ Custom Branding • '}
+                  {subscription.features.prioritySupport && '✓ Priority Support'}
+                </Text>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* API Key Card */}
         <Card 
