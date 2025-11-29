@@ -21,6 +21,24 @@ export default function PricingPage() {
     if (session) {
       fetchCurrentSubscription();
     }
+
+    // Check for payment status in URL
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get('payment');
+    const plan = params.get('plan');
+    const reason = params.get('reason');
+
+    if (paymentStatus === 'success') {
+      message.success(`Payment successful! You are now subscribed to ${plan} plan.`);
+      // Clear URL params
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (paymentStatus === 'failed') {
+      message.error(`Payment failed: ${reason || 'Unknown error'}`);
+    } else if (paymentStatus === 'cancelled') {
+      message.info('Payment cancelled');
+    } else if (paymentStatus === 'error') {
+      message.error('An error occurred during payment processing');
+    }
   }, [session]);
 
   const fetchPlans = async () => {
@@ -58,30 +76,49 @@ export default function PricingPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/subscription', {
+      // Initialize payment
+      const res = await fetch('/api/payment/init', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan: planId,
-          paymentInfo: {
-            transactionId: `TXN-${Date.now()}`,
-            amount: plans.find(p => p.id === planId)?.price || 0,
-            paymentMethod: 'demo',
-            lastPaymentDate: new Date(),
-          },
-        }),
+        body: JSON.stringify({ plan: planId }),
       });
 
       const data = await res.json();
+
       if (data.success) {
-        message.success(`Successfully subscribed to ${planId} plan!`);
-        setCurrentPlan(planId);
-        fetchCurrentSubscription();
+        if (data.gatewayUrl) {
+          // Redirect to payment gateway
+          window.location.href = data.gatewayUrl;
+        } else {
+          // Free plan or direct success
+          message.success(data.message || `Successfully subscribed to ${planId} plan!`);
+          setCurrentPlan(planId);
+          fetchCurrentSubscription();
+          
+          // Also call the subscription API to ensure record is created for free plan
+          if (!data.redirect) {
+             await fetch('/api/subscription', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                plan: planId,
+                paymentInfo: {
+                  transactionId: 'FREE-' + Date.now(),
+                  amount: 0,
+                  paymentMethod: 'none',
+                  lastPaymentDate: new Date(),
+                },
+              }),
+            });
+            fetchCurrentSubscription();
+          }
+        }
       } else {
         message.error(data.message || 'Subscription failed');
       }
     } catch (error) {
-      message.error('An error occurred');
+      console.error('Subscription error:', error);
+      message.error('An error occurred during subscription');
     } finally {
       setLoading(false);
       setSubscribingPlan(null);

@@ -1,0 +1,149 @@
+import dbConnect from '@/lib/db';
+import Subscription from '@/models/Subscription';
+import { NextResponse } from 'next/server';
+
+const SSLCommerzPayment = require('sslcommerz-lts');
+
+// POST - Handle successful payment
+export async function POST(request) {
+  await dbConnect();
+
+  try {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+
+    const {
+      tran_id,
+      val_id,
+      amount,
+      card_type,
+      store_amount,
+      card_no,
+      bank_tran_id,
+      status,
+      tran_date,
+      currency,
+      card_issuer,
+      card_brand,
+      card_issuer_country,
+      card_issuer_country_code,
+      value_a: userId,
+      value_b: plan,
+      value_c: transactionId,
+    } = data;
+
+    // Determine base URL
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
+    // Verify payment with SSLCommerz
+    const store_id = process.env.SSLCOMMERZ_STORE_ID;
+    const store_passwd = process.env.SSLCOMMERZ_STORE_PASSWORD;
+    const is_live = process.env.SSLCOMMERZ_IS_LIVE === 'true';
+
+    // Validation URL based on environment
+    const validation_url = is_live
+      ? `https://securepay.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${store_id}&store_passwd=${store_passwd}&format=json`
+      : `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${store_id}&store_passwd=${store_passwd}&format=json`;
+
+    console.log('Validating payment with SSLCommerz...');
+    
+    const validationRes = await fetch(validation_url);
+    const validation = await validationRes.json();
+
+    if (validation.status === 'VALID' || validation.status === 'VALIDATED') {
+      // Plan configuration
+      const planConfig = {
+        free: {
+          storageLimit: 100,
+          fileLimit: 50,
+          features: {
+            apiAccess: false,
+            customBranding: false,
+            prioritySupport: false,
+            analytics: false,
+          },
+        },
+        basic: {
+          storageLimit: 1024,
+          fileLimit: 200,
+          features: {
+            apiAccess: true,
+            customBranding: false,
+            prioritySupport: false,
+            analytics: false,
+          },
+        },
+        pro: {
+          storageLimit: 10240,
+          fileLimit: 1000,
+          features: {
+            apiAccess: true,
+            customBranding: true,
+            prioritySupport: true,
+            analytics: true,
+          },
+        },
+        enterprise: {
+          storageLimit: 102400,
+          fileLimit: -1,
+          features: {
+            apiAccess: true,
+            customBranding: true,
+            prioritySupport: true,
+            analytics: true,
+          },
+        },
+      };
+
+      const config = planConfig[plan];
+      const endDate = new Date();
+      endDate.setMonth(endDate.getMonth() + 1);
+
+      // Update or create subscription
+      await Subscription.findOneAndUpdate(
+        { userId },
+        {
+          plan,
+          status: 'active',
+          startDate: new Date(),
+          endDate,
+          storageLimit: config.storageLimit,
+          fileLimit: config.fileLimit,
+          features: config.features,
+          paymentInfo: {
+            transactionId: tran_id,
+            amount: parseFloat(amount),
+            currency,
+            paymentMethod: card_type || 'Unknown',
+            lastPaymentDate: new Date(tran_date),
+            validationId: val_id,
+            bankTransactionId: bank_tran_id,
+            cardDetails: {
+              cardNo: card_no,
+              cardBrand: card_brand,
+              cardIssuer: card_issuer,
+              cardIssuerCountry: card_issuer_country,
+            },
+          },
+        },
+        { upsert: true, new: true }
+      );
+
+      // Redirect to success page
+      return NextResponse.redirect(
+        `${baseUrl}/user/subscription?payment=success&plan=${plan}`
+      );
+    } else {
+      // Payment validation failed
+      return NextResponse.redirect(
+        `${baseUrl}/pricing?payment=failed&reason=validation_failed`
+      );
+    }
+  } catch (error) {
+    console.error('Payment success handler error:', error);
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    return NextResponse.redirect(
+      `${baseUrl}/pricing?payment=error&reason=${error.message}`
+    );
+  }
+}

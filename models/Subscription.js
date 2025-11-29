@@ -61,20 +61,6 @@ const SubscriptionSchema = new mongoose.Schema({
     paymentMethod: String,
     lastPaymentDate: Date,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-// Update the updatedAt timestamp before saving
-SubscriptionSchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
+}, { timestamps: true });
 
 export default mongoose.models.Subscription || mongoose.model('Subscription', SubscriptionSchema);

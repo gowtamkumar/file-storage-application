@@ -1,7 +1,7 @@
 'use client';
 
-import { CloudUploadOutlined, CopyOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, KeyOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Card, Input, message, Modal, Popconfirm, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
+import { CloudUploadOutlined, CopyOutlined, CrownOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, KeyOutlined, RocketOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Card, Input, message, Modal, Popconfirm, Progress, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -355,7 +355,7 @@ export default function UserDashboard() {
               background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(10px)'
             }}
-            bodyStyle={{ padding: '28px' }}
+            // bodyStyle={{ padding: '28px' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
               <div style={{ flex: 1, minWidth: '250px' }}>
@@ -452,7 +452,7 @@ export default function UserDashboard() {
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)'
           }}
-          bodyStyle={{ padding: '28px' }}
+          // bodyStyle={{ padding: '28px' }}
         >
           <div style={{ marginBottom: '16px' }}>
             <Title level={4} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -513,7 +513,7 @@ export default function UserDashboard() {
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)'
           }}
-          bodyStyle={{ padding: '32px' }}
+          // bodyStyle={{ padding: '32px' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
@@ -570,7 +570,7 @@ export default function UserDashboard() {
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)'
           }}
-          bodyStyle={{ padding: '28px' }}
+          // bodyStyle={{ padding: '28px' }}
         >
           <Title level={4} style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FileOutlined style={{ color: '#667eea' }} />
