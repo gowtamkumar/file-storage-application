@@ -2,11 +2,13 @@
 
 import { CloudUploadOutlined, CopyOutlined, DatabaseOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, UploadOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Input, message, Modal, Popconfirm, Row, Space, Statistic, Table, Tag, Tooltip, Typography, Upload } from 'antd';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const { Title, Text } = Typography;
 
 export default function Dashboard() {
+  const router = useRouter();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -249,6 +251,16 @@ export default function Dashboard() {
             <Text style={{ color: '#8c8c8c', fontSize: '14px' }}>Manage all files and monitor storage</Text>
           </div>
           <Space size="large">
+            <Button
+              onClick={() => router.push('/dashboard/subscriptions')}
+              style={{ 
+                borderRadius: '8px',
+                height: '40px',
+                fontWeight: 500
+              }}
+            >
+              Subscriptions
+            </Button>
             <Button 
               href="/api/auth/signout"
               style={{ 

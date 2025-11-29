@@ -307,6 +307,26 @@ export default function UserDashboard() {
             <Text style={{ color: '#8c8c8c', fontSize: '14px' }}>Manage and share your files effortlessly</Text>
           </div>
           <Space size="large">
+            <Button
+              onClick={() => router.push('/pricing')}
+              style={{ 
+                borderRadius: '8px',
+                height: '40px',
+                fontWeight: 500
+              }}
+            >
+              Pricing
+            </Button>
+            <Button
+              onClick={() => router.push('/user/subscription')}
+              style={{ 
+                borderRadius: '8px',
+                height: '40px',
+                fontWeight: 500
+              }}
+            >
+              My Subscription
+            </Button>
             <div style={{ textAlign: 'right' }}>
               <Text style={{ fontSize: '12px', color: '#8c8c8c', display: 'block' }}>Logged in as</Text>
               <Text strong style={{ fontSize: '14px' }}>{session?.user?.email}</Text>
