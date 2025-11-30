@@ -34,12 +34,9 @@ export default withAuth(
           return new NextResponse('Too Many Requests', { status: 429 });
        }
     }
-
     // Auth Logic
     const token = req.nextauth.token;
     const isDashboard = req.nextUrl.pathname.startsWith("/dashboard");
-    // const isUserPanel = req.nextUrl.pathname.startsWith("/user"); // Handled by authorized callback mostly, but can add specific checks
-
     if (isDashboard && token?.role !== "admin") {
       return NextResponse.rewrite(new URL("/login", req.url));
     }
@@ -50,7 +47,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const path = req.nextUrl.pathname;
-        if (path.startsWith("/dashboard") || path.startsWith("/user")) {
+        if (path.startsWith("/dashboard") || path.startsWith("/user") ) {
             return !!token;
         }
         return true;
