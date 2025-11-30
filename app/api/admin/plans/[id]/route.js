@@ -18,7 +18,7 @@ export async function GET(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     const plan = await SubscriptionPlan.findById(id);
 
     if (!plan) {
@@ -52,7 +52,7 @@ export async function PUT(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     // Don't allow changing planId if it creates a duplicate
@@ -107,7 +107,7 @@ export async function DELETE(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     
     // Soft delete by setting active to false
     const plan = await SubscriptionPlan.findByIdAndUpdate(

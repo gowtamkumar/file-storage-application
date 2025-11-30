@@ -5,7 +5,26 @@ import { mkdir, writeFile } from 'fs/promises';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import path from 'path';
+import sharp from 'sharp';
+import { z } from 'zod';
 import { authOptions } from '../auth/[...nextauth]/route';
+
+const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) * 1024 * 1024; // 5MB
+const ALLOWED_FILE_TYPES = [
+  'image/jpeg', 
+  'image/png', 
+  'image/webp', 
+  'image/gif', 
+  'application/pdf', 
+  'text/plain',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+];
+
+const FileValidationSchema = z.object({
+  size: z.number().max(MAX_FILE_SIZE, "File size must be less than " + MAX_FILE_SIZE + "MB"),
+  type: z.string().refine((val) => ALLOWED_FILE_TYPES.includes(val), "File type not allowed"),
+});
 
 export async function POST(request) {
   await dbConnect();
@@ -39,8 +58,35 @@ export async function POST(request) {
     return NextResponse.json({ success: false, message: 'No file uploaded' }, { status: 400 });
   }
 
+  // Validate file
+  const validationResult = FileValidationSchema.safeParse({
+    size: file.size,
+    type: file.type
+  });
+
+  if (!validationResult.success) {
+    return NextResponse.json({ success: false, message: validationResult.error.errors[0].message }, { status: 400 });
+  }
+
   const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+  let buffer = Buffer.from(bytes);
+  let fileSize = file.size;
+
+  // Image Optimization & Security (Strip Metadata)
+  if (file.type.startsWith('image/')) {
+    try {
+      buffer = await sharp(buffer)
+        .rotate() // Auto-rotate based on EXIF before stripping
+        .resize(1920, 1920, { fit: 'inside', withoutEnlargement: true }) // Resize to max 1920x1920
+        .toBuffer(); // This strips metadata by default unless .withMetadata() is called
+      fileSize = buffer.length;
+    } catch (error) {
+      console.error('Image processing error:', error);
+      // If image processing fails, we might want to reject the upload or fallback.
+      // For security, if it claims to be an image but fails processing, it might be malicious.
+      return NextResponse.json({ success: false, message: 'Invalid image file' }, { status: 400 });
+    }
+  }
 
   // Create unique filename
   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -57,7 +103,7 @@ export async function POST(request) {
       filename: uniqueFilename,
       originalName: file.name,
       path: `/uploads/${uniqueFilename}`,
-      size: file.size,
+      size: fileSize,
       mimetype: file.type,
       userId: userId,
     });

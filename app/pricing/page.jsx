@@ -334,25 +334,7 @@ export default function PricingPage() {
           ))}
         </Row>
 
-        {/* Back to Dashboard */}
-        {session && (
-          <div style={{ textAlign: 'center', marginTop: '48px' }}>
-            <Button
-              size="large"
-              onClick={() => router.push(session.user.role === 'admin' ? '/dashboard' : '/user')}
-              style={{
-                borderRadius: '12px',
-                height: '48px',
-                padding: '0 32px',
-                fontWeight: 600,
-                background: 'rgba(255,255,255,0.95)',
-                border: 'none'
-              }}
-            >
-              Back to Dashboard
-            </Button>
-          </div>
-        )}
+       
       </div>
     </div>
      <Footer />
