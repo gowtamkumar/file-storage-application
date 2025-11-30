@@ -1,5 +1,6 @@
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import dbConnect from '@/lib/db';
+import SubscriptionPlan from '@/models/SubscriptionPlan';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
@@ -15,21 +16,17 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    const { plan } = body;
+    const { plan: planId } = body;
 
-    // Plan pricing
-    const planPricing = {
-      free: 0,
-      basic: 9.99,
-      pro: 29.99,
-      enterprise: 99.99,
-    };
-
-    const amount = planPricing[plan];
+    // Fetch plan from database
+    const plan = await SubscriptionPlan.findOne({ planId: planId, active: true });
     
-    if (amount === undefined) {
-      return NextResponse.json({ success: false, message: 'Invalid plan' }, { status: 400 });
+    if (!plan) {
+      return NextResponse.json({ success: false, message: 'Invalid or inactive plan' }, { status: 400 });
     }
+
+    const amount = plan.price;
+    const currency = plan.currency;
 
     // Free plan doesn't require payment
     if (amount === 0) {
@@ -62,20 +59,20 @@ export async function POST(request) {
       ? 'https://securepay.sslcommerz.com/gwprocess/v4/api.php'
       : 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php';
 
-      console.log("amount", amount);
+    console.log(`Initiating payment: ${amount} ${currency} for plan ${plan.name}`);
 
     const formData = new URLSearchParams();
     formData.append('store_id', store_id);
     formData.append('store_passwd', store_passwd);
     formData.append('total_amount', amount);
-    formData.append('currency', 'USD');
+    formData.append('currency', currency); // Dynamic currency from database
     formData.append('tran_id', transactionId);
     formData.append('success_url', `${baseUrl}/api/payment/success`);
     formData.append('fail_url', `${baseUrl}/api/payment/fail`);
     formData.append('cancel_url', `${baseUrl}/api/payment/cancel`);
     formData.append('ipn_url', `${baseUrl}/api/payment/ipn`);
     formData.append('shipping_method', 'NO');
-    formData.append('product_name', `${plan.charAt(0).toUpperCase() + plan.slice(1)} Subscription`);
+    formData.append('product_name', `${plan.name} Subscription`);
     formData.append('product_category', 'Subscription');
     formData.append('product_profile', 'general');
     formData.append('cus_name', session.user.name || session.user.email);
@@ -86,9 +83,9 @@ export async function POST(request) {
     formData.append('cus_country', 'Bangladesh');
     formData.append('cus_phone', '0000000000');
     formData.append('value_a', session.user.id);
-    formData.append('value_b', plan);
+    formData.append('value_b', planId);
     formData.append('value_c', transactionId);
-    formData.append('format', 'json'); // Request JSON response
+    formData.append('format', 'json');
 
     console.log('Initiating payment with SSLCommerz...');
 
@@ -98,7 +95,7 @@ export async function POST(request) {
     });
 
     const result = await response.json();
-    console.log("result", result);
+    console.log("SSLCommerz Response:", result);
     
 
     if (result.status === 'SUCCESS') {

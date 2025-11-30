@@ -3,10 +3,12 @@
 import NavBar from '@/components/NavBar';
 import { CheckOutlined, CrownOutlined, RocketOutlined, StarOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Button, Card, Col, message, Row, Space, Tag, Typography } from 'antd';
+import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Footer from '../../components/Footer';
+
 const { Title, Text, Paragraph } = Typography;
 
 export default function PricingPage() {
@@ -31,7 +33,6 @@ export default function PricingPage() {
 
     if (paymentStatus === 'success') {
       message.success(`Payment successful! You are now subscribed to ${plan} plan.`);
-      // Clear URL params
       window.history.replaceState({}, document.title, window.location.pathname);
     } else if (paymentStatus === 'failed') {
       message.error(`Payment failed: ${reason || 'Unknown error'}`);
@@ -77,7 +78,6 @@ export default function PricingPage() {
     setLoading(true);
 
     try {
-      // Initialize payment
       const res = await fetch('/api/payment/init', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -88,15 +88,12 @@ export default function PricingPage() {
 
       if (data.success) {
         if (data.gatewayUrl) {
-          // Redirect to payment gateway
           window.location.href = data.gatewayUrl;
         } else {
-          // Free plan or direct success
           message.success(data.message || `Successfully subscribed to ${planId} plan!`);
           setCurrentPlan(planId);
           fetchCurrentSubscription();
           
-          // Also call the subscription API to ensure record is created for free plan
           if (!data.redirect) {
              await fetch('/api/subscription', {
               method: 'POST',
@@ -146,195 +143,246 @@ export default function PricingPage() {
     return gradients[planId] || gradients.free;
   };
 
+  const getCurrencySymbol = (currency) => {
+    const symbols = {
+      USD: '$',
+      BDT: '৳',
+      EUR: '€',
+      GBP: '£',
+      INR: '₹',
+      MYR: 'RM',
+      AUD: 'A$',
+      CAD: 'C$',
+    };
+    return symbols[currency] || currency + ' ';
+  };
+
   return (
     <>
     <NavBar />
     <div style={{ 
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '48px 24px'
+      paddingTop: '100px',
+      paddingBottom: '80px',
+      paddingLeft: '24px',
+      paddingRight: '24px'
     }}>
  
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          style={{ textAlign: 'center', marginBottom: '64px' }}
+        >
           <Title level={1} style={{ 
             color: 'white',
-            fontSize: '48px',
+            fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
             marginBottom: '16px',
-            fontWeight: 700
+            fontWeight: 800
           }}>
             Choose Your Perfect Plan
           </Title>
           <Paragraph style={{ 
-            color: 'rgba(255,255,255,0.9)',
-            fontSize: '18px',
+            color: 'rgba(255,255,255,0.95)',
+            fontSize: '20px',
             maxWidth: '600px',
-            margin: '0 auto'
+            margin: '0 auto 32px'
           }}>
-            Select the plan that best fits your needs. Upgrade or downgrade anytime.
+            Start free and scale as you grow. All plans include core features.
           </Paragraph>
-        </div>
+          {session && (
+            <Tag color="green" style={{ fontSize: '14px', padding: '6px 16px', borderRadius: '20px' }}>
+              Current Plan: {currentPlan.toUpperCase()}
+            </Tag>
+          )}
+        </motion.div>
 
         {/* Pricing Cards */}
         <Row gutter={[24, 24]} justify="center">
-          {plans.map((plan) => (
-            <Col xs={24} sm={12} lg={6} key={plan.id}>
-              <Card
-                style={{
-                  height: '100%',
-                  borderRadius: '20px',
-                  border: plan.highlighted ? '3px solid #ffd700' : 'none',
-                  boxShadow: plan.highlighted 
-                    ? '0 12px 48px rgba(255, 215, 0, 0.3)' 
-                    : '0 8px 32px rgba(0, 0, 0, 0.15)',
-                  background: 'rgba(255, 255, 255, 0.98)',
-                  backdropFilter: 'blur(10px)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  transition: 'all 0.3s ease',
-                }}
-                bodyStyle={{ padding: '32px 24px' }}
-                hoverable
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-8px)';
-                  e.currentTarget.style.boxShadow = plan.highlighted
-                    ? '0 16px 56px rgba(255, 215, 0, 0.4)'
-                    : '0 12px 40px rgba(0, 0, 0, 0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = plan.highlighted
-                    ? '0 12px 48px rgba(255, 215, 0, 0.3)'
-                    : '0 8px 32px rgba(0, 0, 0, 0.15)';
-                }}
+          {plans.map((plan, index) => (
+            <Col xs={24} sm={12} lg={6} key={plan.planId}>
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -8 }}
               >
-                {plan.highlighted && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '16px',
-                    right: '16px',
-                  }}>
-                    <Tag color="gold" style={{ 
-                      borderRadius: '12px',
-                      padding: '4px 12px',
-                      fontWeight: 600,
-                      border: 'none'
-                    }}>
-                      POPULAR
-                    </Tag>
-                  </div>
-                )}
-
-                {currentPlan === plan.id && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '16px',
-                    left: '16px',
-                  }}>
-                    <Tag color="green" style={{ 
-                      borderRadius: '12px',
-                      padding: '4px 12px',
-                      fontWeight: 600,
-                      border: 'none'
-                    }}>
-                      CURRENT
-                    </Tag>
-                  </div>
-                )}
-
-                {/* Icon */}
-                <div style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '20px',
-                  background: getPlanGradient(plan.id),
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  marginBottom: '24px',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
-                }}>
-                  {getPlanIcon(plan.id)}
-                </div>
-
-                {/* Plan Name */}
-                <Title level={3} style={{ marginBottom: '8px', fontSize: '28px' }}>
-                  {plan.name}
-                </Title>
-
-                {/* Description */}
-                <Text type="secondary" style={{ display: 'block', marginBottom: '24px' }}>
-                  {plan.description}
-                </Text>
-
-                {/* Price */}
-                <div style={{ marginBottom: '32px' }}>
-                  <Space align="baseline">
-                    <Title level={2} style={{ 
-                      margin: 0,
-                      fontSize: '42px',
-                      fontWeight: 700,
-                      background: getPlanGradient(plan.id),
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent'
-                    }}>
-                      ${plan.price}
-                    </Title>
-                    <Text type="secondary" style={{ fontSize: '16px' }}>
-                      /{plan.interval}
-                    </Text>
-                  </Space>
-                </div>
-
-                {/* Features */}
-                <div style={{ marginBottom: '32px' }}>
-                  {plan.features.map((feature, index) => (
-                    <div key={index} style={{ 
-                      marginBottom: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px'
-                    }}>
-                      <CheckOutlined style={{ 
-                        color: '#52c41a',
-                        fontSize: '16px',
-                        flexShrink: 0
-                      }} />
-                      <Text style={{ fontSize: '14px' }}>{feature}</Text>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Subscribe Button */}
-                <Button
-                  type={plan.highlighted ? 'primary' : 'default'}
-                  size="large"
-                  block
-                  onClick={() => handleSubscribe(plan.id)}
-                  loading={subscribingPlan === plan.id}
-                  disabled={currentPlan === plan.id || loading}
+                <Card
                   style={{
-                    height: '48px',
-                    borderRadius: '12px',
-                    fontWeight: 600,
-                    fontSize: '16px',
-                    ...(plan.highlighted && {
-                      background: getPlanGradient(plan.id),
-                      border: 'none',
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
-                    })
+                    height: '100%',
+                    borderRadius: '24px',
+                    border: plan.highlighted ? '3px solid #ffd700' : 'none',
+                    boxShadow: plan.highlighted 
+                      ? '0 20px 60px rgba(255, 215, 0, 0.4)' 
+                      : '0 10px 40px rgba(0, 0, 0, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.98)',
+                    backdropFilter: 'blur(20px)',
+                    position: 'relative',
+                    overflow: 'hidden',
                   }}
+                  bodyStyle={{ padding: '40px 28px' }}
                 >
-                  {currentPlan === plan.id ? 'Current Plan' : `Get ${plan.name}`}
-                </Button>
-              </Card>
+                  {plan.highlighted && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '20px',
+                      right: '20px',
+                    }}>
+                      <Tag color="gold" style={{ 
+                        borderRadius: '12px',
+                        padding: '6px 14px',
+                        fontWeight: 700,
+                        border: 'none',
+                        fontSize: '12px'
+                      }}>
+                        ⭐ POPULAR
+                      </Tag>
+                    </div>
+                  )}
+
+                  {currentPlan === plan.planId && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '20px',
+                      left: '20px',
+                    }}>
+                      <Tag color="green" style={{ 
+                        borderRadius: '12px',
+                        padding: '6px 14px',
+                        fontWeight: 700,
+                        border: 'none',
+                        fontSize: '12px'
+                      }}>
+                        ✓ CURRENT
+                      </Tag>
+                    </div>
+                  )}
+
+                  {/* Icon */}
+                  <div style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '20px',
+                    background: getPlanGradient(plan.planId),
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    marginBottom: '24px',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
+                  }}>
+                    {getPlanIcon(plan.planId)}
+                  </div>
+
+                  {/* Plan Name */}
+                  <Title level={3} style={{ marginBottom: '8px', fontSize: '28px', fontWeight: 700 }}>
+                    {plan.name}
+                  </Title>
+
+                  {/* Description */}
+                  <Text type="secondary" style={{ display: 'block', marginBottom: '24px', fontSize: '15px' }}>
+                    {plan.description}
+                  </Text>
+
+                  {/* Price */}
+                  <div style={{ marginBottom: '32px' }}>
+                    <Space align="baseline">
+                      <Title level={2} style={{ 
+                        margin: 0,
+                        fontSize: '48px',
+                        fontWeight: 800,
+                        background: getPlanGradient(plan.planId),
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}>
+                        {getCurrencySymbol(plan.currency)}{plan.price}
+                      </Title>
+                      <Text type="secondary" style={{ fontSize: '16px' }}>
+                        /{plan.interval}
+                      </Text>
+                    </Space>
+                  </div>
+
+                  {/* Features */}
+                  <div style={{ marginBottom: '32px' }}>
+                    {plan.features.map((feature, index) => (
+                      <div key={index} style={{ 
+                        marginBottom: '14px',
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '12px'
+                      }}>
+                        <CheckOutlined style={{ 
+                          color: '#52c41a',
+                          fontSize: '16px',
+                          flexShrink: 0,
+                          marginTop: '2px'
+                        }} />
+                        <Text style={{ fontSize: '14px', lineHeight: '1.6' }}>{feature}</Text>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Subscribe Button */}
+                  <Button
+                    type={plan.highlighted ? 'primary' : 'default'}
+                    size="large"
+                    block
+                    onClick={() => handleSubscribe(plan.planId)}
+                    loading={subscribingPlan === plan.planId}
+                    disabled={currentPlan === plan.planId || loading}
+                    style={{
+                      height: '52px',
+                      borderRadius: '14px',
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      ...(plan.highlighted && {
+                        background: getPlanGradient(plan.planId),
+                        border: 'none',
+                        boxShadow: '0 6px 20px rgba(0,0,0,0.15)'
+                      })
+                    }}
+                  >
+                    {currentPlan === plan.planId ? '✓ Current Plan' : `Get ${plan.name}`}
+                  </Button>
+                </Card>
+              </motion.div>
             </Col>
           ))}
         </Row>
 
-       
+        {/* FAQ Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          style={{ marginTop: '80px', textAlign: 'center', maxWidth: '800px', margin: '80px auto 0' }}
+        >
+          <Title level={3} style={{ color: 'white', marginBottom: '24px' }}>
+            Questions? We've got answers.
+          </Title>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: '16px', padding: '24px', textAlign: 'left' }}>
+              <Text strong style={{ color: 'white', display: 'block', marginBottom: '8px', fontSize: '16px' }}>
+                Can I change plans later?
+              </Text>
+              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>
+                Yes! Upgrade or downgrade anytime from your dashboard.
+              </Text>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: '16px', padding: '24px', textAlign: 'left' }}>
+              <Text strong style={{ color: 'white', display: 'block', marginBottom: '8px', fontSize: '16px' }}>
+                Is there a free trial?
+              </Text>
+              <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>
+                Our Free plan is available forever with no credit card required.
+              </Text>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
      <Footer />
