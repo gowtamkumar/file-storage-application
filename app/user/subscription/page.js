@@ -5,6 +5,8 @@ import { Button, Card, Col, Descriptions, Progress, Row, Space, Tag, Timeline, T
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Footer from '../../../components/Footer';
+import NavBar from '../../../components/NavBar';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -14,10 +16,12 @@ export default function MySubscriptionPage() {
   const [subscription, setSubscription] = useState(null);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [planDetails, setPlanDetails] = useState(null);
 
   useEffect(() => {
     fetchSubscription();
     fetchFiles();
+    fetchPlanDetails();
   }, []);
 
   const fetchSubscription = async () => {
@@ -47,53 +51,41 @@ export default function MySubscriptionPage() {
     }
   };
 
-  const getPlanFeatures = (plan) => {
-    const features = {
-      free: [
-        '100 MB Storage',
-        '50 Files',
-        'Basic File Sharing',
-        'Community Support',
-      ],
-      basic: [
-        '1 GB Storage',
-        '200 Files',
-        'API Access',
-        'Email Support',
-        'File Analytics',
-      ],
-      pro: [
-        '10 GB Storage',
-        '1000 Files',
-        'API Access',
-        'Custom Branding',
-        'Priority Support',
-        'Advanced Analytics',
-        'Team Collaboration',
-      ],
-      enterprise: [
-        '100 GB Storage',
-        'Unlimited Files',
-        'API Access',
-        'Custom Branding',
-        'Dedicated Support',
-        'Advanced Analytics',
-        'Team Management',
-        'SLA Guarantee',
-        'Custom Integration',
-      ],
-    };
-    return features[plan] || features.free;
+  const fetchPlanDetails = async () => {
+    try {
+      const res = await fetch('/api/subscription/plans');
+      const data = await res.json();
+      if (data.success) {
+        // Store all plans as a lookup object
+        const plansMap = {};
+        data.data.forEach(plan => {
+          plansMap[plan.id] = plan;
+        });
+        setPlanDetails(plansMap);
+      }
+    } catch (error) {
+      console.error('Failed to fetch plan details');
+    }
   };
 
-  const getPlanPrice = (plan) => {
-    const prices = {
-      free: { amount: 0, interval: 'forever' },
-      basic: { amount: 9.99, interval: 'month' },
-      pro: { amount: 29.99, interval: 'month' },
-      enterprise: { amount: 99.99, interval: 'month' },
-    };
-    return prices[plan] || prices.free;
+  const getPlanFeatures = (planId) => {
+    if (planDetails && planDetails[planId]) {
+      return planDetails[planId].features;
+    }
+    // Fallback to empty array if plan not found
+    return [];
+  };
+
+  const getPlanPrice = (planId) => {
+    if (planDetails && planDetails[planId]) {
+      return {
+        amount: planDetails[planId].price,
+        interval: planDetails[planId].interval,
+        currency: planDetails[planId].currency,
+      };
+    }
+    // Fallback
+    return { amount: 0, interval: 'forever', currency: 'USD' };
   };
 
   if (!subscription) {
@@ -108,6 +100,8 @@ export default function MySubscriptionPage() {
   const planPrice = getPlanPrice(subscription.plan);
 
   return (
+    <>
+    <NavBar />
     <div style={{ 
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -188,7 +182,7 @@ export default function MySubscriptionPage() {
                         {subscription.status.toUpperCase()}
                       </Tag>
                       <Text type="secondary">
-                        ${planPrice.amount}/{planPrice.interval}
+                        {planPrice.currency} {planPrice.amount}/{planPrice.interval}
                       </Text>
                     </Space>
                   </div>
@@ -345,5 +339,7 @@ export default function MySubscriptionPage() {
         </Row>
       </div>
     </div>
+    <Footer />
+    </> 
   );
 }

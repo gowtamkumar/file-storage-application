@@ -5,6 +5,8 @@ import { Button, Card, Input, message, Modal, Popconfirm, Progress, Space, Table
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Footer from '../../components/Footer';
+import NavBar from '../../components/NavBar';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -282,6 +284,8 @@ export default function UserDashboard() {
   ];
 
   return (
+    <>
+    <NavBar/>
     <div style={{ 
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -645,5 +649,7 @@ export default function UserDashboard() {
         }
       `}</style>
     </div>
+    <Footer/>
+    </>
   );
 }

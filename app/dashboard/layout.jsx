@@ -1,10 +1,11 @@
 'use client';
 
 import {
-    LogoutOutlined,
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    UserOutlined
+  AppstoreOutlined,
+  LogoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
@@ -36,7 +37,12 @@ export default function DashboardLayout({ children }) {
               label: 'Files',
               onClick: () => router.push('/dashboard'),
             },
-            // Add more menu items here
+            ...(session?.user?.role === 'admin' ? [{
+              key: '2',
+              icon: <AppstoreOutlined />,
+              label: 'Plans',
+              onClick: () => router.push('/dashboard/plans'),
+            }] : []),
           ]}
         />
       </Sider>

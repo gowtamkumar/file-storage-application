@@ -285,13 +285,13 @@ export default function Dashboard() {
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white'
               }}
-              bodyStyle={{ padding: '24px' }}
+              // bodyStyle={{ padding: '24px' }}
             >
               <Statistic
                 title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Total Files</span>}
                 value={files.length}
                 prefix={<FileOutlined />}
-                valueStyle={{ color: 'white', fontWeight: 600 }}
+                // valueStyle={{ color: 'white', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -304,14 +304,14 @@ export default function Dashboard() {
                 background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                 color: 'white'
               }}
-              bodyStyle={{ padding: '24px' }}
+              // bodyStyle={{ padding: '24px' }}
             >
               <Statistic
                 title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Total Storage</span>}
                 value={(totalSize / (1024 * 1024)).toFixed(2)}
                 suffix="MB"
                 prefix={<DatabaseOutlined />}
-                valueStyle={{ color: 'white', fontWeight: 600 }}
+                // valueStyle={{ color: 'white', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -324,13 +324,13 @@ export default function Dashboard() {
                 background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                 color: 'white'
               }}
-              bodyStyle={{ padding: '24px' }}
+              // bodyStyle={{ padding: '24px' }}
             >
               <Statistic
                 title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Images</span>}
                 value={imageFiles}
                 prefix={<FileImageOutlined />}
-                valueStyle={{ color: 'white', fontWeight: 600 }}
+                // valueStyle={{ color: 'white', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -343,13 +343,13 @@ export default function Dashboard() {
                 background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
                 color: 'white'
               }}
-              bodyStyle={{ padding: '24px' }}
+              // bodyStyle={{ padding: '24px' }}
             >
               <Statistic
                 title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Documents</span>}
                 value={documentFiles}
                 prefix={<FilePdfOutlined />}
-                valueStyle={{ color: 'white', fontWeight: 600 }}
+                // valueStyle={{ color: 'white', fontWeight: 600 }}
               />
             </Card>
           </Col>
@@ -365,7 +365,7 @@ export default function Dashboard() {
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)'
           }}
-          bodyStyle={{ padding: '32px' }}
+          // bodyStyle={{ padding: '32px' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
@@ -422,7 +422,7 @@ export default function Dashboard() {
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)'
           }}
-          bodyStyle={{ padding: '28px' }}
+          // bodyStyle={{ padding: '28px' }}
         >
           <Title level={4} style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <FileOutlined style={{ color: '#667eea' }} />

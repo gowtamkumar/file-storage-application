@@ -1,16 +1,17 @@
 'use client';
 
+import NavBar from '@/components/NavBar';
 import { CloudUploadOutlined, RocketOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import { Button, Space, Typography } from 'antd';
 import Link from 'next/link';
-
+import Footer from '../components/Footer';
 const { Title, Paragraph } = Typography;
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
-
+    <NavBar/>
 
       {/* Hero Section */}
       <main className="flex-grow flex flex-col items-center justify-center text-center px-4 bg-gradient-to-b from-blue-50 to-white">
@@ -57,9 +58,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 text-center text-gray-500 border-t">
-        © 2024 FileStore. All rights reserved.
-      </footer>
+     <Footer />
     </div>
   );
 }

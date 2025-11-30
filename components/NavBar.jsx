@@ -7,7 +7,10 @@ export default function NavBar() {
   return (
       <nav className="flex justify-between items-center p-6 bg-white shadow-sm">
         <div className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-          <CloudUploadOutlined /> FileStore
+          
+          <Link href="/">
+            <CloudUploadOutlined /> FileStore
+          </Link>
         </div>
         <Space>
           <Link href="/pricing">

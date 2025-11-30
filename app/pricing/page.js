@@ -1,11 +1,12 @@
 'use client';
 
+import NavBar from '@/components/NavBar';
 import { CheckOutlined, CrownOutlined, RocketOutlined, StarOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Button, Card, Col, message, Row, Space, Tag, Typography } from 'antd';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
+import Footer from '../../components/Footer';
 const { Title, Text, Paragraph } = Typography;
 
 export default function PricingPage() {
@@ -146,11 +147,14 @@ export default function PricingPage() {
   };
 
   return (
+    <>
+    <NavBar />
     <div style={{ 
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       padding: '48px 24px'
     }}>
+ 
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '48px' }}>
@@ -351,5 +355,7 @@ export default function PricingPage() {
         )}
       </div>
     </div>
+     <Footer />
+    </>
   );
 }

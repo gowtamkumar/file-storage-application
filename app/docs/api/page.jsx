@@ -1,25 +1,22 @@
 'use client';
 
+import NavBar from '@/components/NavBar';
 import {
-    ApiOutlined,
-    CodeOutlined,
-    CopyOutlined,
-    GlobalOutlined,
-    RocketOutlined,
-    ThunderboltOutlined
+  ApiOutlined,
+  CodeOutlined,
+  CopyOutlined,
+  GlobalOutlined,
+  RocketOutlined,
+  ThunderboltOutlined
 } from '@ant-design/icons';
-import { Alert, Button, Card, Col, Layout, Row, Tabs, Tag, Typography, message } from 'antd';
-import { useSession } from 'next-auth/react';
+import { Alert, Button, Card, Col, Row, Tabs, Tag, Typography, message } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Footer from '../../../components/Footer';
 
 const { Title, Text, Paragraph } = Typography;
-const { Content } = Layout;
 
 export default function ApiDocsPage() {
-  const { data: session } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('postman');
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -169,6 +166,8 @@ async function uploadImage(file) {
   ];
 
   return (
+    <>
+    <NavBar />
     <div style={{ 
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -282,5 +281,7 @@ async function uploadImage(file) {
         </Row>
       </div>
     </div>
+     <Footer />
+    </>
   );
 }

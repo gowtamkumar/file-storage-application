@@ -9,8 +9,15 @@ const SubscriptionSchema = new mongoose.Schema({
   },
   plan: {
     type: String,
-    enum: ['free', 'basic', 'pro', 'enterprise'],
+    // Support both legacy string values and new plan IDs
+    // For backward compatibility with existing subscriptions
     default: 'free',
+  },
+  planRef: {
+    // Optional reference to SubscriptionPlan for dynamic plans
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SubscriptionPlan',
+    required: false,
   },
   status: {
     type: String,
