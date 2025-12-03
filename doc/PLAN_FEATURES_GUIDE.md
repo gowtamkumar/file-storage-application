@@ -98,3 +98,19 @@ Keep features **specific and measurable**:
 - ❌ "Premium Support" - Subjective, not a technical feature
 
 This builds **trust** with your customers!
+
+
+🟡 2. STANDARD PRODUCTION VERSION (Like real ImgBB)
+
+Features:
+✔ Drag & drop upload
+✔ Auto compression / resize
+✔ User accounts
+✔ Expire links
+✔ Statistics (views, traffic)
+✔ Folder/album system
+✔ Secure upload API
+✔ Admin panel
+✔ SEO & social preview
+✔ CDN caching
+✔ Optimized storage

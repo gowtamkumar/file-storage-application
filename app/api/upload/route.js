@@ -11,11 +11,11 @@ import { authOptions } from '../auth/[...nextauth]/route';
 
 const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = [
-  'image/jpeg', 
-  'image/png', 
-  'image/webp', 
-  'image/gif', 
-  'application/pdf', 
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'application/pdf',
   'text/plain',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -65,7 +65,7 @@ export async function POST(request) {
   });
 
   if (!validationResult.success) {
-    return NextResponse.json({ success: false, message: validationResult.error.errors[0].message }, { status: 400 });
+    return NextResponse.json({ success: false, message: validationResult.error.message }, { status: 400 });
   }
 
   const bytes = await file.arrayBuffer();
@@ -92,9 +92,9 @@ export async function POST(request) {
   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
   const filename = file.name.replace(/\s+/g, '-');
   const uniqueFilename = `${uniqueSuffix}-${filename}`;
-  
+
   const uploadDir = path.join(process.cwd(), 'public/uploads');
-  
+
   try {
     await mkdir(uploadDir, { recursive: true });
     await writeFile(path.join(uploadDir, uniqueFilename), buffer);
