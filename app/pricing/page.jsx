@@ -86,6 +86,8 @@ export default function PricingPage() {
 
       const data = await res.json();
 
+      console.log(data);
+
       if (data.success) {
         if (data.gatewayUrl) {
           window.location.href = data.gatewayUrl;

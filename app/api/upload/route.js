@@ -51,12 +51,30 @@ export async function POST(request) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
+
   const data = await request.formData();
   const file = data.get('file');
+  const folderId = data.get('folderId');
 
   if (!file) {
     return NextResponse.json({ success: false, message: 'No file uploaded' }, { status: 400 });
   }
+
+  // Validate folder if provided
+  if (folderId) {
+    const Folder = (await import('@/models/Folder')).default;
+    const folder = await Folder.findById(folderId);
+    
+    if (!folder) {
+      return NextResponse.json({ success: false, message: 'Folder not found' }, { status: 404 });
+    }
+    
+    // Check folder ownership
+    if (folder.userId.toString() !== userId) {
+      return NextResponse.json({ success: false, message: 'Folder does not belong to you' }, { status: 403 });
+    }
+  }
+
 
   // Validate file
   const validationResult = FileValidationSchema.safeParse({
@@ -106,6 +124,7 @@ export async function POST(request) {
       size: fileSize,
       mimetype: file.type,
       userId: userId,
+      folderId: folderId || null,
     });
 
     return NextResponse.json({ success: true, data: newFile });

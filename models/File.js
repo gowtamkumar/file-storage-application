@@ -26,6 +26,11 @@ const FileSchema = new mongoose.Schema({
     ref: 'User',
     required: false, // Optional for backward compatibility or public uploads if allowed later
   },
+  folderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Folder',
+    default: null, // null means file is in root
+  },
   createdAt: {
     type: Date,
     default: Date.now,

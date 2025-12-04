@@ -18,15 +18,29 @@ export async function POST(request) {
     const body = await request.json();
     const { plan: planId } = body;
 
+    console.log('Payment init - Received planId:', planId);
+
     // Fetch plan from database
-    const plan = await SubscriptionPlan.findOne({ planId: planId, active: true });
+    let plan = await SubscriptionPlan.findOne({ planId: planId, active: true });
     
+    console.log('Database plan found:', !!plan);
+
+    // Fallback to default plans if not in database
     if (!plan) {
-      return NextResponse.json({ success: false, message: 'Invalid or inactive plan' }, { status: 400 });
+      console.log('Looking for plan in default configuration');
+      plan = getPlanById(planId);
+      console.log('Default plan found:', !!plan);
+      
+      if (!plan) {
+        console.error('Plan not found. Received planId:', planId);
+        return NextResponse.json({ success: false, message: `Invalid plan: ${planId}` }, { status: 400 });
+      }
     }
 
     const amount = plan.price;
     const currency = plan.currency;
+
+    console.log(`Plan selected: ${plan.name}, Amount: ${amount} ${currency}`);
 
     // Free plan doesn't require payment
     if (amount === 0) {
