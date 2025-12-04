@@ -1,5 +1,6 @@
 'use client';
 
+import DocsNav from '@/components/DocsNav';
 import NavBar from '@/components/NavBar';
 import {
   ApiOutlined,
@@ -10,6 +11,7 @@ import {
   ThunderboltOutlined
 } from '@ant-design/icons';
 import { Alert, Button, Card, Col, Row, Tabs, Tag, Typography, message } from 'antd';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Footer from '../../../components/Footer';
 
@@ -25,9 +27,9 @@ export default function ApiDocsPage() {
 
   const CodeBlock = ({ code, language = 'bash' }) => (
     <div style={{ position: 'relative', background: '#1e1e1e', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
-      <Button 
-        type="text" 
-        icon={<CopyOutlined style={{ color: '#fff' }} />} 
+      <Button
+        type="text"
+        icon={<CopyOutlined style={{ color: '#fff' }} />}
         style={{ position: 'absolute', right: '8px', top: '8px' }}
         onClick={() => copyToClipboard(code)}
       />
@@ -167,97 +169,100 @@ async function uploadImage(file) {
 
   return (
     <>
-    <NavBar />
-    <div style={{ 
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      paddingTop: '100px',
-       paddingBottom: '80px',
-    }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        {/* Header */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '32px',
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '20px 32px',
-          borderRadius: '16px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          backdropFilter: 'blur(10px)'
-        }}>
-          <div>
-            <Title level={2} style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <ApiOutlined style={{ color: '#667eea' }} />
-              API Documentation
-            </Title>
-            <Text style={{ color: '#8c8c8c' }}>Simple and powerful file upload API</Text>
-          </div>
-          <Button 
-            onClick={() => router.push('/user')}
-            style={{ borderRadius: '8px' }}
-          >
-            Back to Dashboard
-          </Button>
-        </div>
+      <NavBar />
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        paddingTop: '100px',
+        paddingBottom: '80px',
+      }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Row gutter={[32, 32]}>
+            {/* Sidebar Navigation */}
+            <Col xs={24} lg={6}>
+              <DocsNav />
+            </Col>
 
-        <Row gutter={[24, 24]}>
-          <Col span={24}>
-            <Card 
-              style={{ 
-                borderRadius: '16px',
-                border: 'none',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                background: 'rgba(255, 255, 255, 0.95)',
-              }}
-            >
-              <Title level={3}>Authentication</Title>
-              <Paragraph>
-                Authentication is handled via an API Key. You can generate your API Key from the <a onClick={() => router.push('/user')}>User Dashboard</a>.
-              </Paragraph>
-              <Alert
-                message="Security Note"
-                description="Keep your API key secret. Do not share it publicly or commit it to version control."
-                type="warning"
-                showIcon
-                style={{ marginBottom: '24px', borderRadius: '8px' }}
-              />
-              <Paragraph>
-                Include the API Key in the <Text code>x-api-key</Text> header of your requests.
-              </Paragraph>
-              <CodeBlock code="x-api-key: sk_your_api_key_here" />
-            </Card>
-          </Col>
+            {/* Main Content */}
+            <Col xs={24} lg={18}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Card
+                  style={{
+                    borderRadius: '16px',
+                    border: 'none',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                  }}
+                  bodyStyle={{ padding: '48px' }}
+                >
+                  <Title level={1} style={{ marginBottom: '16px' }}>
+                    <ApiOutlined style={{ marginRight: '12px', color: '#667eea' }} />
+                    API Documentation
+                  </Title>
+                  <Paragraph style={{ fontSize: '1.125rem', color: '#8c8c8c', marginBottom: '32px' }}>
+                    Simple and powerful file upload API for developers.
+                  </Paragraph>
 
-          <Col span={24}>
-            <Card 
-              style={{ 
-                borderRadius: '16px',
-                border: 'none',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                background: 'rgba(255, 255, 255, 0.95)',
-              }}
-            >
-              <Title level={3}>Integration Guide</Title>
-              <Tabs defaultActiveKey="postman" items={items} />
-            </Card>
-          </Col>
+                  <Row gutter={[24, 24]}>
+                    <Col span={24}>
+                      <Card
+                        style={{
+                          borderRadius: '16px',
+                          border: 'none',
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                        }}
+                      >
+                        <Title level={3}>Authentication</Title>
+                        <Paragraph>
+                          Authentication is handled via an API Key. You can generate your API Key from the <a onClick={() => router.push('/user')}>User Dashboard</a>.
+                        </Paragraph>
+                        <Alert
+                          message="Security Note"
+                          description="Keep your API key secret. Do not share it publicly or commit it to version control."
+                          type="warning"
+                          showIcon
+                          style={{ marginBottom: '24px', borderRadius: '8px' }}
+                        />
+                        <Paragraph>
+                          Include the API Key in the <Text code>x-api-key</Text> header of your requests.
+                        </Paragraph>
+                        <CodeBlock code="x-api-key: sk_your_api_key_here" />
+                      </Card>
+                    </Col>
 
-          <Col span={24}>
-            <Card 
-              style={{ 
-                borderRadius: '16px',
-                border: 'none',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                background: 'rgba(255, 255, 255, 0.95)',
-              }}
-            >
-              <Title level={3}>Response Format</Title>
-              <Row gutter={24}>
-                <Col xs={24} md={12}>
-                  <Title level={4} type="success">Success Response (200)</Title>
-                  <CodeBlock language="json" code={`{
+                    <Col span={24}>
+                      <Card
+                        style={{
+                          borderRadius: '16px',
+                          border: 'none',
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                        }}
+                      >
+                        <Title level={3}>Integration Guide</Title>
+                        <Tabs defaultActiveKey="postman" items={items} />
+                      </Card>
+                    </Col>
+
+                    <Col span={24}>
+                      <Card
+                        style={{
+                          borderRadius: '16px',
+                          border: 'none',
+                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                        }}
+                      >
+                        <Title level={3}>Response Format</Title>
+                        <Row gutter={24}>
+                          <Col xs={24} md={12}>
+                            <Title level={4} type="success">Success Response (200)</Title>
+                            <CodeBlock language="json" code={`{
   "success": true,
   "data": {
     "filename": "1732890000000-image.png",
@@ -268,21 +273,25 @@ async function uploadImage(file) {
     "userId": "656..."
   }
 }`} />
-                </Col>
-                <Col xs={24} md={12}>
-                  <Title level={4} type="danger">Error Response</Title>
-                  <CodeBlock language="json" code={`{
+                          </Col>
+                          <Col xs={24} md={12}>
+                            <Title level={4} type="danger">Error Response</Title>
+                            <CodeBlock language="json" code={`{
   "success": false,
   "message": "Invalid API Key" // or other error message
 }`} />
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-        </Row>
+                          </Col>
+                        </Row>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Card>
+              </motion.div>
+            </Col>
+          </Row>
+        </div>
       </div>
-    </div>
-     <Footer />
+      <Footer />
     </>
   );
 }

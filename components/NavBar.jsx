@@ -32,6 +32,9 @@ export default function NavBar() {
           <Link href="/pricing">
             <Button type="text" className="font-medium">Pricing</Button>
           </Link>
+          <Link href="/docs">
+            <Button type="text" className="font-medium">Docs</Button>
+          </Link>
           <Link href="/docs/api">
             <Button type="text" className="font-medium">API Docs</Button>
           </Link>
