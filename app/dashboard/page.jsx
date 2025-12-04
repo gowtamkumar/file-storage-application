@@ -1,7 +1,8 @@
 'use client';
 
-import { CopyOutlined, DatabaseOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, FolderAddOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SwapOutlined, UploadOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Card, Form, Input, Layout, message, Modal, Popconfirm, Select, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
+import { CopyOutlined, DatabaseOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, FolderAddOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SearchOutlined, SwapOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
+import { Breadcrumb, Button, Card, Col, Form, Input, Layout, message, Modal, Popconfirm, Row, Select, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -10,6 +11,7 @@ const { Header, Sider, Content } = Layout;
 
 export default function Dashboard() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
   const [currentFolderId, setCurrentFolderId] = useState(null);
@@ -23,6 +25,8 @@ export default function Dashboard() {
   const [fileToMove, setFileToMove] = useState(null);
   const [selectedTargetFolder, setSelectedTargetFolder] = useState('');
   const [collapsed, setCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState('all'); // 'all', 'files', 'folders'
 
   useEffect(() => {
     fetchFolders();
@@ -317,6 +321,19 @@ export default function Dashboard() {
 
   const currentFolder = folders.find(f => f._id === currentFolderId);
 
+  // Filter files and folders based on search
+  const filteredFiles = files.filter(file => {
+    if (!searchQuery) return true;
+    if (searchType === 'folders') return false;
+    return file.originalName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
+  const filteredFolders = folders.filter(folder => {
+    if (!searchQuery) return true;
+    if (searchType === 'files') return false;
+    return folder.name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       {/* Header */}
@@ -343,6 +360,26 @@ export default function Dashboard() {
           </Title>
         </div>
         <Space size="middle">
+          {/* User Info */}
+          {session?.user && (
+            <div style={{
+              background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+              borderRadius: '10px',
+              padding: '10px 20px',
+              boxShadow: '0 4px 12px rgba(168, 237, 234, 0.3)',
+              color: '#333',
+              minWidth: '140px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <UserOutlined style={{ fontSize: '24px', opacity: 0.9 }} />
+                <div>
+                  <div style={{ fontSize: '11px', opacity: 0.7, marginBottom: '2px' }}>User</div>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{session.user.email?.split('@')[0]}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Files Stat Card */}
           <div style={{
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -380,6 +417,13 @@ export default function Dashboard() {
           </div>
 
           {/* Action Buttons */}
+          <Button 
+            onClick={() => router.push('/dashboard/users')}
+            style={{ height: '36px' }}
+            icon={<UserOutlined />}
+          >
+            Users
+          </Button>
           <Button 
             onClick={() => router.push('/dashboard/subscriptions')}
             style={{ height: '36px' }}
@@ -508,6 +552,35 @@ export default function Dashboard() {
 
         {/* Main Content */}
         <Content style={{ padding: '24px', background: '#fff' }}>
+          {/* Search and Filter Bar */}
+          <Card size="small" style={{ marginBottom: '16px', borderRadius: '8px' }}>
+            <Row gutter={16} align="middle">
+              <Col flex="auto">
+                <Input
+                  placeholder="Search files and folders..."
+                  prefix={<SearchOutlined />}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  allowClear
+                  size="large"
+                  style={{ borderRadius: '8px' }}
+                />
+              </Col>
+              <Col>
+                <Select
+                  value={searchType}
+                  onChange={setSearchType}
+                  style={{ width: 150 }}
+                  size="large"
+                >
+                  <Select.Option value="all">All</Select.Option>
+                  <Select.Option value="files">Files Only</Select.Option>
+                  <Select.Option value="folders">Folders Only</Select.Option>
+                </Select>
+              </Col>
+            </Row>
+          </Card>
+
           {/* Breadcrumb */}
           <Breadcrumb style={{ marginBottom: '16px' }}>
             <Breadcrumb.Item onClick={() => setCurrentFolderId(null)} style={{ cursor: 'pointer' }}>
@@ -568,13 +641,13 @@ export default function Dashboard() {
           >
             <Table 
               columns={columns} 
-              dataSource={files} 
+              dataSource={filteredFiles} 
               rowKey="_id" 
               loading={loading}
               pagination={{ 
                 pageSize: 15, 
                 showSizeChanger: true,
-                showTotal: (total) => `Total ${total} files`
+                showTotal: (total) => `Total ${total} files${searchQuery ? ' (filtered)' : ''}`
               }}
               size="small"
             />

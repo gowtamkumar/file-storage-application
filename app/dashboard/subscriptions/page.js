@@ -174,13 +174,13 @@ export default function SubscriptionsPage() {
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}
-                bodyStyle={{ padding: '24px' }}
+                
               >
                 <Statistic
                   title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Total Subscriptions</span>}
                   value={stats.total}
                   prefix={<UserOutlined />}
-                  valueStyle={{ color: 'white', fontWeight: 600 }}
+                  // valueStyle={{ color: 'white', fontWeight: 600 }}
                 />
               </Card>
             </Col>
@@ -192,13 +192,13 @@ export default function SubscriptionsPage() {
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                   background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
                 }}
-                bodyStyle={{ padding: '24px' }}
+                
               >
                 <Statistic
                   title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Active Subscriptions</span>}
                   value={stats.active}
                   prefix={<TeamOutlined />}
-                  valueStyle={{ color: 'white', fontWeight: 600 }}
+                  // valueStyle={{ color: 'white', fontWeight: 600 }}
                 />
               </Card>
             </Col>
@@ -210,13 +210,13 @@ export default function SubscriptionsPage() {
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                   background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                 }}
-                bodyStyle={{ padding: '24px' }}
+                
               >
                 <Statistic
                   title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Total Revenue</span>}
                   value={stats.totalRevenue.toFixed(2)}
                   prefix={<DollarOutlined />}
-                  valueStyle={{ color: 'white', fontWeight: 600 }}
+                  // valueStyle={{ color: 'white', fontWeight: 600 }}
                 />
               </Card>
             </Col>
@@ -228,7 +228,7 @@ export default function SubscriptionsPage() {
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                   background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                 }}
-                bodyStyle={{ padding: '24px' }}
+                
               >
                 <div style={{ color: 'white' }}>
                   <div style={{ fontSize: '14px', marginBottom: '8px', opacity: 0.9 }}>Plan Distribution</div>

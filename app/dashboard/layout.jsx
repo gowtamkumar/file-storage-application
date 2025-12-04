@@ -1,11 +1,14 @@
 'use client';
 
 import {
-  AppstoreOutlined,
+  CrownOutlined,
+  DashboardOutlined,
+  FileOutlined,
+  HomeOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UserOutlined
+  TeamOutlined
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
@@ -31,15 +34,33 @@ export default function DashboardLayout({ children }) {
           mode="inline"
           defaultSelectedKeys={['1']}
           items={[
+            ...(session?.user?.role === 'admin' ? [{
+              key: '0',
+              icon: <HomeOutlined />,
+              label: 'Home',
+              onClick: () => router.push('/dashboard/home'),
+            }] : []),
             {
               key: '1',
-              icon: <UserOutlined />,
+              icon: <FileOutlined />,
               label: 'Files',
               onClick: () => router.push('/dashboard'),
             },
             ...(session?.user?.role === 'admin' ? [{
               key: '2',
-              icon: <AppstoreOutlined />,
+              icon: <TeamOutlined />,
+              label: 'Users',
+              onClick: () => router.push('/dashboard/users'),
+            }] : []),
+            ...(session?.user?.role === 'admin' ? [{
+              key: '3',
+              icon: <CrownOutlined />,
+              label: 'Subscriptions',
+              onClick: () => router.push('/dashboard/subscriptions'),
+            }] : []),
+            ...(session?.user?.role === 'admin' ? [{
+              key: '4',
+              icon: <DashboardOutlined />,
               label: 'Plans',
               onClick: () => router.push('/dashboard/plans'),
             }] : []),
