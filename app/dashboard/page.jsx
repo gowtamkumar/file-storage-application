@@ -50,8 +50,8 @@ export default function Dashboard() {
         onSuccess(data.data);
         fetchFiles();
       } else {
-        message.error(`${file.name} upload failed.`);
-        onError(new Error('Upload failed'));
+        message.error(data.message || `${file.name} upload failed.`);
+        onError(new Error(data.message || 'Upload failed'));
       }
     } catch (err) {
       message.error(`${file.name} upload failed.`);

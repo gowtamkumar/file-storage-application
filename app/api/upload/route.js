@@ -9,7 +9,7 @@ import sharp from 'sharp';
 import { z } from 'zod';
 import { authOptions } from '../auth/[...nextauth]/route';
 
-const MAX_FILE_SIZE = Number(process.env.MAX_FILE_SIZE) * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = (Number(process.env.MAX_FILE_SIZE) || 5) * 1024 * 1024; // Default 5MB
 const ALLOWED_FILE_TYPES = [
   'image/jpeg',
   'image/png',
