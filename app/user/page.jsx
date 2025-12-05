@@ -611,6 +611,22 @@ export default function UserDashboard() {
             </div>
           </Sider>
 
+          {/* Backdrop overlay for mobile sidebar */}
+          {isMobile && !collapsed && (
+            <div
+              onClick={() => setCollapsed(true)}
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0, 0, 0, 0.45)',
+                zIndex: 98
+              }}
+            />
+          )}
+
           {/* Main Content */}
           <Content style={{ padding: isMobile ? '16px' : '24px', background: '#fff', minHeight: 'calc(100vh - 128px)' }}>
             {/* Breadcrumb */}
@@ -675,48 +691,101 @@ export default function UserDashboard() {
               </Card>
             )}
 
-            {/* Upload Section */}
-            <Card
-              size="small"
-              style={{
-                marginBottom: 16,
-                borderRadius: '8px',
-                background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)'
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                flexDirection: isMobile ? 'column' : 'row',
-                justifyContent: 'space-between',
-                alignItems: isMobile ? 'stretch' : 'center',
-                gap: isMobile ? '12px' : '0'
-              }}>
-                <div>
-                  <Text strong>Upload Files</Text>
-                  <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                    {currentFolder ? `to ${currentFolder.name}` : 'to root'}
+            {/* Mobile Action Buttons */}
+            {isMobile && (
+              <Card
+                size="small"
+                style={{
+                  marginBottom: 16,
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)'
+                }}
+              >
+                <Row gutter={[8, 8]}>
+                  <Col span={12}>
+                    <Button
+                      type="primary"
+                      icon={<FolderAddOutlined />}
+                      onClick={() => setFolderModalVisible(true)}
+                      block
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        height: '44px'
+                      }}
+                    >
+                      New Folder
+                    </Button>
+                  </Col>
+                  <Col span={12}>
+                    <Upload
+                      customRequest={handleUpload}
+                      showUploadList={false}
+                      multiple
+                    >
+                      <Button
+                        type="primary"
+                        icon={<UploadOutlined />}
+                        loading={uploading}
+                        block
+                        style={{
+                          background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                          border: 'none',
+                          height: '44px'
+                        }}
+                      >
+                        Upload Files
+                      </Button>
+                    </Upload>
+                  </Col>
+                </Row>
+              </Card>
+            )}
+
+            {/* Desktop Upload Section */}
+            {!isMobile && (
+              <Card
+                size="small"
+                style={{
+                  marginBottom: 16,
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)'
+                }}
+              >
+                <div style={{
+                  display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  justifyContent: 'space-between',
+                  alignItems: isMobile ? 'stretch' : 'center',
+                  gap: isMobile ? '12px' : '0'
+                }}>
+                  <div>
+                    <Text strong>Upload Files</Text>
+                    <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
+                      {currentFolder ? `to ${currentFolder.name}` : 'to root'}
+                    </div>
                   </div>
-                </div>
-                <Upload
-                  customRequest={handleUpload}
-                  showUploadList={false}
-                  multiple
-                >
-                  <Button
-                    type="primary"
-                    icon={<UploadOutlined />}
-                    loading={uploading}
-                    style={{
-                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      border: 'none',
-                      width: isMobile ? '100%' : 'auto'
-                    }}
+                  <Upload
+                    customRequest={handleUpload}
+                    showUploadList={false}
+                    multiple
                   >
-                    Upload Files
-                  </Button>
-                </Upload>
-              </div>
-            </Card>
+                    <Button
+                      type="primary"
+                      icon={<UploadOutlined />}
+                      loading={uploading}
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        width: isMobile ? '100%' : 'auto'
+                      }}
+                    >
+                      Upload Files
+                    </Button>
+                  </Upload>
+                </div>
+              </Card>
+            )}
 
             {/* API Key Section */}
             <Card
@@ -915,9 +984,15 @@ export default function UserDashboard() {
           .ant-layout-sider {
             position: fixed !important;
             left: 0;
-            top: 64px !important;
+            top: 0 !important;
             bottom: 0;
             z-index: 99;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+            transition: left 0.3s ease;
+          }
+          
+          .ant-layout-sider-collapsed {
+            left: -280px !important;
           }
           
           .ant-table-tbody > tr > td {
