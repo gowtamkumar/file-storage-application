@@ -27,7 +27,25 @@ export default function DashboardLayout({ children }) {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        breakpoint="lg"
+        collapsedWidth={0}
+        onBreakpoint={(broken) => {
+          // Automatically collapse on mobile/tablet
+          setCollapsed(broken);
+        }}
+        style={{
+          overflow: 'auto',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          bottom: 0,
+        }}
+      >
         <div className="demo-logo-vertical" style={{ height: '32px', margin: '16px', background: 'rgba(255, 255, 255, 0.2)', borderRadius: '6px' }} />
         <Menu
           theme="dark"
@@ -67,8 +85,21 @@ export default function DashboardLayout({ children }) {
           ]}
         />
       </Sider>
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: '20px' }}>
+      <Layout style={{ marginLeft: collapsed ? 0 : 200, transition: 'margin-left 0.2s' }}>
+        <Header
+          style={{
+            padding: '0 20px 0 0',
+            background: colorBgContainer,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
+            width: '100%',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          }}
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -79,9 +110,28 @@ export default function DashboardLayout({ children }) {
               height: 64,
             }}
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-             <span>{session?.user?.name} ({session?.user?.role})</span>
-             <Button icon={<LogoutOutlined />} onClick={() => signOut({ callbackUrl: '/login' })}>Logout</Button>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end'
+          }}>
+            <span style={{
+              fontSize: '14px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
+              {session?.user?.name} ({session?.user?.role})
+            </span>
+            <Button
+              icon={<LogoutOutlined />}
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              size="small"
+            >
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
           </div>
         </Header>
         <Content
