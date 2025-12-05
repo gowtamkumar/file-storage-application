@@ -1,766 +1,286 @@
 'use client';
 
-import { CopyOutlined, DatabaseOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, FolderAddOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, MenuFoldOutlined, MenuUnfoldOutlined, SearchOutlined, SwapOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Card, Col, Form, Input, Layout, message, Modal, Popconfirm, Row, Select, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
-import { useSession } from 'next-auth/react';
+import { ClockCircleOutlined, CloudUploadOutlined, CrownOutlined, DatabaseOutlined, FileOutlined, FolderOutlined, RocketOutlined, TeamOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
+import { Card, Col, Row, Statistic, Table, Tag, Typography } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const { Title, Text } = Typography;
-const { Header, Sider, Content } = Layout;
 
-export default function Dashboard() {
+export default function AdminDashboard() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const [files, setFiles] = useState([]);
-  const [folders, setFolders] = useState([]);
-  const [currentFolderId, setCurrentFolderId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [folderModalVisible, setFolderModalVisible] = useState(false);
-  const [folderForm] = Form.useForm();
-  const [moveModalVisible, setMoveModalVisible] = useState(false);
-  const [fileToMove, setFileToMove] = useState(null);
-  const [selectedTargetFolder, setSelectedTargetFolder] = useState('');
-  const [collapsed, setCollapsed] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchType, setSearchType] = useState('all'); // 'all', 'files', 'folders'
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFolders();
-    fetchFiles();
+    fetchStats();
   }, []);
 
-  useEffect(() => {
-    fetchFiles();
-  }, [currentFolderId]);
-
-  const fetchFolders = async () => {
-    try {
-      const res = await fetch('/api/folders');
-      const data = await res.json();
-      if (data.success) {
-        setFolders(data.data);
-      }
-    } catch (error) {
-      message.error('Failed to fetch folders');
-    }
-  };
-
-  const fetchFiles = async () => {
+  const fetchStats = async () => {
     setLoading(true);
     try {
-      const url = currentFolderId ? `/api/files?folderId=${currentFolderId}` : '/api/files?folderId=null';
-      const res = await fetch(url);
+      const res = await fetch('/api/admin/dashboard');
       const data = await res.json();
       if (data.success) {
-        setFiles(data.data);
+        setStats(data.data);
       }
     } catch (error) {
-      message.error('Failed to fetch files');
+      console.error('Failed to fetch stats');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpload = async ({ file, onSuccess, onError }) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    if (currentFolderId) {
-      formData.append('folderId', currentFolderId);
-    }
-    setUploading(true);
-
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success) {
-        message.success(`${file.name} uploaded successfully`);
-        onSuccess(data.data);
-        fetchFiles();
-      } else {
-        message.error(data.message || `${file.name} upload failed.`);
-        onError(new Error(data.message || 'Upload failed'));
-      }
-    } catch (err) {
-      message.error(`${file.name} upload failed.`);
-      onError(err);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleCreateFolder = async (values) => {
-    try {
-      const res = await fetch('/api/folders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: values.folderName }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        message.success('Folder created successfully');
-        setFolderModalVisible(false);
-        folderForm.resetFields();
-        fetchFolders();
-      } else {
-        message.error(data.message || 'Failed to create folder');
-      }
-    } catch (error) {
-      message.error('Failed to create folder');
-    }
-  };
-
-  const handleDeleteFolder = async (id) => {
-    try {
-      const res = await fetch(`/api/folders/${id}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (data.success) {
-        message.success(data.message || 'Folder deleted successfully');
-        fetchFolders();
-        fetchFiles();
-        if (currentFolderId === id) {
-          setCurrentFolderId(null);
-        }
-      } else {
-        message.error(data.message || 'Delete failed');
-      }
-    } catch (error) {
-      message.error('Delete failed');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      const res = await fetch(`/api/files/${id}`, {
-        method: 'DELETE',
-      });
-      const data = await res.json();
-      if (data.success) {
-        message.success('File deleted successfully');
-        fetchFiles();
-      } else {
-        message.error(data.message || 'Delete failed');
-      }
-    } catch (error) {
-      message.error('Delete failed');
-    }
-  };
-
-  const handleMoveFile = async () => {
-    if (!fileToMove) return;
-    
-    try {
-      const res = await fetch(`/api/files/${fileToMove}/move`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ folderId: selectedTargetFolder || null }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        message.success('File moved successfully');
-        setMoveModalVisible(false);
-        setFileToMove(null);
-        setSelectedTargetFolder('');
-        fetchFiles();
-      } else {
-        message.error(data.message || 'Failed to move file');
-      }
-    } catch (error) {
-      message.error('Failed to move file');
-    }
-  };
-
-  const copyFileUrl = (path) => {
-    const fullUrl = `${window.location.origin}${path}`;
-    navigator.clipboard.writeText(fullUrl);
-    message.success('File URL copied to clipboard!');
-  };
-
-  const getFileIcon = (mimetype) => {
-    if (mimetype.startsWith('image/')) return <FileImageOutlined style={{ fontSize: '32px', color: '#52c41a' }} />;
-    if (mimetype.includes('pdf')) return <FilePdfOutlined style={{ fontSize: '32px', color: '#ff4d4f' }} />;
-    if (mimetype.includes('zip') || mimetype.includes('rar')) return <FileZipOutlined style={{ fontSize: '32px', color: '#faad14' }} />;
-    if (mimetype.includes('text')) return <FileTextOutlined style={{ fontSize: '32px', color: '#1890ff' }} />;
-    return <FileOutlined style={{ fontSize: '32px', color: '#722ed1' }} />;
-  };
-
-  const handlePreview = (path) => {
-    setPreviewImage(path);
-    setPreviewVisible(true);
-  };
-
-  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-  const imageFiles = files.filter(f => f.mimetype.startsWith('image/')).length;
-  const documentFiles = files.filter(f => f.mimetype.includes('pdf') || f.mimetype.includes('document')).length;
-
-  const columns = [
+  const quickActions = [
     {
-      title: 'Preview',
-      key: 'preview',
-      width: 80,
-      render: (_, record) => (
-        <div style={{ cursor: 'pointer' }} onClick={() => record.mimetype.startsWith('image/') && handlePreview(record.path)}>
-          {record.mimetype.startsWith('image/') ? 
-            <img src={record.path} alt={record.originalName} style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 6 }} /> :
-            getFileIcon(record.mimetype)
-          }
+      title: 'Manage Users',
+      description: 'View and manage all users',
+      icon: <TeamOutlined style={{ fontSize: '32px', color: '#667eea' }} />,
+      onClick: () => router.push('/dashboard/users'),
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    },
+    {
+      title: 'View Files',
+      description: 'Browse all uploaded files',
+      icon: <FileOutlined style={{ fontSize: '32px', color: '#f093fb' }} />,
+      onClick: () => router.push('/dashboard'),
+      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    },
+    {
+      title: 'Subscriptions',
+      description: 'Manage user subscriptions',
+      icon: <CrownOutlined style={{ fontSize: '32px', color: '#4facfe' }} />,
+      onClick: () => router.push('/dashboard/subscriptions'),
+      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    },
+    {
+      title: 'Plans',
+      description: 'Configure subscription plans',
+      icon: <RocketOutlined style={{ fontSize: '32px', color: '#43e97b' }} />,
+      onClick: () => router.push('/dashboard/plans'),
+      gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    },
+  ];
+
+  const recentFilesColumns = [
+    {
+      title: 'File Name',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <FileOutlined />
+          <Text ellipsis style={{ maxWidth: '200px' }}>{text}</Text>
         </div>
       ),
     },
     {
-      title: 'Name',
-      dataIndex: 'originalName',
-      key: 'name',
-      render: (text, record) => (
-        <div>
-          <a href={record.path} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 500, fontSize: '14px' }}>
-            {text}
-          </a>
-          <div style={{ fontSize: '12px', color: '#8c8c8c', marginTop: '2px' }}>
-            {new Date(record.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-          </div>
-        </div>
-      ),
+      title: 'User',
+      dataIndex: 'user',
+      key: 'user',
     },
     {
       title: 'Size',
       dataIndex: 'size',
       key: 'size',
-      width: 100,
       render: (size) => {
         if (size > 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(2)} MB`;
         return `${(size / 1024).toFixed(2)} KB`;
       },
     },
     {
-      title: 'Type',
-      dataIndex: 'mimetype',
-      key: 'type',
-      width: 120,
-      render: (type) => {
-        const typeMap = {
-          'image': { color: 'green', text: 'Image' },
-          'pdf': { color: 'red', text: 'PDF' },
-          'video': { color: 'purple', text: 'Video' },
-          'audio': { color: 'orange', text: 'Audio' },
-          'text': { color: 'blue', text: 'Text' },
-          'zip': { color: 'gold', text: 'Archive' },
-        };
-        
-        const mainType = type.split('/')[0];
-        const config = typeMap[mainType] || { color: 'default', text: type.split('/')[1] };
-        
-        return <Tag color={config.color} style={{ borderRadius: '4px' }}>{config.text}</Tag>;
-      },
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      width: 150,
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title="Copy URL">
-            <Button 
-              type="text" 
-              icon={<CopyOutlined />} 
-              size="small"
-              onClick={() => copyFileUrl(record.path)}
-              style={{ color: '#1890ff' }}
-            />
-          </Tooltip>
-          <Tooltip title="Download">
-            <Button 
-              type="text" 
-              icon={<DownloadOutlined />} 
-              href={record.path} 
-              download 
-              size="small"
-              style={{ color: '#52c41a' }}
-            />
-          </Tooltip>
-          <Tooltip title="Move">
-            <Button 
-              type="text" 
-              icon={<SwapOutlined />} 
-              size="small"
-              style={{ color: '#faad14' }}
-              onClick={() => {
-                setFileToMove(record._id);
-                setMoveModalVisible(true);
-              }}
-            />
-          </Tooltip>
-          <Popconfirm
-            title="Delete file?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Yes"
-            cancelText="No"
-            okButtonProps={{ danger: true }}
-          >
-            <Tooltip title="Delete">
-              <Button 
-                type="text" 
-                danger 
-                icon={<DeleteOutlined />} 
-                size="small"
-              />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
+      title: 'Uploaded',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date) => new Date(date).toLocaleString(),
     },
   ];
 
-  const currentFolder = folders.find(f => f._id === currentFolderId);
-
-  // Filter files and folders based on search
-  const filteredFiles = files.filter(file => {
-    if (!searchQuery) return true;
-    if (searchType === 'folders') return false;
-    return file.originalName.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
-  const filteredFolders = folders.filter(folder => {
-    if (!searchQuery) return true;
-    if (searchType === 'files') return false;
-    return folder.name.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      {/* Header */}
-      <Header style={{ 
-        background: '#fff', 
-        padding: '16px 24px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Button 
-            type="text" 
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ fontSize: '16px' }}
-          />
-          <Title level={3} style={{ margin: 0, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            File Manager
+    <div style={{ padding: '24px', minHeight: 'calc(100vh - 64px)', background: '#f0f2f5' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '32px' }}>
+          <Title level={2} style={{ margin: 0, marginBottom: '8px' }}>
+            Admin Dashboard
           </Title>
+          <Text type="secondary">Overview of your file storage system</Text>
         </div>
-        <Space size="middle">
-          {/* User Info */}
-          {session?.user && (
-            <div style={{
-              background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-              borderRadius: '10px',
-              padding: '10px 20px',
-              boxShadow: '0 4px 12px rgba(168, 237, 234, 0.3)',
-              color: '#333',
-              minWidth: '140px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <UserOutlined style={{ fontSize: '24px', opacity: 0.9 }} />
-                <div>
-                  <div style={{ fontSize: '11px', opacity: 0.7, marginBottom: '2px' }}>User</div>
-                  <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{session.user.email?.split('@')[0]}</div>
-                </div>
+
+        {/* Statistics Overview */}
+        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+          <Col xs={24} sm={12} lg={6}>
+            <Card loading={loading}>
+              <Statistic
+                title="Total Users"
+                value={stats?.overview?.totalUsers || 0}
+                prefix={<UserOutlined />}
+                valueStyle={{ color: '#667eea', fontSize: '32px', fontWeight: 'bold' }}
+              />
+              <div style={{ marginTop: '12px', padding: '8px 12px', background: '#f0f5ff', borderRadius: '6px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  <UserAddOutlined /> +{stats?.overview?.newUsersWeek || 0} this week
+                </Text>
               </div>
-            </div>
-          )}
-
-          {/* Files Stat Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '10px',
-            padding: '10px 20px',
-            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-            color: 'white',
-            minWidth: '120px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <FileOutlined style={{ fontSize: '24px', opacity: 0.9 }} />
-              <div>
-                <div style={{ fontSize: '11px', opacity: 0.9, marginBottom: '2px' }}>Files</div>
-                <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{files.length}</div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card loading={loading}>
+              <Statistic
+                title="Total Files"
+                value={stats?.overview?.totalFiles || 0}
+                prefix={<CloudUploadOutlined />}
+                valueStyle={{ color: '#52c41a', fontSize: '32px', fontWeight: 'bold' }}
+              />
+              <div style={{ marginTop: '12px', padding: '8px 12px', background: '#f6ffed', borderRadius: '6px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  <FolderOutlined /> {stats?.overview?.totalFolders || 0} folders
+                </Text>
               </div>
-            </div>
-          </div>
-
-          {/* Storage Stat Card */}
-          <div style={{
-            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-            borderRadius: '10px',
-            padding: '10px 20px',
-            boxShadow: '0 4px 12px rgba(245, 87, 108, 0.3)',
-            color: 'white',
-            minWidth: '120px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <DatabaseOutlined style={{ fontSize: '24px', opacity: 0.9 }} />
-              <div>
-                <div style={{ fontSize: '11px', opacity: 0.9, marginBottom: '2px' }}>Storage</div>
-                <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{(totalSize / (1024 * 1024)).toFixed(1)} <span style={{ fontSize: '12px', fontWeight: 'normal' }}>MB</span></div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card loading={loading}>
+              <Statistic
+                title="Storage Used"
+                value={stats?.overview?.totalStorageMB || 0}
+                suffix="MB"
+                prefix={<DatabaseOutlined />}
+                valueStyle={{ color: '#faad14', fontSize: '32px', fontWeight: 'bold' }}
+              />
+              <div style={{ marginTop: '12px', padding: '8px 12px', background: '#fffbe6', borderRadius: '6px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  Across all users
+                </Text>
               </div>
-            </div>
-          </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card loading={loading}>
+              <Statistic
+                title="Subscriptions"
+                value={stats?.overview?.totalSubscriptions || 0}
+                prefix={<CrownOutlined />}
+                valueStyle={{ color: '#f5576c', fontSize: '32px', fontWeight: 'bold' }}
+              />
+              <div style={{ marginTop: '12px', padding: '8px 12px', background: '#fff1f0', borderRadius: '6px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  Active plans
+                </Text>
+              </div>
+            </Card>
+          </Col>
+        </Row>
 
-          {/* Action Buttons */}
-          <Button 
-            onClick={() => router.push('/dashboard/users')}
-            style={{ height: '36px' }}
-            icon={<UserOutlined />}
-          >
-            Users
-          </Button>
-          <Button 
-            onClick={() => router.push('/dashboard/subscriptions')}
-            style={{ height: '36px' }}
-          >
-            Subscriptions
-          </Button>
-          <Button 
-            href="/api/auth/signout"
-            style={{ height: '36px' }}
-          >
-            Logout
-          </Button>
-        </Space>
-      </Header>
-
-      <Layout>
-        {/* Sidebar */}
-        <Sider 
-          collapsible 
-          collapsed={collapsed} 
-          onCollapse={setCollapsed}
-          trigger={null}
-          width={280}
-          style={{ 
-            background: '#fafafa',
-            borderRight: '1px solid #f0f0f0'
-          }}
+        {/* Subscription Breakdown */}
+        <Card
+          title={
+            <span>
+              <CrownOutlined style={{ marginRight: '8px' }} />
+              Subscription Breakdown
+            </span>
+          }
+          style={{ marginBottom: '24px' }}
+          loading={loading}
         >
-          <div style={{ padding: '16px' }}>
-            <Button 
-              type="primary" 
-              icon={<FolderAddOutlined />}
-              onClick={() => setFolderModalVisible(true)}
-              block
-              style={{ 
-                marginBottom: '16px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                border: 'none'
-              }}
-            >
-              {!collapsed && 'New Folder'}
-            </Button>
-            
-            {/* All Files */}
-            <div
-              onClick={() => setCurrentFolderId(null)}
-              style={{
-                padding: '12px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                background: !currentFolderId ? '#e6f7ff' : 'transparent',
-                marginBottom: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                transition: 'all 0.3s'
-              }}
-            >
-              <HomeOutlined style={{ fontSize: '18px', color: '#667eea' }} />
-              {!collapsed && <span style={{ fontWeight: !currentFolderId ? 600 : 400 }}>All Files</span>}
-            </div>
+          <Row gutter={16}>
+            <Col span={6}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#8c8c8c' }}>
+                  {stats?.subscriptionBreakdown?.free || 0}
+                </div>
+                <Tag color="default">FREE</Tag>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#52c41a' }}>
+                  {stats?.subscriptionBreakdown?.basic || 0}
+                </div>
+                <Tag color="green">BASIC</Tag>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#1890ff' }}>
+                  {stats?.subscriptionBreakdown?.pro || 0}
+                </div>
+                <Tag color="blue">PRO</Tag>
+              </div>
+            </Col>
+            <Col span={6}>
+              <div style={{ textAlign: 'center', padding: '16px' }}>
+                <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#faad14' }}>
+                  {stats?.subscriptionBreakdown?.enterprise || 0}
+                </div>
+                <Tag color="gold">ENTERPRISE</Tag>
+              </div>
+            </Col>
+          </Row>
+        </Card>
 
-            {/* Folders List */}
-            <div style={{ marginTop: '16px' }}>
-              {!collapsed && <div style={{ fontSize: '12px', color: '#8c8c8c', marginBottom: '8px', paddingLeft: '12px' }}>FOLDERS</div>}
-              {folders.map(folder => (
+        {/* Quick Actions */}
+        <Title level={4} style={{ marginBottom: '16px' }}>
+          Quick Actions
+        </Title>
+        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+          {quickActions.map((action, index) => (
+            <Col xs={24} sm={12} lg={6} key={index}>
+              <Card
+                hoverable
+                onClick={action.onClick}
+                style={{
+                  borderRadius: '12px',
+                  border: 'none',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s',
+                }}
+                bodyStyle={{ padding: '24px' }}
+              >
                 <div
-                  key={folder._id}
                   style={{
-                    padding: '12px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    background: currentFolderId === folder._id ? '#e6f7ff' : 'transparent',
-                    marginBottom: '4px',
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '12px',
+                    background: action.gradient,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
-                    transition: 'all 0.3s'
-                  }}
-                  onClick={() => setCurrentFolderId(folder._id)}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-                    <FolderOutlined style={{ fontSize: '18px', color: '#faad14' }} />
-                    {!collapsed && (
-                      <span style={{ 
-                        fontWeight: currentFolderId === folder._id ? 600 : 400,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        {folder.name}
-                      </span>
-                    )}
-                  </div>
-                  {!collapsed && (
-                    <Popconfirm
-                      title="Delete folder?"
-                      description="Files will be moved to root"
-                      onConfirm={(e) => {
-                        e.stopPropagation();
-                        handleDeleteFolder(folder._id);
-                      }}
-                      okText="Yes"
-                      cancelText="No"
-                      okButtonProps={{ danger: true }}
-                    >
-                      <Button 
-                        type="text" 
-                        danger 
-                        icon={<DeleteOutlined />} 
-                        size="small"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </Popconfirm>
-                  )}
-                </div>
-              ))}
-              {folders.length === 0 && !collapsed && (
-                <div style={{ textAlign: 'center', padding: '20px 0', color: '#8c8c8c', fontSize: '12px' }}>
-                  No folders yet
-                </div>
-              )}
-            </div>
-          </div>
-        </Sider>
-
-        {/* Main Content */}
-        <Content style={{ padding: '24px', background: '#fff' }}>
-          {/* Search and Filter Bar */}
-          <Card size="small" style={{ marginBottom: '16px', borderRadius: '8px' }}>
-            <Row gutter={16} align="middle">
-              <Col flex="auto">
-                <Input
-                  placeholder="Search files and folders..."
-                  prefix={<SearchOutlined />}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  allowClear
-                  size="large"
-                  style={{ borderRadius: '8px' }}
-                />
-              </Col>
-              <Col>
-                <Select
-                  value={searchType}
-                  onChange={setSearchType}
-                  style={{ width: 150 }}
-                  size="large"
-                >
-                  <Select.Option value="all">All</Select.Option>
-                  <Select.Option value="files">Files Only</Select.Option>
-                  <Select.Option value="folders">Folders Only</Select.Option>
-                </Select>
-              </Col>
-            </Row>
-          </Card>
-
-          {/* Breadcrumb */}
-          <Breadcrumb style={{ marginBottom: '16px' }}>
-            <Breadcrumb.Item onClick={() => setCurrentFolderId(null)} style={{ cursor: 'pointer' }}>
-              <HomeOutlined /> All Files
-            </Breadcrumb.Item>
-            {currentFolder && (
-              <Breadcrumb.Item>
-                <FolderOpenOutlined /> {currentFolder.name}
-              </Breadcrumb.Item>
-            )}
-          </Breadcrumb>
-
-          {/* Upload Section */}
-          <Card 
-            size="small"
-            style={{ 
-              marginBottom: 16,
-              borderRadius: '8px',
-              background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)'
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <Text strong>Upload Files</Text>
-                <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
-                  {currentFolder ? `to ${currentFolder.name}` : 'to root'}
-                </div>
-              </div>
-              <Upload
-                customRequest={handleUpload}
-                showUploadList={false}
-                multiple
-              >
-                <Button 
-                  type="primary" 
-                  icon={<UploadOutlined />} 
-                  loading={uploading}
-                  style={{ 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    border: 'none'
+                    justifyContent: 'center',
+                    marginBottom: '16px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   }}
                 >
-                  Upload Files
-                </Button>
-              </Upload>
-            </div>
-          </Card>
-
-          {/* Files Table */}
-          <Card 
-            title={
-              <Space>
-                <FileOutlined />
-                <span>Files ({files.length})</span>
-              </Space>
-            }
-            style={{ borderRadius: '8px' }}
-          >
-            <Table 
-              columns={columns} 
-              dataSource={filteredFiles} 
-              rowKey="_id" 
-              loading={loading}
-              pagination={{ 
-                pageSize: 15, 
-                showSizeChanger: true,
-                showTotal: (total) => `Total ${total} files${searchQuery ? ' (filtered)' : ''}`
-              }}
-              size="small"
-            />
-          </Card>
-        </Content>
-      </Layout>
-
-      {/* Modals */}
-      <Modal
-        open={previewVisible}
-        footer={null}
-        onCancel={() => setPreviewVisible(false)}
-        width={800}
-      >
-        <img src={previewImage} alt="Preview" style={{ width: '100%', borderRadius: '8px' }} />
-      </Modal>
-
-      <Modal
-        title="Create New Folder"
-        open={folderModalVisible}
-        onCancel={() => {
-          setFolderModalVisible(false);
-          folderForm.resetFields();
-        }}
-        footer={null}
-      >
-        <Form
-          form={folderForm}
-          onFinish={handleCreateFolder}
-          layout="vertical"
-        >
-          <Form.Item
-            name="folderName"
-            label="Folder Name"
-            rules={[
-              { required: true, message: 'Please enter folder name' },
-              { max: 100, message: 'Name cannot exceed 100 characters' },
-            ]}
-          >
-            <Input placeholder="Enter folder name" />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
-            <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-              <Button onClick={() => {
-                setFolderModalVisible(false);
-                folderForm.resetFields();
-              }}>
-                Cancel
-              </Button>
-              <Button type="primary" htmlType="submit">
-                Create
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Move File to Folder"
-        open={moveModalVisible}
-        onCancel={() => {
-          setMoveModalVisible(false);
-          setFileToMove(null);
-          setSelectedTargetFolder('');
-        }}
-        onOk={handleMoveFile}
-      >
-        <Select
-          placeholder="Select destination folder"
-          style={{ width: '100%' }}
-          value={selectedTargetFolder}
-          onChange={(value) => setSelectedTargetFolder(value)}
-        >
-          <Select.Option value="">Root (No Folder)</Select.Option>
-          {folders.map(folder => (
-            <Select.Option key={folder._id} value={folder._id}>
-              <FolderOutlined /> {folder.name}
-            </Select.Option>
+                  {action.icon}
+                </div>
+                <Title level={5} style={{ marginBottom: '8px', margin: 0 }}>
+                  {action.title}
+                </Title>
+                <Text type="secondary" style={{ fontSize: '13px' }}>
+                  {action.description}
+                </Text>
+              </Card>
+            </Col>
           ))}
-        </Select>
-      </Modal>
+        </Row>
 
-      <style jsx global>{`
-        .ant-table-thead > tr > th {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-          color: white !important;
-          font-weight: 600 !important;
-          font-size: 13px !important;
-          padding: 14px 16px !important;
-          border: none !important;
-        }
-        
-        .ant-table-thead > tr > th::before {
-          display: none !important;
-        }
-        
-        .ant-table-tbody > tr:hover > td {
-          background: #f0f5ff !important;
-        }
-        
-        .ant-table-tbody > tr > td {
-          padding: 12px 16px !important;
-        }
-        
-        .ant-layout-sider-children::-webkit-scrollbar {
-          width: 6px;
-        }
-        
-        .ant-layout-sider-children::-webkit-scrollbar-thumb {
-          background: #d9d9d9;
-          border-radius: 3px;
-        }
-      `}</style>
-    </Layout>
+        {/* Recent Files */}
+        <Card
+          title={
+            <span>
+              <ClockCircleOutlined style={{ marginRight: '8px' }} />
+              Recent Files
+            </span>
+          }
+          loading={loading}
+        >
+          <Table
+            columns={recentFilesColumns}
+            dataSource={stats?.recentFiles || []}
+            pagination={false}
+            size="small"
+          />
+        </Card>
+      </div>
+    </div>
   );
 }

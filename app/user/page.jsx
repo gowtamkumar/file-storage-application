@@ -30,6 +30,22 @@ export default function UserDashboard() {
   const [fileToMove, setFileToMove] = useState(null);
   const [selectedTargetFolder, setSelectedTargetFolder] = useState('');
   const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Handle responsive sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile && !collapsed) {
+        setCollapsed(true);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchFolders();
@@ -381,14 +397,16 @@ export default function UserDashboard() {
         {/* Header */}
         <Header style={{
           background: '#fff',
-          padding: '16px 24px',
+          padding: isMobile ? '12px 16px' : '16px 24px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           display: 'flex',
-          alignItems: 'center',
+          flexDirection: isMobile ? 'column' : 'row',
+          alignItems: isMobile ? 'stretch' : 'center',
           justifyContent: 'space-between',
           position: 'sticky',
-          top: 64,
-          zIndex: 100
+          top: isMobile ? 0 : 64,
+          zIndex: 100,
+          gap: isMobile ? '12px' : 0
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <Button
@@ -401,54 +419,85 @@ export default function UserDashboard() {
               My Files
             </Title>
           </div>
-          <Space size="middle">
-            {/* Files Stat Card */}
+          <div style={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? '12px' : '16px',
+            width: isMobile ? '100%' : 'auto',
+            flexWrap: 'wrap'
+          }}>
+            {/* Stats Container */}
             <div style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              borderRadius: '10px',
-              padding: '10px 20px',
-              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
-              color: 'white',
-              minWidth: '120px'
+              display: 'flex',
+              gap: '12px',
+              flexWrap: 'wrap',
+              flex: isMobile ? '1' : 'auto'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FileOutlined style={{ fontSize: '24px', opacity: 0.9 }} />
-                <div>
-                  <div style={{ fontSize: '11px', opacity: 0.9, marginBottom: '2px' }}>Files</div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{files.length}</div>
+              {/* Files Stat Card */}
+              <div style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderRadius: '10px',
+                boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                color: 'white',
+                flex: isMobile ? '1' : 'auto',
+                minWidth: isMobile ? '0' : '120px'
+              }}>
+                <div style={{ padding: isMobile ? '0px 3px' : '1px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FileOutlined style={{ fontSize: isMobile ? '20px' : '24px', opacity: 0.9 }} />
+                    <div style={{ fontSize: '11px', opacity: 0.9, marginBottom: '2px' }}>Files</div>
+                    <div style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 'bold' }}>{files.length}</div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Storage Stat Card */}
-            <div style={{
-              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-              borderRadius: '10px',
-              padding: '10px 20px',
-              boxShadow: '0 4px 12px rgba(245, 87, 108, 0.3)',
-              color: 'white',
-              minWidth: '120px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <DatabaseOutlined style={{ fontSize: '24px', opacity: 0.9 }} />
-                <div>
-                  <div style={{ fontSize: '11px', opacity: 0.9, marginBottom: '2px' }}>Storage</div>
-                  <div style={{ fontSize: '20px', fontWeight: 'bold' }}>{(totalSize / (1024 * 1024)).toFixed(1)} <span style={{ fontSize: '12px', fontWeight: 'normal' }}>MB</span></div>
+              {/* Storage Stat Card */}
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                  borderRadius: '10px',
+                  boxShadow: '0 4px 12px rgba(245, 87, 108, 0.3)',
+                  color: 'white',
+                  flex: isMobile ? '1' : 'auto',
+                  minWidth: isMobile ? '0' : '120px'
+                }}>
+                <div style={{ padding: isMobile ? '0px 3px' : '1px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <DatabaseOutlined style={{ fontSize: isMobile ? '20px' : '24px', opacity: 0.9 }} />
+                    <div style={{ fontSize: '11px', opacity: 0.9, marginBottom: '2px' }}>Storage</div>
+                    <div style={{ fontSize: isMobile ? '18px' : '20px', fontWeight: 'bold' }}>{(totalSize / (1024 * 1024)).toFixed(1)} <span style={{ fontSize: '12px', fontWeight: 'normal' }}>MB</span></div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <Button onClick={() => router.push('/user/subscription')} style={{ height: '36px' }}>
-              Subscription
-            </Button>
-            <Button onClick={() => router.push('/pricing')} style={{ height: '36px' }}>
-              Pricing
-            </Button>
-            <Button href="/api/auth/signout" style={{ height: '36px' }}>
-              Logout
-            </Button>
-          </Space>
+            <div style={{
+              display: 'flex',
+              gap: '8px',
+              flexWrap: 'wrap',
+              width: isMobile ? '100%' : 'auto'
+            }}>
+              <Button
+                onClick={() => router.push('/user/subscription')}
+                style={{ height: '36px', flex: isMobile ? '1' : 'auto' }}
+              >
+                Subscription
+              </Button>
+              <Button
+                onClick={() => router.push('/pricing')}
+                style={{ height: '36px', flex: isMobile ? '1' : 'auto' }}
+              >
+                Pricing
+              </Button>
+              <Button
+                href="/api/auth/signout"
+                style={{ height: '36px', flex: isMobile ? '1' : 'auto' }}
+              >
+                Logout
+              </Button>
+            </div>
+          </div>
         </Header>
 
         <Layout>
@@ -563,7 +612,7 @@ export default function UserDashboard() {
           </Sider>
 
           {/* Main Content */}
-          <Content style={{ padding: '24px', background: '#fff', minHeight: 'calc(100vh - 128px)' }}>
+          <Content style={{ padding: isMobile ? '16px' : '24px', background: '#fff', minHeight: 'calc(100vh - 128px)' }}>
             {/* Breadcrumb */}
             <Breadcrumb style={{ marginBottom: '16px' }}>
               <Breadcrumb.Item onClick={() => setCurrentFolderId(null)} style={{ cursor: 'pointer' }}>
@@ -579,27 +628,27 @@ export default function UserDashboard() {
             {/* Subscription Progress Card */}
             {subscription && (
               <Card size="small" style={{ marginBottom: 16, borderRadius: '8px' }}>
-                <Row gutter={16} align="middle">
-                  <Col flex="auto">
-                    <Space size="large">
-                      <div>
+                <Row gutter={[16, 16]} align="middle">
+                  <Col xs={24} sm={24} md={18} lg={18}>
+                    <Space size={isMobile ? "middle" : "large"} direction={isMobile ? "vertical" : "horizontal"} style={{ width: '100%' }}>
+                      <div style={{ width: isMobile ? '100%' : 'auto' }}>
                         <Text strong style={{ display: 'block', fontSize: '12px', marginBottom: 4 }}>Storage</Text>
                         <Progress
                           percent={subscription.storageLimit === -1 ? 0 :
                             Math.min(100, (totalSize / (1024 * 1024) / subscription.storageLimit * 100))}
                           size="small"
-                          style={{ width: '150px' }}
+                          style={{ width: isMobile ? '100%' : '150px' }}
                         />
                         <Text type="secondary" style={{ fontSize: '11px' }}>
                           {(totalSize / (1024 * 1024)).toFixed(1)} / {subscription.storageLimit === -1 ? '∞' : subscription.storageLimit} MB
                         </Text>
                       </div>
-                      <div>
+                      <div style={{ width: isMobile ? '100%' : 'auto' }}>
                         <Text strong style={{ display: 'block', fontSize: '12px', marginBottom: 4 }}>Files</Text>
                         <Progress
                           percent={subscription.fileLimit === -1 ? 0 : Math.min(100, (files.length / subscription.fileLimit * 100))}
                           size="small"
-                          style={{ width: '150px' }}
+                          style={{ width: isMobile ? '100%' : '150px' }}
                         />
                         <Text type="secondary" style={{ fontSize: '11px' }}>
                           {files.length} / {subscription.fileLimit === -1 ? '∞' : subscription.fileLimit}
@@ -607,13 +656,17 @@ export default function UserDashboard() {
                       </div>
                     </Space>
                   </Col>
-                  <Col>
+                  <Col xs={24} sm={24} md={6} lg={6}>
                     <Button
                       type="primary"
                       size="small"
                       icon={<RocketOutlined />}
                       onClick={() => router.push('/pricing')}
-                      style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', border: 'none' }}
+                      style={{
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        border: 'none',
+                        width: isMobile ? '100%' : 'auto'
+                      }}
                     >
                       Upgrade
                     </Button>
@@ -631,7 +684,13 @@ export default function UserDashboard() {
                 background: 'linear-gradient(135deg, #667eea15 0%, #764ba215 100%)'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{
+                display: 'flex',
+                flexDirection: isMobile ? 'column' : 'row',
+                justifyContent: 'space-between',
+                alignItems: isMobile ? 'stretch' : 'center',
+                gap: isMobile ? '12px' : '0'
+              }}>
                 <div>
                   <Text strong>Upload Files</Text>
                   <div style={{ fontSize: '12px', color: '#8c8c8c' }}>
@@ -649,7 +708,8 @@ export default function UserDashboard() {
                     loading={uploading}
                     style={{
                       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      border: 'none'
+                      border: 'none',
+                      width: isMobile ? '100%' : 'auto'
                     }}
                   >
                     Upload Files
@@ -667,8 +727,8 @@ export default function UserDashboard() {
                 background: 'linear-gradient(135deg, #fff 0%, #f0f2f5 100%)'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-                <div>
+              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div style={{ flex: isMobile ? '1' : 'auto' }}>
                   <Space>
                     <KeyOutlined style={{ fontSize: '20px', color: '#faad14' }} />
                     <Text strong>API Access</Text>
@@ -677,12 +737,18 @@ export default function UserDashboard() {
                     Generate an API key to access your files programmatically.
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  gap: '8px',
+                  alignItems: isMobile ? 'stretch' : 'center',
+                  width: isMobile ? '100%' : 'auto'
+                }}>
                   {apiKey && (
                     <Input.Password
                       value={apiKey}
                       readOnly
-                      style={{ width: 250 }}
+                      style={{ width: isMobile ? '100%' : 250 }}
                       addonAfter={
                         <CopyOutlined
                           onClick={() => {
@@ -701,7 +767,8 @@ export default function UserDashboard() {
                     style={{
                       background: !apiKey ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : undefined,
                       border: !apiKey ? 'none' : undefined,
-                      color: !apiKey ? 'white' : undefined
+                      color: !apiKey ? 'white' : undefined,
+                      width: isMobile ? '100%' : 'auto'
                     }}
                   >
                     {apiKey ? 'Regenerate Key' : 'Generate Key'}
@@ -731,6 +798,7 @@ export default function UserDashboard() {
                   showTotal: (total) => `Total ${total} files`
                 }}
                 size="small"
+                scroll={{ x: isMobile ? 800 : undefined }}
               />
             </Card>
           </Content>
@@ -840,6 +908,26 @@ export default function UserDashboard() {
         .ant-layout-sider-children::-webkit-scrollbar-thumb {
           background: #d9d9d9;
           border-radius: 3px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .ant-layout-sider {
+            position: fixed !important;
+            left: 0;
+            top: 64px !important;
+            bottom: 0;
+            z-index: 99;
+          }
+          
+          .ant-table-tbody > tr > td {
+            padding: 8px 12px !important;
+          }
+          
+          .ant-table-thead > tr > th {
+            padding: 10px 12px !important;
+            font-size: 12px !important;
+          }
         }
       `}</style>
       </Layout>
