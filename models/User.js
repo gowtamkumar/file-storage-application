@@ -25,6 +25,11 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user',
   },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active',
+  },
   apiKey: {
     type: String,
     unique: true,

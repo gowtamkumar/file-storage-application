@@ -21,13 +21,17 @@ export const authOptions = {
           throw new Error('No user found with this email');
         }
 
+        if (user.status === 'inactive') {
+          throw new Error('Your account has been deactivated. Please contact support.');
+        }
+
         const isMatch = await bcrypt.compare(credentials.password, user.password);
 
         if (!isMatch) {
           throw new Error('Password incorrect');
         }
 
-        return { id: user._id, name: user.name, email: user.email, role: user.role };
+        return { id: user._id, name: user.name, email: user.email, role: user.role, status: user.status };
       }
     })
   ],
@@ -36,6 +40,7 @@ export const authOptions = {
       if (user) {
         token.role = user.role;
         token.id = user.id;
+        token.status = user.status;
       }
       return token;
     },
@@ -43,6 +48,7 @@ export const authOptions = {
       if (session?.user) {
         session.user.role = token.role;
         session.user.id = token.id;
+        session.user.status = token.status;
       }
       return session;
     }
