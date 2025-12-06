@@ -24,12 +24,22 @@ const FileSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false, // Optional for backward compatibility or public uploads if allowed later
+    required: false, // Optional for public uploads
   },
   folderId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Folder',
     default: null, // null means file is in root
+  },
+  isPublic: {
+    type: Boolean,
+    default: false, // false for authenticated uploads, true for public uploads
+  },
+  shareableId: {
+    type: String,
+    unique: true,
+    sparse: true, // Only enforce uniqueness when value is present
+    index: true, // Index for fast lookup
   },
   createdAt: {
     type: Date,
