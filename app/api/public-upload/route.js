@@ -96,7 +96,7 @@ export async function POST(request) {
 
     // Generate shareable URL
     const baseUrl = process.env.NEXTAUTH_URL || `http://localhost:${process.env.PORT || 3000}`;
-    const shareableUrl = `${baseUrl}/api/public-files/${shareableId}`;
+    const shareableUrl = `${baseUrl}/share/${shareableId}`;
 
     return NextResponse.json({ 
       success: true, 

@@ -294,7 +294,7 @@ export default function PublicUploadPage() {
               </div>
 
               {/* Download Button */}
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
                 <a
                   href={uploadResult.file.path}
                   target="_blank"
@@ -305,11 +305,27 @@ export default function PublicUploadPage() {
                   Download File
                 </a>
                 <button
+                  onClick={() => copyToClipboard(`${process.env.NEXT_PUBLIC_APP_URL}${uploadResult.file.path}`)}
+                  className="flex-1 px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all font-semibold flex items-center justify-center"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-5 h-5 mr-2 text-green-500" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-5 h-5 mr-2" />
+                      Copy Link
+                    </>
+                  )}
+                </button>
+                <button
                   onClick={() => {
                     setUploadResult(null);
                     setFile(null);
                   }}
-                  className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 transition-all font-semibold"
+                  className="flex-1 px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all font-semibold"
                 >
                   Upload Another
                 </button>
