@@ -18,18 +18,28 @@ export async function GET(request, { params }) {
       return NextResponse.json({ success: false, message: 'File not found or not public' }, { status: 404 });
     }
 
-    // Return file metadata with download link
+    // Increment view count
+    await File.findByIdAndUpdate(file._id, {
+      $inc: { viewCount: 1 },
+      lastViewed: new Date(),
+    });
+
+    // Return file metadata with download link and analytics
     const baseUrl = process.env.NEXTAUTH_URL || `http://localhost:${process.env.PORT || 3000}`;
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       data: {
         originalName: file.originalName,
         size: file.size,
         mimetype: file.mimetype,
         createdAt: file.createdAt,
-        downloadUrl: `${baseUrl}${file.path}`,
+        downloadUrl: `${baseUrl}/api/public-files/${shareableId}/download`,
         directUrl: file.path,
+        analytics: {
+          viewCount: file.viewCount + 1, // Return updated count
+          downloadCount: file.downloadCount,
+        }
       }
     });
   } catch (error) {

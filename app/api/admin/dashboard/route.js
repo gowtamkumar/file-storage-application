@@ -47,6 +47,22 @@ export async function GET() {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const newUsers = await User.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
 
+    // Get analytics for public files
+    const publicFiles = await File.find({ isPublic: true });
+    const totalViews = publicFiles.reduce((acc, file) => acc + (file.viewCount || 0), 0);
+    const totalDownloads = publicFiles.reduce((acc, file) => acc + (file.downloadCount || 0), 0);
+
+    // Get trending files (most viewed and most downloaded)
+    const mostViewed = await File.find({ isPublic: true })
+      .sort({ viewCount: -1 })
+      .limit(10)
+      .select('originalName viewCount downloadCount createdAt shareableId');
+
+    const mostDownloaded = await File.find({ isPublic: true })
+      .sort({ downloadCount: -1 })
+      .limit(10)
+      .select('originalName viewCount downloadCount createdAt shareableId');
+
     return NextResponse.json({
       success: true,
       data: {
@@ -58,6 +74,9 @@ export async function GET() {
           totalStorage,
           totalStorageMB: (totalStorage / (1024 * 1024)).toFixed(2),
           newUsersWeek: newUsers,
+          totalViews,
+          totalDownloads,
+          publicFiles: publicFiles.length,
         },
         subscriptionBreakdown,
         recentFiles: recentFiles.map(file => ({
@@ -65,7 +84,28 @@ export async function GET() {
           size: file.size,
           user: file.userId?.name || file.userId?.email || 'Unknown',
           createdAt: file.createdAt,
+          viewCount: file.viewCount || 0,
+          downloadCount: file.downloadCount || 0,
+          isPublic: file.isPublic || false,
         })),
+        trending: {
+          mostViewed: mostViewed.map(file => ({
+            _id: file._id,
+            name: file.originalName,
+            viewCount: file.viewCount || 0,
+            downloadCount: file.downloadCount || 0,
+            createdAt: file.createdAt,
+            shareableId: file.shareableId,
+          })),
+          mostDownloaded: mostDownloaded.map(file => ({
+            _id: file._id,
+            name: file.originalName,
+            viewCount: file.viewCount || 0,
+            downloadCount: file.downloadCount || 0,
+            createdAt: file.createdAt,
+            shareableId: file.shareableId,
+          })),
+        },
       },
     });
   } catch (error) {

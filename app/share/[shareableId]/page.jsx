@@ -161,7 +161,6 @@ export default function SharedFilePage() {
             <div className="flex gap-4">
               <a
                 href={fileData.downloadUrl}
-                download
                 className="flex-1 py-4 px-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:from-indigo-700 hover:to-purple-700 transform hover:-translate-y-0.5 transition-all flex items-center justify-center group"
               >
                 <Download className="w-5 h-5 mr-2 group-hover:animate-bounce" />
@@ -184,6 +183,21 @@ export default function SharedFilePage() {
                 )}
               </button>
             </div>
+
+            {/* Analytics Display */}
+            {fileData.analytics && (
+              <div className="mt-6 flex items-center justify-center gap-6 text-sm text-gray-500">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                  <span>{fileData.analytics.viewCount} {fileData.analytics.viewCount === 1 ? 'view' : 'views'}</span>
+                </div>
+                <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                  <span>{fileData.analytics.downloadCount} {fileData.analytics.downloadCount === 1 ? 'download' : 'downloads'}</span>
+                </div>
+              </div>
+            )}
 
             <p className="text-center text-xs text-gray-400 mt-6">
               By downloading, you agree to our Terms of Service.

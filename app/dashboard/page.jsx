@@ -43,7 +43,7 @@ export default function AdminDashboard() {
       title: 'View Files',
       description: 'Browse all uploaded files',
       icon: <FileOutlined style={{ fontSize: '32px', color: '#f093fb' }} />,
-      onClick: () => router.push('/dashboard'),
+      onClick: () => router.push('/dashboard/file'),
       gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     },
     {
@@ -89,6 +89,22 @@ export default function AdminDashboard() {
       },
     },
     {
+      title: 'Views',
+      dataIndex: 'viewCount',
+      key: 'viewCount',
+      render: (count, record) => record.isPublic ? (
+        <Tag color="blue">{count || 0}</Tag>
+      ) : <Text type="secondary" style={{ fontSize: '12px' }}>-</Text>,
+    },
+    {
+      title: 'Downloads',
+      dataIndex: 'downloadCount',
+      key: 'downloadCount',
+      render: (count, record) => record.isPublic ? (
+        <Tag color="cyan">{count || 0}</Tag>
+      ) : <Text type="secondary" style={{ fontSize: '12px' }}>-</Text>,
+    },
+    {
       title: 'Uploaded',
       dataIndex: 'createdAt',
       key: 'createdAt',
@@ -109,7 +125,7 @@ export default function AdminDashboard() {
 
         {/* Statistics Overview */}
         <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
-          <Col xs={24} sm={12} lg={6}>
+          <Col xs={24} sm={12} md={8} lg={6}>
             <Card loading={loading}>
               <Statistic
                 title="Total Users"
@@ -124,7 +140,7 @@ export default function AdminDashboard() {
               </div>
             </Card>
           </Col>
-          <Col xs={24} sm={12} lg={6}>
+          <Col xs={24} sm={12} md={8} lg={6}>
             <Card loading={loading}>
               <Statistic
                 title="Total Files"
@@ -139,7 +155,7 @@ export default function AdminDashboard() {
               </div>
             </Card>
           </Col>
-          <Col xs={24} sm={12} lg={6}>
+          <Col xs={24} sm={12} md={8} lg={6}>
             <Card loading={loading}>
               <Statistic
                 title="Storage Used"
@@ -155,7 +171,7 @@ export default function AdminDashboard() {
               </div>
             </Card>
           </Col>
-          <Col xs={24} sm={12} lg={6}>
+          <Col xs={24} sm={12} md={8} lg={6}>
             <Card loading={loading}>
               <Statistic
                 title="Subscriptions"
@@ -166,6 +182,55 @@ export default function AdminDashboard() {
               <div style={{ marginTop: '12px', padding: '8px 12px', background: '#fff1f0', borderRadius: '6px' }}>
                 <Text type="secondary" style={{ fontSize: '12px' }}>
                   Active plans
+                </Text>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Analytics Statistics */}
+        <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+          <Col xs={24} sm={12} md={8}>
+            <Card loading={loading}>
+              <Statistic
+                title="Total Views"
+                value={stats?.overview?.totalViews || 0}
+                prefix={<FileOutlined />}
+                valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 'bold' }}
+              />
+              <div style={{ marginTop: '12px', padding: '8px 12px', background: '#e6f7ff', borderRadius: '6px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  Public file views
+                </Text>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Card loading={loading}>
+              <Statistic
+                title="Total Downloads"
+                value={stats?.overview?.totalDownloads || 0}
+                prefix={<CloudUploadOutlined />}
+                valueStyle={{ color: '#13c2c2', fontSize: '32px', fontWeight: 'bold' }}
+              />
+              <div style={{ marginTop: '12px', padding: '8px 12px', background: '#e6fffb', borderRadius: '6px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  Public file downloads
+                </Text>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8}>
+            <Card loading={loading}>
+              <Statistic
+                title="Public Files"
+                value={stats?.overview?.publicFiles || 0}
+                prefix={<FileOutlined />}
+                valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 'bold' }}
+              />
+              <div style={{ marginTop: '12px', padding: '8px 12px', background: '#f9f0ff', borderRadius: '6px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  Shared publicly
                 </Text>
               </div>
             </Card>
@@ -262,6 +327,130 @@ export default function AdminDashboard() {
             </Col>
           ))}
         </Row>
+
+        {/* Trending Files */}
+        {stats?.trending && (stats.trending.mostViewed.length > 0 || stats.trending.mostDownloaded.length > 0) && (
+          <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+            <Col xs={24} lg={12}>
+              <Card
+                title={
+                  <span>
+                    <FileOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
+                    Most Viewed Files
+                  </span>
+                }
+                loading={loading}
+              >
+                <Table
+                  columns={[
+                    {
+                      title: 'File Name',
+                      dataIndex: 'name',
+                      key: 'name',
+                      render: (text, record) => (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <FileOutlined />
+                          <Text ellipsis style={{ maxWidth: '200px' }}>{text}</Text>
+                        </div>
+                      ),
+                    },
+                    {
+                      title: 'Views',
+                      dataIndex: 'viewCount',
+                      key: 'viewCount',
+                      render: (count) => <Tag color="blue">{count}</Tag>,
+                      sorter: (a, b) => a.viewCount - b.viewCount,
+                    },
+                    {
+                      title: 'Downloads',
+                      dataIndex: 'downloadCount',
+                      key: 'downloadCount',
+                      render: (count) => <Tag color="cyan">{count}</Tag>,
+                    },
+                    {
+                      title: 'Share',
+                      key: 'share',
+                      render: (_, record) => record.shareableId ? (
+                        <a
+                          href={`/share/${record.shareableId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ fontSize: '12px' }}
+                        >
+                          View
+                        </a>
+                      ) : '-',
+                    },
+                  ]}
+                  dataSource={stats.trending.mostViewed}
+                  rowKey="_id"
+                  pagination={false}
+                  size="small"
+                  scroll={{ x: true }}
+                />
+              </Card>
+            </Col>
+            <Col xs={24} lg={12}>
+              <Card
+                title={
+                  <span>
+                    <CloudUploadOutlined style={{ marginRight: '8px', color: '#13c2c2' }} />
+                    Most Downloaded Files
+                  </span>
+                }
+                loading={loading}
+              >
+                <Table
+                  columns={[
+                    {
+                      title: 'File Name',
+                      dataIndex: 'name',
+                      key: 'name',
+                      render: (text, record) => (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <FileOutlined />
+                          <Text ellipsis style={{ maxWidth: '200px' }}>{text}</Text>
+                        </div>
+                      ),
+                    },
+                    {
+                      title: 'Downloads',
+                      dataIndex: 'downloadCount',
+                      key: 'downloadCount',
+                      render: (count) => <Tag color="cyan">{count}</Tag>,
+                      sorter: (a, b) => a.downloadCount - b.downloadCount,
+                    },
+                    {
+                      title: 'Views',
+                      dataIndex: 'viewCount',
+                      key: 'viewCount',
+                      render: (count) => <Tag color="blue">{count}</Tag>,
+                    },
+                    {
+                      title: 'Share',
+                      key: 'share',
+                      render: (_, record) => record.shareableId ? (
+                        <a
+                          href={`/share/${record.shareableId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ fontSize: '12px' }}
+                        >
+                          View
+                        </a>
+                      ) : '-',
+                    },
+                  ]}
+                  dataSource={stats.trending.mostDownloaded}
+                  rowKey="_id"
+                  pagination={false}
+                  size="small"
+                  scroll={{ x: true }}
+                />
+              </Card>
+            </Col>
+          </Row>
+        )}
 
         {/* Recent Files */}
         <Card

@@ -330,6 +330,24 @@ export default function UserDashboard() {
       },
     },
     {
+      title: 'Views',
+      dataIndex: 'viewCount',
+      key: 'viewCount',
+      width: 80,
+      render: (count, record) => record.isPublic ? (
+        <Tag color="blue" style={{ borderRadius: '4px' }}>{count || 0}</Tag>
+      ) : <Text type="secondary" style={{ fontSize: '12px' }}>-</Text>,
+    },
+    {
+      title: 'Downloads',
+      dataIndex: 'downloadCount',
+      key: 'downloadCount',
+      width: 100,
+      render: (count, record) => record.isPublic ? (
+        <Tag color="cyan" style={{ borderRadius: '4px' }}>{count || 0}</Tag>
+      ) : <Text type="secondary" style={{ fontSize: '12px' }}>-</Text>,
+    },
+    {
       title: 'Actions',
       key: 'actions',
       width: 150,

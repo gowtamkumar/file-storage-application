@@ -41,6 +41,22 @@ const FileSchema = new mongoose.Schema({
     sparse: true, // Only enforce uniqueness when value is present
     index: true, // Index for fast lookup
   },
+  viewCount: {
+    type: Number,
+    default: 0,
+  },
+  downloadCount: {
+    type: Number,
+    default: 0,
+  },
+  lastViewed: {
+    type: Date,
+    default: null,
+  },
+  lastDownloaded: {
+    type: Date,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
