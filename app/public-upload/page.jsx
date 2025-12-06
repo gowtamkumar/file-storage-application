@@ -1,7 +1,7 @@
 'use client';
 
-import { Check, Copy, Download, FileText, Link as LinkIcon, Upload } from 'lucide-react';
-import { useState } from 'react';
+import { Check, Cloud, Copy, Download, FileText, Globe, Link as LinkIcon, Lock, Sparkles, Upload, Zap } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 export default function PublicUploadPage() {
   const [file, setFile] = useState(null);
@@ -9,11 +9,38 @@ export default function PublicUploadPage() {
   const [uploadResult, setUploadResult] = useState(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
+      setUploadResult(null);
+      setError(null);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      setFile(droppedFile);
       setUploadResult(null);
       setError(null);
     }
@@ -44,8 +71,6 @@ export default function PublicUploadPage() {
       if (result.success) {
         setUploadResult(result.data);
         setFile(null);
-        // Reset file input
-        document.getElementById('fileInput').value = '';
       } else {
         setError(result.message || 'Upload failed');
       }
@@ -75,93 +100,127 @@ export default function PublicUploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-4xl mx-auto px-4 py-16">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 py-12 relative z-10">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
-            <Upload className="w-8 h-8 text-white" />
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl mb-6 shadow-2xl transform hover:scale-110 transition-transform duration-300">
+            <Cloud className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Public File Upload
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+            Share Files Instantly
           </h1>
-          <p className="text-lg text-gray-600">
-            Upload your file and get a shareable link instantly - no account required
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Drop your file, get a link. No sign-up, no hassle. Just pure simplicity.
           </p>
+          {/* <div className="flex items-center justify-center gap-2 mt-4">
+            <Sparkles className="w-5 h-5 text-yellow-500" />
+            <span className="text-sm font-medium text-gray-600">Powered by AI-optimized compression</span>
+          </div> */}
         </div>
 
-        {/* Upload Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+        {/* Upload Area */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 border border-white/20">
           <form onSubmit={handleUpload}>
-            <div className="mb-6">
-              <label
-                htmlFor="fileInput"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Choose File
-              </label>
-              <div className="relative">
-                <input
-                  id="fileInput"
-                  type="file"
-                  onChange={handleFileChange}
-                  className="block w-full text-sm text-gray-500
-                    file:mr-4 file:py-3 file:px-6
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-gradient-to-r file:from-blue-600 file:to-purple-600
-                    file:text-white
-                    hover:file:from-blue-700 hover:file:to-purple-700
-                    file:cursor-pointer
-                    cursor-pointer"
-                  accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                />
+            {/* Drag and Drop Zone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`relative border-3 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${isDragging
+                ? 'border-purple-500 bg-purple-50 scale-105 shadow-lg'
+                : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50/50'
+                }`}
+            >
+              <input
+                ref={fileInputRef}
+                id="fileInput"
+                type="file"
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              />
+
+              <div className="flex flex-col items-center">
+                <div className={`w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mb-6 transform transition-all duration-300 ${isDragging ? 'scale-110 rotate-12' : 'scale-100'
+                  }`}>
+                  <Upload className="w-12 h-12 text-white" />
+                </div>
+
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  {isDragging ? 'Drop your file here!' : 'Drag and Drop your file here'}
+                </h3>
+                <p className="text-gray-500 mb-4">or click to browse</p>
+
+                <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                  <Upload className="w-5 h-5 mr-2" />
+                  Choose File
+                </div>
+
+                <p className="mt-6 text-xs text-gray-400">
+                  Images, PDFs, Documents - Max 5MB - Secure and Private
+                </p>
               </div>
-              <p className="mt-2 text-xs text-gray-500">
-                Supported: Images (JPEG, PNG, WebP, GIF), PDF, Text, Word documents. Max size: 5MB
-              </p>
             </div>
 
             {file && (
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center">
-                  <FileText className="w-5 h-5 text-blue-600 mr-3" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                    <p className="text-xs text-gray-600">{formatFileSize(file.size)}</p>
+              <div className="mt-6 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border-2 border-indigo-200 animate-slide-up">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
+                      <FileText className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-base font-semibold text-gray-900">{file.name}</p>
+                      <p className="text-sm text-gray-600">{formatFileSize(file.size)}</p>
+                    </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setFile(null)}
+                    className="text-gray-400 hover:text-red-500 transition-colors text-xl"
+                  >
+                    ×
+                  </button>
                 </div>
               </div>
             )}
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 rounded-lg border border-red-200">
-                <p className="text-sm text-red-600">{error}</p>
+              <div className="mt-6 p-4 bg-red-50 rounded-2xl border-2 border-red-200 animate-shake">
+                <p className="text-sm text-red-600 font-medium">Warning: {error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={!file || uploading}
-              className="w-full py-4 px-6 rounded-full font-semibold text-white
-                bg-gradient-to-r from-blue-600 to-purple-600
-                hover:from-blue-700 hover:to-purple-700
+              className="w-full mt-8 py-5 px-8 rounded-2xl font-bold text-lg text-white
+                bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600
+                hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700
                 disabled:opacity-50 disabled:cursor-not-allowed
-                transition-all duration-200 shadow-lg hover:shadow-xl
-                flex items-center justify-center"
+                transition-all duration-300 shadow-2xl hover:shadow-3xl
+                transform hover:scale-105 active:scale-95
+                flex items-center justify-center gap-3"
             >
               {uploading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Uploading...
+                  <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Uploading your file...
                 </>
               ) : (
                 <>
-                  <Upload className="w-5 h-5 mr-2" />
-                  Upload File
+                  <Cloud className="w-6 h-6" />
+                  Upload and Generate Link
+                  <Sparkles className="w-5 h-5" />
                 </>
               )}
             </button>
@@ -170,42 +229,43 @@ export default function PublicUploadPage() {
 
         {/* Upload Result */}
         {uploadResult && (
-          <div className="bg-white rounded-2xl shadow-xl p-8 border-2 border-green-200">
-            <div className="flex items-center mb-6">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                <Check className="w-6 h-6 text-green-600" />
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl shadow-2xl p-8 border-2 border-green-300 animate-slide-up">
+            <div className="flex items-center mb-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mr-5 shadow-lg">
+                <Check className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Upload Successful!</h2>
-                <p className="text-gray-600">Your file is now available</p>
+                <h2 className="text-3xl font-bold text-gray-900">Success!</h2>
+                <p className="text-gray-600 text-lg">Your file is ready to share</p>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               {/* Shareable URL */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Shareable Link
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200">
+                <label className="block text-sm font-bold text-gray-700 mb-3 flex items-center">
+                  <LinkIcon className="w-4 h-4 mr-2 text-indigo-600" />
+                  Your Shareable Link
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <input
                     type="text"
                     value={uploadResult.shareableUrl}
                     readOnly
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm font-mono"
+                    className="flex-1 px-5 py-4 border-2 border-gray-300 rounded-xl bg-white text-sm font-mono focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   />
                   <button
                     onClick={() => copyToClipboard(uploadResult.shareableUrl)}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center"
+                    className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 flex items-center gap-2 font-semibold"
                   >
                     {copied ? (
                       <>
-                        <Check className="w-4 h-4 mr-2" />
+                        <Check className="w-5 h-5" />
                         Copied!
                       </>
                     ) : (
                       <>
-                        <Copy className="w-4 h-4 mr-2" />
+                        <Copy className="w-5 h-5" />
                         Copy
                       </>
                     )}
@@ -213,64 +273,80 @@ export default function PublicUploadPage() {
                 </div>
               </div>
 
-              {/* File Details */}
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-                <div>
-                  <p className="text-sm text-gray-600">File Name</p>
-                  <p className="font-medium text-gray-900">{uploadResult.file.originalName}</p>
+              {/* File Details Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
+                  <p className="text-xs text-gray-500 mb-1">File Name</p>
+                  <p className="font-semibold text-gray-900 text-sm truncate">{uploadResult.file.originalName}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">File Size</p>
-                  <p className="font-medium text-gray-900">{formatFileSize(uploadResult.file.size)}</p>
+                <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
+                  <p className="text-xs text-gray-500 mb-1">Size</p>
+                  <p className="font-semibold text-gray-900 text-sm">{formatFileSize(uploadResult.file.size)}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">File Type</p>
-                  <p className="font-medium text-gray-900">{uploadResult.file.mimetype}</p>
+                <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
+                  <p className="text-xs text-gray-500 mb-1">Type</p>
+                  <p className="font-semibold text-gray-900 text-sm truncate">{uploadResult.file.mimetype}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Shareable ID</p>
-                  <p className="font-mono text-sm text-gray-900">{uploadResult.shareableId}</p>
+                <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
+                  <p className="text-xs text-gray-500 mb-1">ID</p>
+                  <p className="font-mono text-xs text-gray-900 truncate">{uploadResult.shareableId}</p>
                 </div>
               </div>
 
-              {/* Direct Download Link */}
-              <div className="pt-4 border-t border-gray-200">
+              {/* Download Button */}
+              <div className="flex gap-4">
                 <a
                   href={uploadResult.file.path}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all"
+                  className="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-2xl hover:from-gray-900 hover:to-black transition-all shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 font-semibold"
                 >
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className="w-5 h-5 mr-2" />
                   Download File
                 </a>
+                <button
+                  onClick={() => {
+                    setUploadResult(null);
+                    setFile(null);
+                  }}
+                  className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 transition-all font-semibold"
+                >
+                  Upload Another
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Info Section */}
-        <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-            <LinkIcon className="w-5 h-5 mr-2 text-blue-600" />
-            How It Works
-          </h3>
-          <div className="space-y-3 text-gray-700">
-            <div className="flex items-start">
-              <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full mr-3 text-sm font-semibold flex-shrink-0 mt-0.5">1</span>
-              <p>Select a file from your device (max 5MB)</p>
+        {/* Features Grid */}
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all transform hover:scale-105">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-4">
+              <Zap className="w-6 h-6 text-white" />
             </div>
-            <div className="flex items-start">
-              <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full mr-3 text-sm font-semibold flex-shrink-0 mt-0.5">2</span>
-              <p>Click upload and get an instant shareable link</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Lightning Fast</h3>
+            <p className="text-gray-600 text-sm">Upload and share files in seconds with our optimized infrastructure</p>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all transform hover:scale-105">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4">
+              <Lock className="w-6 h-6 text-white" />
             </div>
-            <div className="flex items-start">
-              <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 rounded-full mr-3 text-sm font-semibold flex-shrink-0 mt-0.5">3</span>
-              <p>Share the link with anyone - no login required to view or download</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Secure and Private</h3>
+            <p className="text-gray-600 text-sm">Your files are protected with enterprise-grade security measures</p>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all transform hover:scale-105">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4">
+              <Globe className="w-6 h-6 text-white" />
             </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Share Anywhere</h3>
+            <p className="text-gray-600 text-sm">Anyone with the link can access your files, no account needed</p>
           </div>
         </div>
       </div>
+
+
     </div>
   );
 }

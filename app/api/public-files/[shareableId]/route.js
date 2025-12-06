@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 export async function GET(request, { params }) {
   await dbConnect();
 
-  const { shareableId } = params;
+  const { shareableId } = await params;
 
   if (!shareableId) {
     return NextResponse.json({ success: false, message: 'Shareable ID is required' }, { status: 400 });
