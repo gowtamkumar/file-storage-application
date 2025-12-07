@@ -21,8 +21,8 @@ export const authOptions = {
           throw new Error('No user found with this email');
         }
 
-        if (user.status === 'inactive') {
-          throw new Error('Your account has been deactivated. Please contact support.');
+        if (user.status !== 'active') {
+          throw new Error('Your account is not active. Please contact support.');
         }
 
         const isMatch = await bcrypt.compare(credentials.password, user.password);

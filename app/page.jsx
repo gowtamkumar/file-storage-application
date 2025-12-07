@@ -1,14 +1,15 @@
 'use client';
 
 import NavBar from '@/components/NavBar';
+import PublicUpload from '@/components/PublicUpload';
 import {
-    CheckCircleOutlined,
-    CloudUploadOutlined,
-    GlobalOutlined,
-    RocketOutlined,
-    SafetyCertificateOutlined,
-    StarFilled,
-    TeamOutlined
+  CheckCircleOutlined,
+  CloudUploadOutlined,
+  GlobalOutlined,
+  RocketOutlined,
+  SafetyCertificateOutlined,
+  StarFilled,
+  TeamOutlined
 } from '@ant-design/icons';
 import { Avatar, Button, Collapse, Typography } from 'antd';
 import { motion } from 'framer-motion';
@@ -21,19 +22,19 @@ const { Panel } = Collapse;
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <NavBar/>
+      <NavBar />
 
       {/* Hero Section */}
       <main className="flex-grow">
         <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white pt-32 pb-32">
           {/* Abstract Background Shapes */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <motion.div 
+            <motion.div
               animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -top-24 -right-24 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"
             />
-            <motion.div 
+            <motion.div
               animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
               transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               className="absolute top-32 -left-24 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"
@@ -51,13 +52,13 @@ export default function Home() {
                   New: Team Collaboration Features 🚀
                 </span>
                 <Title level={1} style={{ fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '1.5rem' }}>
-                  Secure Storage for <br/>
+                  Secure Storage for <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
                     Modern Teams
                   </span>
                 </Title>
                 <Paragraph className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-                  Experience lightning-fast uploads, military-grade encryption, and seamless sharing. 
+                  Experience lightning-fast uploads, military-grade encryption, and seamless sharing.
                   The workspace built for the future of work.
                 </Paragraph>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -74,25 +75,14 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              {/* Hero Image / Dashboard Preview */}
-              <motion.div 
+              {/* Public Upload Component */}
+              <motion.div
                 initial={{ opacity: 0, y: 40, rotateX: 10 }}
                 animate={{ opacity: 1, y: 0, rotateX: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
                 className="mt-20 relative perspective-1000"
               >
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10 bottom-0 h-24"></div>
-                <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-2 transform transition-transform hover:scale-[1.01] duration-500">
-                   {/* Placeholder for a dashboard screenshot */}
-                   <div className="bg-gray-50 rounded-xl overflow-hidden aspect-[16/9] flex items-center justify-center border border-gray-100 relative group">
-                      <div className="text-center z-10">
-                        <CloudUploadOutlined style={{ fontSize: '64px', color: '#bfdbfe' }} />
-                        <p className="text-gray-400 mt-4 font-medium">Dashboard Preview</p>
-                      </div>
-                      {/* Grid Pattern Overlay */}
-                      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#444cf7_1px,transparent_1px)] [background-size:16px_16px]"></div>
-                   </div>
-                </div>
+                <PublicUpload />
               </motion.div>
             </div>
           </div>
@@ -121,37 +111,37 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <FeatureCard 
+              <FeatureCard
                 icon={<CloudUploadOutlined className="text-4xl text-blue-500" />}
                 title="Smart Uploads"
                 description="Drag & drop interface with auto-compression and image optimization. Files are resized and metadata stripped for security."
                 delay={0}
               />
-              <FeatureCard 
+              <FeatureCard
                 icon={<SafetyCertificateOutlined className="text-4xl text-green-500" />}
                 title="Bank-Level Security"
                 description="File validation, size limits, and secure authentication. Rate limiting protects against abuse."
                 delay={0.1}
               />
-              <FeatureCard 
+              <FeatureCard
                 icon={<RocketOutlined className="text-4xl text-purple-500" />}
                 title="API Access"
                 description="Integrate file storage into your own apps with our REST API. Generate API keys from your dashboard."
                 delay={0.2}
               />
-              <FeatureCard 
+              <FeatureCard
                 icon={<CheckCircleOutlined className="text-4xl text-orange-500" />}
                 title="Flexible Plans"
                 description="Choose from multiple subscription tiers. Upgrade or downgrade anytime to match your needs."
                 delay={0.3}
               />
-              <FeatureCard 
+              <FeatureCard
                 icon={<TeamOutlined className="text-4xl text-teal-500" />}
                 title="File Management"
                 description="Upload, view, and delete your files. Admin dashboard for complete control over your storage."
                 delay={0.4}
               />
-              <FeatureCard 
+              <FeatureCard
                 icon={<GlobalOutlined className="text-4xl text-indigo-500" />}
                 title="Secure Sharing"
                 description="Store your files securely and access them from anywhere. Each file gets a unique URL."
@@ -170,33 +160,33 @@ export default function Home() {
                 Don't just take our word for it. Here's what our community has to say.
               </Paragraph>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               <TestimonialCard 
-                 name="Sarah Chen"
-                 role="Frontend Lead @ TechCorp"
-                 content="The API is a joy to work with. We integrated file uploads into our app in less than an hour."
-                 delay={0}
-               />
-               <TestimonialCard 
-                 name="Mark Davis"
-                 role="Freelance Designer"
-                 content="Finally, a storage solution that looks good and works perfectly. The sharing features are a lifesaver."
-                 delay={0.2}
-               />
-               <TestimonialCard 
-                 name="Alex Rivera"
-                 role="CTO @ StartupX"
-                 content="Security was our top priority, and FileStore delivered. The granular permissions are exactly what we needed."
-                 delay={0.4}
-               />
+              <TestimonialCard
+                name="Sarah Chen"
+                role="Frontend Lead @ TechCorp"
+                content="The API is a joy to work with. We integrated file uploads into our app in less than an hour."
+                delay={0}
+              />
+              <TestimonialCard
+                name="Mark Davis"
+                role="Freelance Designer"
+                content="Finally, a storage solution that looks good and works perfectly. The sharing features are a lifesaver."
+                delay={0.2}
+              />
+              <TestimonialCard
+                name="Alex Rivera"
+                role="CTO @ StartupX"
+                content="Security was our top priority, and FileStore delivered. The granular permissions are exactly what we needed."
+                delay={0.4}
+              />
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
         <section className="py-24 bg-gray-50">
-           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <Title level={2} style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Frequently Asked Questions</Title>
             </div>
@@ -214,7 +204,7 @@ export default function Home() {
                 <p className="text-gray-600">Yes, we offer a comprehensive REST API for developers to integrate storage into their applications.</p>
               </Panel>
             </Collapse>
-           </div>
+          </div>
         </section>
 
         {/* CTA Section */}
@@ -243,7 +233,7 @@ export default function Home() {
 
 function FeatureCard({ icon, title, description, delay }) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}

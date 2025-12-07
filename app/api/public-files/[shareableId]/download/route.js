@@ -1,6 +1,8 @@
 import dbConnect from '@/lib/db';
 import File from '@/models/File';
+import { readFile } from 'fs/promises';
 import { NextResponse } from 'next/server';
+import path from 'path';
 
 export async function GET(request, { params }) {
     await dbConnect();
@@ -24,16 +26,26 @@ export async function GET(request, { params }) {
             lastDownloaded: new Date(),
         });
 
-        // Return the file path for download
-        const baseUrl = process.env.NEXTAUTH_URL || `http://localhost:${process.env.PORT || 3000}`;
+        // Determine absolute path
+        // file.path is like "/uploads/xxx.ext"
+        // We need /home/.../public/uploads/xxx.ext
+        const filePath = path.join(process.cwd(), 'public', file.path);
+        
+        try {
+            const fileBuffer = await readFile(filePath);
+             return new NextResponse(fileBuffer, {
+                status: 200,
+                headers: {
+                    'Content-Type': file.mimetype,
+                    'Content-Disposition': `attachment; filename="${file.originalName}"`,
+                    'Content-Length': file.size.toString(),
+                },
+            });
+        } catch (readError) {
+             console.error('File read error:', readError);
+             return NextResponse.json({ success: false, message: 'File not found on server' }, { status: 404 });
+        }
 
-        return NextResponse.json({
-            success: true,
-            data: {
-                downloadUrl: `${baseUrl}${file.path}`,
-                filename: file.originalName,
-            }
-        });
     } catch (error) {
         console.error('Download tracking error:', error);
         return NextResponse.json({ success: false, message: 'Failed to track download' }, { status: 500 });
