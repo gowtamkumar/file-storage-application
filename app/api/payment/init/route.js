@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import SubscriptionPlan from "@/models/SubscriptionPlan";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import Stripe from 'stripe';
 
 // POST - Initialize payment for subscription
 export async function POST(request) {
@@ -18,9 +19,9 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    const { plan: planId } = body;
+    const { plan: planId, paymentMethod } = body;
 
-    console.log("Payment init - Received planId:", planId);
+    console.log("Payment init - Received planId:", planId, "Method:", paymentMethod);
 
     // Fetch plan from database
     let plan = await SubscriptionPlan.findOne({ planId: planId, active: true });
@@ -56,7 +57,56 @@ export async function POST(request) {
       });
     }
 
-    // SSLCommerz configuration
+    const transactionId = `SUB-${session.user.id}-${Date.now()}`;
+    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+    // Handle Stripe Payment
+    if (paymentMethod === 'stripe') {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+      try {
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price_data: {
+                currency: currency.toLowerCase(),
+                product_data: {
+                  name: `${plan.name} Subscription`,
+                  description: plan.description,
+                },
+                unit_amount: Math.round(amount * 100), // Stripe expects amount in cents
+              },
+              quantity: 1,
+            },
+          ],
+          mode: 'payment',
+          success_url: `${baseUrl}/api/payment/success?session_id={CHECKOUT_SESSION_ID}&payment_method=stripe`,
+          cancel_url: `${baseUrl}/pricing?payment=cancelled`,
+          metadata: {
+            userId: session.user.id,
+            planId: planId,
+            transactionId: transactionId,
+            type: 'subscription'
+          },
+          customer_email: session.user.email,
+        });
+
+        return NextResponse.json({
+          success: true,
+          gatewayUrl: session.url,
+          transactionId,
+        });
+      } catch (stripeError) {
+        console.error("Stripe initialization error:", stripeError);
+        return NextResponse.json({
+          success: false,
+          message: "Stripe payment initialization failed: " + stripeError.message
+        }, { status: 500 });
+      }
+    }
+
+    // SSLCommerz configuration (Default)
     const store_id = process.env.SSLCOMMERZ_STORE_ID;
     const store_passwd = process.env.SSLCOMMERZ_STORE_PASSWORD;
     const is_live = process.env.SSLCOMMERZ_IS_LIVE === "true";
@@ -70,11 +120,6 @@ export async function POST(request) {
         { status: 500 }
       );
     }
-
-    const transactionId = `SUB-${session.user.id}-${Date.now()}`;
-
-    // Determine base URL
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
     // Base URL based on environment
     const api_url = is_live

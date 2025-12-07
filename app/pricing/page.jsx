@@ -8,7 +8,7 @@ import {
   StarOutlined,
   ThunderboltOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Col, message, Row, Space, Tag, Typography } from "antd";
+import { Button, Card, Col, message, Row, Space, Tag, Typography, Modal, Radio } from "antd";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -75,6 +75,9 @@ export default function PricingPage() {
     }
   };
 
+  const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("sslcommerz");
+
   const handleSubscribe = async (planId) => {
     if (!session) {
       message.info("Please login to subscribe");
@@ -82,14 +85,31 @@ export default function PricingPage() {
       return;
     }
 
+    // If plan is free, proceed directly without payment
+    const plan = plans.find((p) => p.planId === planId);
+    if (plan && plan.price === 0) {
+      processSubscription(planId, "none");
+      return;
+    }
+
     setSubscribingPlan(planId);
+    setIsPaymentModalVisible(true);
+  };
+
+  const handlePaymentProceed = () => {
+    setIsPaymentModalVisible(false);
+    processSubscription(subscribingPlan, selectedPaymentMethod);
+  };
+
+  const processSubscription = async (planId, paymentMethod) => {
     setLoading(true);
+    setSubscribingPlan(planId);
 
     try {
       const res = await fetch("/api/payment/init", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: planId, paymentMethod }),
       });
 
       const data = await res.json();
@@ -498,6 +518,50 @@ export default function PricingPage() {
         </div>
       </div>
       <Footer />
+
+      <Modal
+        title="Select Payment Method"
+        open={isPaymentModalVisible}
+        onOk={handlePaymentProceed}
+        onCancel={() => setIsPaymentModalVisible(false)}
+        okText="Next Step"
+        cancelText="Cancel"
+      >
+        <Radio.Group
+          onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+          value={selectedPaymentMethod}
+          style={{ width: '100%', marginTop: '20px' }}
+        >
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Radio value="sslcommerz" style={{
+              border: '1px solid #d9d9d9',
+              padding: '15px',
+              borderRadius: '8px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <span style={{ fontWeight: 'bold' }}>1. SSLCommerz</span>
+              <div style={{ marginLeft: '24px', color: '#8c8c8c', fontSize: '12px' }}>
+                Cards, Mobile Banking, Net Banking
+              </div>
+            </Radio>
+            <Radio value="stripe" style={{
+              border: '1px solid #d9d9d9',
+              padding: '15px',
+              borderRadius: '8px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              <span style={{ fontWeight: 'bold' }}>2. Stripe</span>
+              <div style={{ marginLeft: '24px', color: '#8c8c8c', fontSize: '12px' }}>
+                Credit/Debit Cards (International)
+              </div>
+            </Radio>
+          </Space>
+        </Radio.Group>
+      </Modal>
     </>
   );
 }
