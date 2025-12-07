@@ -5,19 +5,22 @@ import {
   DashboardOutlined,
   FileAddOutlined,
   FileOutlined,
+  FundOutlined,
   HomeOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   NotificationOutlined,
   SettingOutlined,
-  TeamOutlined
+  TeamOutlined,
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+import NotificationBell from '@/components/NotificationBell';
 
 const { Header, Sider, Content } = Layout;
 
@@ -40,7 +43,9 @@ export default function DashboardLayout({ children }) {
       case '/dashboard/users': return ['2'];
       case '/dashboard/subscriptions': return ['3'];
       case '/dashboard/plans': return ['4'];
+      case '/dashboard/plans': return ['4'];
       case '/dashboard/ads': return ['5'];
+      case '/dashboard/notifications': return ['6'];
       default: return [];
     }
   };
@@ -103,9 +108,15 @@ export default function DashboardLayout({ children }) {
             },
             {
               key: '5',
-              icon: <NotificationOutlined />,
+              icon: <FundOutlined />,
               label: 'Ads',
               onClick: () => router.push('/dashboard/ads'),
+            },
+            {
+              key: '6',
+              icon: <NotificationOutlined />,
+              label: 'Notifications',
+              onClick: () => router.push('/dashboard/notifications'),
             },
             {
               key: 'settings',
@@ -154,6 +165,7 @@ export default function DashboardLayout({ children }) {
             flexWrap: 'wrap',
             justifyContent: 'flex-end'
           }}>
+            <NotificationBell />
             <span style={{
               fontSize: '14px',
               whiteSpace: 'nowrap',

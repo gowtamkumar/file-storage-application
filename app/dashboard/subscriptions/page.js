@@ -132,6 +132,12 @@ export default function SubscriptionsPage() {
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
+      title: 'End Date',
+      dataIndex: 'endDate',
+      key: 'endDate',
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+    {
       title: 'Payment',
       key: 'payment',
       render: (_, record) => (
