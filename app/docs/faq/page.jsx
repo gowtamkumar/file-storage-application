@@ -4,12 +4,12 @@ import DocsNav from '@/components/DocsNav';
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar';
 import {
-    ApiOutlined,
-    LockOutlined,
-    QuestionCircleOutlined,
-    SafetyCertificateOutlined,
-    ToolOutlined,
-    UserOutlined
+  ApiOutlined,
+  LockOutlined,
+  QuestionCircleOutlined,
+  SafetyCertificateOutlined,
+  ToolOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { Card, Col, Collapse, Divider, Row, Typography } from 'antd';
 import { motion } from 'framer-motion';
@@ -51,7 +51,6 @@ export default function FAQPage() {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     background: 'rgba(255, 255, 255, 0.95)',
                   }}
-                  bodyStyle={{ padding: '48px' }}
                 >
                   <Title level={1} style={{ marginBottom: '16px' }}>
                     <QuestionCircleOutlined style={{ marginRight: '12px', color: '#1890ff' }} />
@@ -534,7 +533,6 @@ export default function FAQPage() {
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         border: 'none',
                       }}
-                      bodyStyle={{ padding: '48px' }}
                     >
                       <Title level={2} style={{ color: 'white', marginBottom: '16px' }}>
                         Still Have Questions?

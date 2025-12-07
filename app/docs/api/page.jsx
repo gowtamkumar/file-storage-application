@@ -197,7 +197,6 @@ async function uploadImage(file) {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     background: 'rgba(255, 255, 255, 0.95)',
                   }}
-                  bodyStyle={{ padding: '48px' }}
                 >
                   <Title level={1} style={{ marginBottom: '16px' }}>
                     <ApiOutlined style={{ marginRight: '12px', color: '#667eea' }} />

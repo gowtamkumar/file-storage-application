@@ -4,12 +4,12 @@ import DocsNav from '@/components/DocsNav';
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar';
 import {
-    CheckCircleOutlined,
-    CloseCircleOutlined,
-    CrownOutlined,
-    DollarOutlined,
-    RocketOutlined,
-    ThunderboltOutlined
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  CrownOutlined,
+  DollarOutlined,
+  RocketOutlined,
+  ThunderboltOutlined
 } from '@ant-design/icons';
 import { Alert, Badge, Card, Col, Divider, Row, Table, Tag, Typography } from 'antd';
 import { motion } from 'framer-motion';
@@ -161,7 +161,6 @@ export default function PlansPage() {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     background: 'rgba(255, 255, 255, 0.95)',
                   }}
-                  bodyStyle={{ padding: '48px' }}
                 >
                   <Title level={1} style={{ marginBottom: '16px' }}>
                     <DollarOutlined style={{ marginRight: '12px', color: '#52c41a' }} />
@@ -502,7 +501,6 @@ export default function PlansPage() {
                         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                         border: 'none',
                       }}
-                      bodyStyle={{ padding: '48px' }}
                     >
                       <Title level={2} style={{ color: 'white', marginBottom: '16px' }}>
                         Ready to get started?

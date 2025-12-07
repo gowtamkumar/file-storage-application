@@ -4,12 +4,12 @@ import DocsNav from '@/components/DocsNav';
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar';
 import {
-    BarChartOutlined,
-    CrownOutlined,
-    DashboardOutlined,
-    SettingOutlined,
-    TeamOutlined,
-    UserOutlined
+  BarChartOutlined,
+  CrownOutlined,
+  DashboardOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import { Alert, Card, Col, Descriptions, Divider, Row, Table, Typography } from 'antd';
 import { motion } from 'framer-motion';
@@ -95,7 +95,6 @@ export default function AdminGuidePage() {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     background: 'rgba(255, 255, 255, 0.95)',
                   }}
-                  bodyStyle={{ padding: '48px' }}
                 >
                   <Title level={1} style={{ marginBottom: '16px' }}>
                     <CrownOutlined style={{ marginRight: '12px', color: '#faad14' }} />

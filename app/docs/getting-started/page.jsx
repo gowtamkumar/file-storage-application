@@ -4,11 +4,11 @@ import DocsNav from '@/components/DocsNav';
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar';
 import {
-    CheckCircleOutlined,
-    CloudUploadOutlined,
-    KeyOutlined,
-    LoginOutlined,
-    UserAddOutlined
+  CheckCircleOutlined,
+  CloudUploadOutlined,
+  KeyOutlined,
+  LoginOutlined,
+  UserAddOutlined
 } from '@ant-design/icons';
 import { Alert, Card, Col, Row, Steps, Timeline, Typography } from 'antd';
 import { motion } from 'framer-motion';
@@ -49,7 +49,6 @@ export default function GettingStartedPage() {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     background: 'rgba(255, 255, 255, 0.95)',
                   }}
-                  bodyStyle={{ padding: '48px' }}
                 >
                   <Title level={1} style={{ marginBottom: '16px' }}>
                     Getting Started

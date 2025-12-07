@@ -4,14 +4,14 @@ import DocsNav from '@/components/DocsNav';
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar';
 import {
-    ApiOutlined,
-    CloudUploadOutlined,
-    CopyOutlined,
-    EyeOutlined,
-    FileOutlined,
-    FolderOpenOutlined,
-    LinkOutlined,
-    SafetyCertificateOutlined
+  ApiOutlined,
+  CloudUploadOutlined,
+  CopyOutlined,
+  EyeOutlined,
+  FileOutlined,
+  FolderOpenOutlined,
+  LinkOutlined,
+  SafetyCertificateOutlined
 } from '@ant-design/icons';
 import { Alert, Card, Col, Divider, Row, Table, Typography } from 'antd';
 import { motion } from 'framer-motion';
@@ -83,7 +83,6 @@ export default function UserGuidePage() {
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     background: 'rgba(255, 255, 255, 0.95)',
                   }}
-                  bodyStyle={{ padding: '48px' }}
                 >
                   <Title level={1} style={{ marginBottom: '16px' }}>
                     User Guide
