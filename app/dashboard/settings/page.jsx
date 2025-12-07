@@ -1,0 +1,156 @@
+'use client';
+
+import { MinusCircleOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { Button, Card, Divider, Form, Input, InputNumber, Space, Switch, message } from 'antd';
+import { useEffect, useState } from 'react';
+
+export default function SiteSettingsPage() {
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch('/api/settings/site');
+      const data = await res.json();
+      if (data.success) {
+        form.setFieldsValue(data.data);
+      } else {
+        message.error('Failed to fetch settings');
+      }
+    } catch (error) {
+      message.error('An error occurred');
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const onFinish = async (values) => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/settings/site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+      const data = await res.json();
+      if (data.success) {
+        message.success('Settings updated successfully');
+      } else {
+        message.error(data.message || 'Update failed');
+      }
+    } catch (error) {
+      message.error('An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (fetching) return <div className="p-6">Loading...</div>;
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Site Settings</h1>
+        <Button type="primary" icon={<SaveOutlined />} onClick={() => form.submit()} loading={loading}>
+          Save Changes
+        </Button>
+      </div>
+
+      <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
+        <Card title="Navbar Configuration" className="mb-6">
+          <Form.List name="navbarLinks">
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restField }) => (
+                  <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'label']}
+                      rules={[{ required: true, message: 'Missing label' }]}
+                    >
+                      <Input placeholder="Label (e.g. Pricing)" />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'path']}
+                      rules={[{ required: true, message: 'Missing path' }]}
+                    >
+                      <Input placeholder="Path (e.g. /pricing)" />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'order']}
+                    >
+                      <InputNumber placeholder="Order" />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={() => remove(name)} />
+                  </Space>
+                ))}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                    Add Navbar Link
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+
+          <Divider />
+
+          <Form.Item name="showNavbarOnSharePage" label="Show Navbar on Share Page" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+        </Card>
+
+        <Card title="Footer Configuration" className="mb-6">
+          <Form.Item name="footerText" label="Footer Copyright Text">
+            <Input.TextArea rows={2} />
+          </Form.Item>
+
+          <Form.List name="footerLinks">
+            {(fields, { add, remove }) => (
+              <>
+                <div className="mb-2 font-medium">Footer Links</div>
+                {fields.map(({ key, name, ...restField }) => (
+                  <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'label']}
+                      rules={[{ required: true, message: 'Missing label' }]}
+                    >
+                      <Input placeholder="Label" />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'path']}
+                      rules={[{ required: true, message: 'Missing path' }]}
+                    >
+                      <Input placeholder="Path" />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={() => remove(name)} />
+                  </Space>
+                ))}
+                <Form.Item>
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                    Add Footer Link
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+
+          <Divider />
+
+          <Form.Item name="showFooterOnSharePage" label="Show Footer on Share Page" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+        </Card>
+      </Form>
+    </div>
+  );
+}

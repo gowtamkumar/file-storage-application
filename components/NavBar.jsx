@@ -12,6 +12,7 @@ export default function NavBar() {
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [links, setLinks] = useState([]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,20 +35,27 @@ export default function NavBar() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings/site');
+        const data = await res.json();
+        if (data.success && data.data && data.data.navbarLinks) {
+          setLinks(data.data.navbarLinks.sort((a, b) => a.order - b.order));
+        }
+      } catch (error) {
+        console.error("Failed to fetch settings", error);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   // Mobile menu items for dropdown
   const mobileMenuItems = [
-    {
-      key: 'pricing',
-      label: <Link href="/pricing" className="block py-2 px-4">Pricing</Link>,
-    },
-    {
-      key: 'docs',
-      label: <Link href="/docs" className="block py-2 px-4">Docs</Link>,
-    },
-    {
-      key: 'api',
-      label: <Link href="/docs/api" className="block py-2 px-4">API Docs</Link>,
-    },
+    ...links.map(link => ({
+      key: link.path,
+      label: <Link href={link.path} className="block py-2 px-4">{link.label}</Link>
+    })),
     ...(session ? [{
       key: 'dashboard',
       label: (
@@ -82,15 +90,11 @@ export default function NavBar() {
       {/* Desktop Navigation */}
       {!isMobile && (
         <Space size="middle">
-          <Link href="/pricing">
-            <Button type="text" className="font-medium">Pricing</Button>
-          </Link>
-          <Link href="/docs">
-            <Button type="text" className="font-medium">Docs</Button>
-          </Link>
-          <Link href="/docs/api">
-            <Button type="text" className="font-medium">API Docs</Button>
-          </Link>
+          {links.map(link => (
+            <Link key={link.path} href={link.path}>
+              <Button type="text" className="font-medium">{link.label}</Button>
+            </Link>
+          ))}
 
           {session ? (
             <Button

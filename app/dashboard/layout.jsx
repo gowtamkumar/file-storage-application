@@ -9,6 +9,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   NotificationOutlined,
+  SettingOutlined,
   TeamOutlined
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
@@ -88,6 +89,12 @@ export default function DashboardLayout({ children }) {
               icon: <NotificationOutlined />,
               label: 'Ads',
               onClick: () => router.push('/dashboard/ads'),
+            },
+            {
+              key: '6',
+              icon: <SettingOutlined />,
+              label: 'Settings',
+              onClick: () => router.push('/dashboard/settings'),
             },
 
             ] : [])

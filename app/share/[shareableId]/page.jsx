@@ -1,6 +1,7 @@
 'use client';
 
 import AdDisplay from '@/components/AdDisplay';
+import NavBar from '@/components/NavBar';
 import {
   CheckCircle,
   Clock,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Footer from '../../../components/Footer';
 
 export default function SharedFilePage() {
   const params = useParams();
@@ -24,6 +26,21 @@ export default function SharedFilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [settings, setSettings] = useState({
+    showNavbarOnSharePage: true,
+    showFooterOnSharePage: true,
+  });
+
+  useEffect(() => {
+    fetch('/api/settings/site')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          setSettings(data.data);
+        }
+      })
+      .catch(err => console.error("Failed to fetch settings", err));
+  }, []);
 
   const copyToClipboard = () => {
     const url = window.location.href;
@@ -109,7 +126,9 @@ export default function SharedFilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FB] relative selection:bg-indigo-100 selection:text-indigo-900 font-sans">
+    <div className="min-h-screen bg-[#F8F9FB] relative selection:bg-indigo-100 selection:text-indigo-900 font-sans flex flex-col">
+      {settings.showNavbarOnSharePage && <NavBar />}
+
       {/* Abstract Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[30%] -right-[10%] w-[80%] h-[80%] rounded-full bg-gradient-to-br from-indigo-100/50 to-purple-100/50 blur-3xl" />
@@ -251,18 +270,7 @@ export default function SharedFilePage() {
         </div>
       </div>
 
-      <style jsx global>{`
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .delay-100 {
-          animation-delay: 0.1s;
-        }
-      `}</style>
+      {settings.showFooterOnSharePage && <div className="z-10 bg-white"><Footer /></div>}
     </div>
   );
 }
