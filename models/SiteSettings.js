@@ -40,6 +40,15 @@ const SiteSettingsSchema = new mongoose.Schema({
     logo: { type: String, default: '' },
     favicon: { type: String, default: '' },
   },
+  seo: {
+    siteTitle: { type: String, default: 'FileStore - Secure File Sharing' },
+    titleTemplate: { type: String, default: '%s | FileStore' },
+    metaDescription: { type: String, default: 'Securely store and share your files with FileStore.' },
+    keywords: { type: String, default: 'file sharing, cloud storage, secure upload' },
+    ogImage: { type: String, default: '' },
+    twitterHandle: { type: String, default: '' },
+    googleAnalyticsId: { type: String, default: '' },
+  },
 }, { collection: 'site_settings', timestamps: true });
 
 // Ensure only one document exists

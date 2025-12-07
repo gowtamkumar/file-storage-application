@@ -21,6 +21,15 @@ const PageSchema = new mongoose.Schema({
     type: String,
     maxlength: [160, 'Meta description cannot be more than 160 characters'],
   },
+  keywords: {
+    type: String,
+  },
+  ogImage: {
+    type: String,
+  },
+  canonicalUrl: {
+    type: String,
+  },
   isPublished: {
     type: Boolean,
     default: false,

@@ -1,60 +1,57 @@
-'use client';
+import Footer from "@/components/Footer";
+import NavBar from "@/components/NavBar";
+import dbConnect from "@/lib/db";
+import Page from "@/models/Page";
+import SiteSettings from "@/models/SiteSettings";
+import PageContent from "./PageContent";
 
-import NavBar from '@/components/NavBar';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Footer from '../../../components/Footer';
+async function getPage(slug) {
+  await dbConnect();
+  const page = await Page.findOne({ slug, isPublished: true }).lean();
+  return page;
+}
 
-export default function DynamicPage() {
-  const params = useParams();
+export async function generateMetadata({ params }) {
   const { slug } = params;
+  const page = await getPage(slug);
+  await dbConnect();
+  const settings = await SiteSettings.findOne().lean();
 
-  const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchPage = async () => {
-      try {
-        const res = await fetch(`/api/pages/public/${slug}`);
-        const data = await res.json();
-
-        if (data.success) {
-          setPage(data.data);
-        } else {
-          setError(data.message || 'Page not found');
-        }
-      } catch (err) {
-        setError('An error occurred loading the page');
-      } finally {
-        setLoading(false);
-      }
+  if (!page) {
+    return {
+      title: 'Page Not Found',
     };
-
-    if (slug) {
-      fetchPage();
-    }
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        <NavBar />
-        <div className="flex-grow flex items-center justify-center">
-          <div className="animate-pulse text-gray-400">Loading...</div>
-        </div>
-        <Footer />
-      </div>
-    );
   }
 
-  if (error || !page) {
+  const titleTemplate = settings?.seo?.titleTemplate || "%s | FileStore";
+  const ogImage = page.ogImage || settings?.seo?.ogImage || "";
+
+  return {
+    title: page.title,
+    description: page.metaDescription || settings?.seo?.metaDescription,
+    openGraph: {
+      title: page.title,
+      description: page.metaDescription || settings?.seo?.metaDescription,
+      images: ogImage ? [ogImage] : [],
+      url: page.canonicalUrl || `${process.env.NEXTAUTH_URL || ''}/p/${slug}`,
+    },
+    keywords: page.keywords ? page.keywords.split(',').map(k => k.trim()) : [],
+  };
+}
+
+export default async function DynamicPage({ params }) {
+  const { slug } = params;
+  const page = await getPage(slug);
+
+  if (!page) {
+    // Return 404 UI manually if needed, or use notFound() to trigger global not-found
+    // Using custom UI to match previous implementation style
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <NavBar />
         <div className="flex-grow container mx-auto px-4 py-20 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-          <p className="text-gray-600 text-lg mb-8">{error || 'Page not found'}</p>
+          <p className="text-gray-600 text-lg mb-8">Page not found</p>
           <a href="/" className="text-blue-600 hover:underline">Return Home</a>
         </div>
         <Footer />
@@ -62,29 +59,14 @@ export default function DynamicPage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <NavBar />
+  // Pass serializable data to client component
+  // Convert _id and dates to strings if necessary, but lean() helps.
+  const serializedPage = {
+    ...page,
+    _id: page._id.toString(),
+    createdAt: page.createdAt.toISOString(),
+    updatedAt: page.updatedAt.toISOString(),
+  };
 
-      <main className="flex-grow pt-24 pb-12">
-        <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <header className="mb-8 border-b pb-8">
-            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl mb-4">
-              {page.title}
-            </h1>
-            <div className="text-sm text-gray-500">
-              Last updated: {new Date(page.updatedAt).toLocaleDateString()}
-            </div>
-          </header>
-
-          <div
-            className="prose prose-lg prose-indigo max-w-none"
-            dangerouslySetInnerHTML={{ __html: page.content }}
-          />
-        </article>
-      </main>
-
-      <Footer />
-    </div>
-  );
+  return <PageContent page={serializedPage} />;
 }

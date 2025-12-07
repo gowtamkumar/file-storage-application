@@ -158,9 +158,21 @@ export default function PageEditor() {
               </Form.Item>
             </Card>
 
-            <Card title="SEO">
+            <Card title="SEO Settings">
               <Form.Item name="metaDescription" label="Meta Description">
-                <Input.TextArea rows={4} maxLength={160} showCount />
+                <Input.TextArea rows={3} maxLength={160} showCount placeholder="Brief summary for search engines" />
+              </Form.Item>
+
+              <Form.Item name="keywords" label="Keywords">
+                <Input placeholder="comma, separated, keywords" />
+              </Form.Item>
+
+              <Form.Item name="ogImage" label="Social Share Image URL">
+                <Input placeholder="https://example.com/image.jpg" />
+              </Form.Item>
+
+              <Form.Item name="canonicalUrl" label="Canonical URL">
+                <Input placeholder="https://example.com/p/my-page" />
               </Form.Item>
             </Card>
           </div>

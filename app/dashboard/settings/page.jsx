@@ -50,6 +50,37 @@ export default function SiteSettingsPage() {
     }
   };
 
+  function renderSeoSettings() {
+    return (
+      <Card title="Search Engine Optimization (SEO)">
+        <p className="mb-4 text-gray-500">Configure global SEO settings for your site. These will be used as defaults.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Form.Item name={['seo', 'siteTitle']} label="Site Title" rules={[{ required: true }]}>
+            <Input placeholder="FileStore - Secure File Sharing" />
+          </Form.Item>
+          <Form.Item name={['seo', 'titleTemplate']} label="Title Template" help="Use %s as a placeholder for page title">
+            <Input placeholder="%s | FileStore" />
+          </Form.Item>
+          <Form.Item name={['seo', 'metaDescription']} label="Default Meta Description" className="md:col-span-2">
+            <Input.TextArea rows={2} showCount maxLength={160} />
+          </Form.Item>
+          <Form.Item name={['seo', 'keywords']} label="Global Keywords" className="md:col-span-2">
+            <Input placeholder="files, sharing, cloud, secure" />
+          </Form.Item>
+          <Form.Item name={['seo', 'ogImage']} label="Default Social Image URL" className="md:col-span-2">
+            <Input placeholder="https://example.com/og-image.jpg" />
+          </Form.Item>
+          <Form.Item name={['seo', 'twitterHandle']} label="Twitter Handle">
+            <Input placeholder="@username" prefix="@" />
+          </Form.Item>
+          <Form.Item name={['seo', 'googleAnalyticsId']} label="Google Analytics ID">
+            <Input placeholder="G-XXXXXXXXXX" />
+          </Form.Item>
+        </div>
+      </Card>
+    );
+  }
+
   if (fetching) return <div className="p-6">Loading...</div>;
 
   return (
@@ -136,6 +167,8 @@ export default function SiteSettingsPage() {
             <Switch />
           </Form.Item>
         </Card>
+
+        {renderSeoSettings()}
 
         <Card title="Footer Configuration" className="mb-6">
           <Form.Item name="footerText" label="Footer Copyright Text">
