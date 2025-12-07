@@ -40,6 +40,14 @@ const SiteSettingsSchema = new mongoose.Schema({
     logo: { type: String, default: '' },
     favicon: { type: String, default: '' },
   },
+  socialLinks: {
+    facebook: { type: String, default: '' },
+    twitter: { type: String, default: '' },
+    instagram: { type: String, default: '' },
+    linkedin: { type: String, default: '' },
+    github: { type: String, default: '' },
+    youtube: { type: String, default: '' },
+  },
   seo: {
     siteTitle: { type: String, default: 'FileStore - Secure File Sharing' },
     titleTemplate: { type: String, default: '%s | FileStore' },

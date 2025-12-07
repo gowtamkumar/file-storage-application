@@ -8,7 +8,7 @@ const rateLimiter = new RateLimiterMemory({
 });
 
 export default withAuth(
-  async function middleware(req) {
+  async function proxy(req) {
     const response = NextResponse.next();
 
     // Security Headers

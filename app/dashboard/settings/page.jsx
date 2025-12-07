@@ -139,6 +139,29 @@ export default function SiteSettingsPage() {
           </Form.Item>
         </Card>
 
+        <Card title="Social Media Links" className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Item name={['socialLinks', 'facebook']} label="Facebook">
+              <Input placeholder="https://facebook.com/yourpage" />
+            </Form.Item>
+            <Form.Item name={['socialLinks', 'twitter']} label="Twitter / X">
+              <Input placeholder="https://twitter.com/yourhandle" />
+            </Form.Item>
+            <Form.Item name={['socialLinks', 'instagram']} label="Instagram">
+              <Input placeholder="https://instagram.com/yourprofile" />
+            </Form.Item>
+            <Form.Item name={['socialLinks', 'linkedin']} label="LinkedIn">
+              <Input placeholder="https://linkedin.com/company/yourcompany" />
+            </Form.Item>
+            <Form.Item name={['socialLinks', 'github']} label="GitHub">
+              <Input placeholder="https://github.com/yourorg" />
+            </Form.Item>
+            <Form.Item name={['socialLinks', 'youtube']} label="YouTube">
+              <Input placeholder="https://youtube.com/@yourchannel" />
+            </Form.Item>
+          </div>
+        </Card>
+
         <Card title="Navbar Configuration" className="mb-6">
           <Form.List name="navbarLinks">
             {(fields, { add, remove }) => (
