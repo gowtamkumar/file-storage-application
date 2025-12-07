@@ -57,11 +57,11 @@ export async function POST(request) {
     }
 
     // SSLCommerz configuration
-    const store_id = process.env.STORE_ID;
-    const store_passwd = process.env.STORE_PASSWD;
-    const is_live = process.env.IS_LIVE === "true";
+    const store_id = process.env.SSLCOMMERZ_STORE_ID;
+    const store_passwd = process.env.SSLCOMMERZ_STORE_PASSWD;
+    const is_live = process.env.SSLCOMMERZ_IS_LIVE === "true";
 
-    if (!store_id || !store_passwd) {
+    if (!store_id || !store_passwd) { 
       return NextResponse.json(
         {
           success: false,

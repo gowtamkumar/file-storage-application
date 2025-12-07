@@ -100,7 +100,7 @@ export default function PagesDashboard() {
       width: 200,
       render: (_, record) => (
         <Space>
-          <Link href={`/p/${record.slug}`} target="_blank">
+          <Link href={`/pages/${record.slug}`} target="_blank">
             <Button
               type="text"
               icon={<EyeOutlined />}

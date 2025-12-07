@@ -150,7 +150,7 @@ export default function PageEditor() {
           <div className="space-y-6">
             <Card title="Publishing">
               <Form.Item name="slug" label="URL Slug" rules={[{ required: true }]}>
-                <Input prefix="/p/" placeholder="my-page-slug" />
+                <Input prefix="/pages/" placeholder="my-page-slug" />
               </Form.Item>
 
               <Form.Item name="isPublished" label="Status" valuePropName="checked">

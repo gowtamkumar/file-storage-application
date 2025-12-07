@@ -14,13 +14,19 @@ export async function GET(request) {
   }
 
   try {
-    // Fetch notifications targeted to 'all' OR specifically to this user
-    const notifications = await Notification.find({
+    // Fetch notifications targeted to 'all', 'admin' (if admin), or specifically to this user
+    const query = {
       $or: [
         { recipient: 'all' },
         { recipient: session.user.id }
       ]
-    }).sort({ createdAt: -1 }).limit(50);
+    };
+
+    if (session.user.role === 'admin') {
+      query.$or.push({ recipient: 'admin' });
+    }
+
+    const notifications = await Notification.find(query).sort({ createdAt: -1 }).limit(50);
 
     return NextResponse.json({ success: true, data: notifications });
   } catch (error) {

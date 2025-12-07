@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 export async function PUT(request, { params }) {
   await dbConnect();
   const session = await getServerSession(authOptions);
-  const { id } = params;
+  const { id } = await params;
 
   if (!session) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });

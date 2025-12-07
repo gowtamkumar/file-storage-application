@@ -1,4 +1,5 @@
 import dbConnect from "@/lib/db";
+import Notification from "@/models/Notification";
 import Subscription from "@/models/Subscription";
 import { NextResponse } from "next/server";
 
@@ -141,6 +142,22 @@ export async function POST(request) {
         },
         { upsert: true, new: true }
       );
+
+      // Notify Admins
+      await Notification.create({
+        title: 'New Subscription',
+        message: `Plan: ${plan.toUpperCase()} - Amount: $${usdAmount} (User ID: ${userId})`,
+        type: 'success',
+        recipient: 'admin',
+      });
+      
+      // Notify User
+       await Notification.create({
+        title: 'Subscription Activated',
+        message: `Your ${plan} plan has been successfully activated. Enjoy!`,
+        type: 'success',
+        recipient: userId,
+      });
 
       // Redirect to success page
       return NextResponse.redirect(

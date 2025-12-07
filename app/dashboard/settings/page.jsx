@@ -1,17 +1,33 @@
 'use client';
 
 import { MinusCircleOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
-import { Button, Card, Divider, Form, Input, InputNumber, Space, Switch, message } from 'antd';
+import { Button, Card, Divider, Form, Input, InputNumber, Select, Space, Switch, message } from 'antd';
 import { useEffect, useState } from 'react';
+
+const { Option } = Select;
 
 export default function SiteSettingsPage() {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [pages, setPages] = useState([]);
 
   useEffect(() => {
     fetchSettings();
+    fetchPages();
   }, []);
+
+  const fetchPages = async () => {
+    try {
+      const res = await fetch('/api/pages');
+      const data = await res.json();
+      if (data.success) {
+        setPages(data.data.filter(p => p.isPublished));
+      }
+    } catch (error) {
+      console.error('Error fetching pages', error);
+    }
+  };
 
   const fetchSettings = async () => {
     try {
@@ -206,6 +222,25 @@ export default function SiteSettingsPage() {
               </>
             )}
           </Form.List>
+
+          <div style={{ marginTop: 16 }}>
+            <div className="mb-2 font-medium">Add Page to Footer</div>
+            <Select
+              placeholder="Select a page to add"
+              style={{ width: 300 }}
+              onChange={(value, option) => {
+                const currentLinks = form.getFieldValue('footerLinks') || [];
+                form.setFieldsValue({
+                  footerLinks: [...currentLinks, { label: option.children, path: `/pages/${value}`, order: currentLinks.length }]
+                });
+                message.success('Added to footer list');
+              }}
+            >
+              {pages.map(page => (
+                <Option key={page._id} value={page.slug}>{page.title}</Option>
+              ))}
+            </Select>
+          </div>
 
           <Divider />
 

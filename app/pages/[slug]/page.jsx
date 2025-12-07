@@ -12,8 +12,10 @@ async function getPage(slug) {
 }
 
 export async function generateMetadata({ params }) {
-  const { slug } = params;
+  const { slug } = await params;
+
   const page = await getPage(slug);
+
   await dbConnect();
   const settings = await SiteSettings.findOne().lean();
 
@@ -40,7 +42,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function DynamicPage({ params }) {
-  const { slug } = params;
+  const { slug } = await params;
+  console.log("slug", slug);
+
   const page = await getPage(slug);
 
   if (!page) {

@@ -6,7 +6,7 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function GET(request, { params }) {
   await dbConnect();
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const page = await Page.findById(id);
@@ -21,7 +21,7 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   await dbConnect();
-  const { id } = params;
+  const { id } = await params;
 
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'admin') {
@@ -50,7 +50,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   await dbConnect();
-  const { id } = params;
+  const { id } = await params;
 
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'admin') {
