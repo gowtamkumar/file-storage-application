@@ -1,8 +1,10 @@
 'use client';
 
-import { CrownOutlined, DollarOutlined, RocketOutlined, StarOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
-import { Card, Col, Row, Space, Statistic, Table, Tag, Typography } from 'antd';
+import { CrownOutlined, DollarOutlined, RocketOutlined, SearchOutlined, StarOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { Card, Col, Input, Row, Select, Space, Statistic, Table, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
+
+const { Option } = Select;
 
 const { Title, Text } = Typography;
 
@@ -10,6 +12,9 @@ export default function SubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [planFilter, setPlanFilter] = useState('all');
 
   useEffect(() => {
     fetchSubscriptions();
@@ -50,6 +55,17 @@ export default function SubscriptionsPage() {
     };
     return colors[plan] || 'default';
   };
+
+  const filteredSubscriptions = subscriptions.filter(sub => {
+    const matchesSearch = 
+      sub.userId?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      sub.userId?.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || sub.status === statusFilter;
+    const matchesPlan = planFilter === 'all' || sub.plan === planFilter;
+
+    return matchesSearch && matchesStatus && matchesPlan;
+  });
 
   const columns = [
     {
@@ -255,12 +271,36 @@ export default function SubscriptionsPage() {
           }}
           bodyStyle={{ padding: '28px' }}
         >
-          <Title level={4} style={{ marginBottom: 20 }}>
-            All Subscriptions ({subscriptions.length})
-          </Title>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <Title level={4} style={{ margin: 0 }}>
+              All Subscriptions ({filteredSubscriptions.length})
+            </Title>
+            <Space wrap>
+              <Input
+                placeholder="Search user or email"
+                prefix={<SearchOutlined />}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                style={{ width: 200 }}
+              />
+              <Select defaultValue="all" style={{ width: 120 }} onChange={setStatusFilter}>
+                <Option value="all">All Status</Option>
+                <Option value="active">Active</Option>
+                <Option value="cancelled">Cancelled</Option>
+                <Option value="expired">Expired</Option>
+              </Select>
+               <Select defaultValue="all" style={{ width: 120 }} onChange={setPlanFilter}>
+                <Option value="all">All Plans</Option>
+                <Option value="free">Free</Option>
+                <Option value="basic">Basic</Option>
+                <Option value="pro">Pro</Option>
+                <Option value="enterprise">Enterprise</Option>
+              </Select>
+            </Space>
+          </div>
           <Table 
             columns={columns} 
-            dataSource={subscriptions} 
+            dataSource={filteredSubscriptions} 
             rowKey="_id" 
             loading={loading}
             pagination={{ 
