@@ -65,7 +65,6 @@ const SubscriptionPlanSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
-SubscriptionPlanSchema.index({ planId: 1 });
 SubscriptionPlanSchema.index({ active: 1 });
 SubscriptionPlanSchema.index({ displayOrder: 1 });
 

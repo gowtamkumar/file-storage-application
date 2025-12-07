@@ -166,7 +166,7 @@ export default function AdminDashboard() {
                     color: "#667eea",
                     fontSize: "32px",
                     fontWeight: "bold",
-                  }
+                  },
                 }}
               />
               <div
@@ -195,7 +195,7 @@ export default function AdminDashboard() {
                     color: "#52c41a",
                     fontSize: "32px",
                     fontWeight: "bold",
-                  }
+                  },
                 }}
               />
               <div
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
                     color: "#faad14",
                     fontSize: "32px",
                     fontWeight: "bold",
-                  }
+                  },
                 }}
               />
               <div
@@ -253,7 +253,7 @@ export default function AdminDashboard() {
                     color: "#f5576c",
                     fontSize: "32px",
                     fontWeight: "bold",
-                  }
+                  },
                 }}
               />
               <div
@@ -285,7 +285,7 @@ export default function AdminDashboard() {
                     color: "#1890ff",
                     fontSize: "32px",
                     fontWeight: "bold",
-                  }
+                  },
                 }}
               />
               <div
@@ -313,7 +313,7 @@ export default function AdminDashboard() {
                     color: "#13c2c2",
                     fontSize: "32px",
                     fontWeight: "bold",
-                  }
+                  },
                 }}
               />
               <div
@@ -341,7 +341,7 @@ export default function AdminDashboard() {
                     color: "#722ed1",
                     fontSize: "32px",
                     fontWeight: "bold",
-                  }
+                  },
                 }}
               />
               <div
@@ -447,7 +447,11 @@ export default function AdminDashboard() {
                   boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                   transition: "all 0.3s",
                 }}
-                bodyStyle={{ padding: "24px" }}
+                styles={{
+                  body: {
+                    padding: "24px",
+                  },
+                }}
               >
                 <div
                   style={{
