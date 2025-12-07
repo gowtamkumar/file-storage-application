@@ -344,44 +344,45 @@ export default function MySubscriptionPage() {
               </Card>
 
               {/* Payment History */}
-              {subscription.paymentInfo?.transactionId && (
-                <Card
-                  style={{
-                    borderRadius: "16px",
-                    border: "none",
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-                    background: "rgba(255, 255, 255, 0.95)",
-                    backdropFilter: "blur(10px)",
-                  }}
-                >
-                  <Title level={5}>Payment History</Title>
+              <Card
+                style={{
+                  borderRadius: "16px",
+                  border: "none",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+                  background: "rgba(255, 255, 255, 0.95)",
+                  backdropFilter: "blur(10px)",
+                }}
+              >
+                <Title level={5}>Payment History</Title>
+                {subscription.transactions && subscription.transactions.length > 0 ? (
                   <Timeline
-                    items={[
-                      {
-                        color: "green",
-                        children: (
-                          <div>
-                            <div style={{ fontWeight: 500 }}>
-                              Payment Successful - $
-                              {subscription.paymentInfo.amount}
-                            </div>
-                            <Text type="secondary" style={{ fontSize: "12px" }}>
-                              Transaction ID:{" "}
-                              {subscription.paymentInfo.transactionId}
-                            </Text>
-                            <br />
-                            <Text type="secondary" style={{ fontSize: "12px" }}>
-                              {new Date(
-                                subscription.paymentInfo.lastPaymentDate
-                              ).toLocaleString()}
-                            </Text>
+                    items={subscription.transactions.map((tx) => ({
+                      color: tx.status === 'success' ? "green" : tx.status === 'pending' ? "blue" : "red",
+                      children: (
+                        <div>
+                          <div style={{ fontWeight: 500 }}>
+                            {tx.status === 'success' ? 'Payment Successful' : `Payment ${tx.status}`} - {tx.currency === 'USD' ? '$' : tx.currency}
+                            {tx.amount}
                           </div>
-                        ),
-                      },
-                    ]}
+                          <Text type="secondary" style={{ fontSize: "12px" }}>
+                            Plan: {tx.planId.toUpperCase()}
+                          </Text>
+                          <br />
+                          <Text type="secondary" style={{ fontSize: "12px" }}>
+                            Transaction ID: {tx.transactionId}
+                          </Text>
+                          <br />
+                          <Text type="secondary" style={{ fontSize: "12px" }}>
+                            {new Date(tx.createdAt).toLocaleString()}
+                          </Text>
+                        </div>
+                      ),
+                    }))}
                   />
-                </Card>
-              )}
+                ) : (
+                  <Text type="secondary">No payment history available.</Text>
+                )}
+              </Card>
             </Col>
 
             {/* Plan Features */}

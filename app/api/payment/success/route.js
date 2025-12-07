@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/db";
 import Notification from "@/models/Notification";
 import Subscription from "@/models/Subscription";
+import Transaction from "@/models/Transaction";
 import { NextResponse } from "next/server";
 import Stripe from 'stripe';
 
@@ -111,6 +112,29 @@ export async function POST(request) {
 
       console.log("Gateway amount (BDT):", amount);
       console.log("Stored amount (USD):", usdAmount);
+
+      // Create Transaction Record
+      await Transaction.create({
+        userId,
+        planId: plan,
+        amount: usdAmount,
+        currency: "USD",
+        paymentMethod: card_type || "Unknown",
+        transactionId: tran_id,
+        status: "success",
+        metadata: {
+          gatewayAmount: parseFloat(amount),
+          gatewayCurrency: currency,
+          validationId: val_id,
+          bankTransactionId: bank_tran_id,
+          cardDetails: {
+            cardNo: card_no,
+            cardBrand: card_brand,
+            cardIssuer: card_issuer,
+            cardIssuerCountry: card_issuer_country,
+          },
+        }
+      });
 
       // Update or create subscription
       await Subscription.findOneAndUpdate(
@@ -243,6 +267,21 @@ export async function GET(request) {
         const config = planConfig[planId];
         const endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 1);
+
+        // Create Transaction Record
+        await Transaction.create({
+          userId,
+          planId,
+          amount: amount,
+          currency: currency,
+          paymentMethod: "stripe",
+          transactionId: transactionId,
+          status: "success",
+          metadata: {
+            validationId: sessionId,
+            bankTransactionId: session.payment_intent,
+          }
+        });
 
         // Update or create subscription
         await Subscription.findOneAndUpdate(

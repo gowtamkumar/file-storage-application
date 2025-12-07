@@ -4,6 +4,8 @@ import Subscription from '@/models/Subscription';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 
+import Transaction from '@/models/Transaction';
+
 // GET - Get user's subscription
 export async function GET(request) {
   await dbConnect();
@@ -15,7 +17,7 @@ export async function GET(request) {
 
   try {
     let subscription = await Subscription.findOne({ userId: session.user.id });
-    
+
     // If no subscription exists, create a free plan
     if (!subscription) {
       subscription = await Subscription.create({
@@ -32,7 +34,16 @@ export async function GET(request) {
       });
     }
 
-    return NextResponse.json({ success: true, data: subscription });
+    // Fetch transaction history
+    const transactions = await Transaction.find({ userId: session.user.id }).sort({ createdAt: -1 });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...subscription.toObject(),
+        transactions
+      }
+    });
   } catch (error) {
     console.error('Get subscription error:', error);
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
@@ -120,10 +131,10 @@ export async function POST(request) {
       { upsert: true, new: true }
     );
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: `Successfully subscribed to ${plan} plan`,
-      data: subscription 
+      data: subscription
     });
   } catch (error) {
     console.error('Subscribe error:', error);
