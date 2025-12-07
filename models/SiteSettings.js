@@ -48,6 +48,15 @@ const SiteSettingsSchema = new mongoose.Schema({
     github: { type: String, default: '' },
     youtube: { type: String, default: '' },
   },
+  smtp: {
+    host: { type: String, default: '' },
+    port: { type: Number, default: 587 },
+    user: { type: String, default: '' },
+    password: { type: String, default: '' },
+    fromEmail: { type: String, default: '' },
+    fromName: { type: String, default: 'FileStore' },
+    secure: { type: Boolean, default: false },
+  },
   seo: {
     siteTitle: { type: String, default: 'FileStore - Secure File Sharing' },
     titleTemplate: { type: String, default: '%s | FileStore' },

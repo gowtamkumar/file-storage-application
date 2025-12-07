@@ -11,6 +11,7 @@ export default function SiteSettingsPage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [pages, setPages] = useState([]);
+  const [testEmailLoading, setTestEmailLoading] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -63,6 +64,35 @@ export default function SiteSettingsPage() {
       message.error('An error occurred');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTestEmail = async () => {
+    const smtpSettings = form.getFieldValue('smtp');
+    if (!smtpSettings?.host || !smtpSettings?.user) {
+      message.warning('Please configure and save SMTP settings first');
+      return;
+    }
+
+    const testEmail = smtpSettings.fromEmail || smtpSettings.user;
+
+    setTestEmailLoading(true);
+    try {
+      const res = await fetch('/api/settings/test-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: testEmail }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        message.success(`Test email sent to ${testEmail}`);
+      } else {
+        message.error(data.message || 'Failed to send test email');
+      }
+    } catch (error) {
+      message.error('Error sending test email');
+    } finally {
+      setTestEmailLoading(false);
     }
   };
 
@@ -207,6 +237,46 @@ export default function SiteSettingsPage() {
           </Form.Item>
         </Card>
 
+        <Card title="Email Configuration (SMTP)" className="mb-6">
+          <p className="mb-4 text-gray-500">Configure SMTP settings to enable the system to send emails.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Item name={['smtp', 'host']} label="SMTP Host" rules={[{ required: false }]}>
+              <Input placeholder="smtp.gmail.com" />
+            </Form.Item>
+            <Form.Item name={['smtp', 'port']} label="SMTP Port">
+              <InputNumber placeholder="587" style={{ width: '100%' }} />
+            </Form.Item>
+            <Form.Item name={['smtp', 'user']} label="SMTP Username">
+              <Input placeholder="your-email@gmail.com" />
+            </Form.Item>
+            <Form.Item name={['smtp', 'password']} label="SMTP Password">
+              <Input.Password placeholder="Your app password" />
+            </Form.Item>
+            <Form.Item name={['smtp', 'fromEmail']} label="From Email">
+              <Input placeholder="noreply@yourdomain.com" />
+            </Form.Item>
+            <Form.Item name={['smtp', 'fromName']} label="From Name">
+              <Input placeholder="FileStore" />
+            </Form.Item>
+          </div>
+          <Form.Item name={['smtp', 'secure']} label="Use SSL/TLS (Port 465)" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+
+          <Divider />
+
+          <Button
+            type="default"
+            onClick={handleTestEmail}
+            loading={testEmailLoading}
+          >
+            Send Test Email
+          </Button>
+          <p className="text-xs text-gray-400 mt-2">
+            A test email will be sent to the configured from email address.
+          </p>
+        </Card>
+
         {renderSeoSettings()}
 
         <Card title="Footer Configuration" className="mb-6">
@@ -272,6 +342,6 @@ export default function SiteSettingsPage() {
           </Form.Item>
         </Card>
       </Form>
-    </div>
+    </div >
   );
 }
