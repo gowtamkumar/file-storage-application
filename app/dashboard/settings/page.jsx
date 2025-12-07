@@ -62,6 +62,36 @@ export default function SiteSettingsPage() {
       </div>
 
       <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
+        <Card title="Company Information" className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Item name={['branding', 'companyName']} label="Company Name">
+              <Input placeholder="e.g. Acme Corp" />
+            </Form.Item>
+            <Form.Item name={['branding', 'email']} label="Email Address">
+              <Input placeholder="contact@example.com" />
+            </Form.Item>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Item name={['branding', 'logo']} label="Logo URL">
+              <Input placeholder="https://example.com/logo.png" />
+            </Form.Item>
+            <Form.Item name={['branding', 'favicon']} label="Favicon URL">
+              <Input placeholder="https://example.com/favicon.ico" />
+            </Form.Item>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Form.Item name={['branding', 'phone']} label="Phone Number">
+              <Input placeholder="+1 (555) 123-4567" />
+            </Form.Item>
+          </div>
+          <Form.Item name={['branding', 'address']} label="Address">
+            <Input.TextArea rows={2} placeholder="123 Main St, City, Country" />
+          </Form.Item>
+          <Form.Item name={['branding', 'description']} label="Company Description">
+            <Input.TextArea rows={3} placeholder="A brief description of your company..." />
+          </Form.Item>
+        </Card>
+
         <Card title="Navbar Configuration" className="mb-6">
           <Form.List name="navbarLinks">
             {(fields, { add, remove }) => (

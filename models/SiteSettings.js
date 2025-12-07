@@ -31,6 +31,15 @@ const SiteSettingsSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  branding: {
+    companyName: { type: String, default: 'FileStore' },
+    email: { type: String, default: '' },
+    phone: { type: String, default: '' },
+    address: { type: String, default: '' },
+    description: { type: String, default: '' },
+    logo: { type: String, default: '' },
+    favicon: { type: String, default: '' },
+  },
 }, { collection: 'site_settings', timestamps: true });
 
 // Ensure only one document exists

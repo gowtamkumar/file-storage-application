@@ -1,6 +1,6 @@
 'use client';
 
-import { CopyOutlined, DatabaseOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, FolderAddOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, KeyOutlined, MenuFoldOutlined, MenuUnfoldOutlined, RocketOutlined, SwapOutlined, UploadOutlined } from '@ant-design/icons';
+import { CopyOutlined, DatabaseOutlined, DeleteOutlined, DownloadOutlined, FileImageOutlined, FileOutlined, FilePdfOutlined, FileTextOutlined, FileZipOutlined, FolderAddOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, KeyOutlined, MenuFoldOutlined, MenuUnfoldOutlined, RocketOutlined, SearchOutlined, ShareAltOutlined, SwapOutlined, UploadOutlined } from '@ant-design/icons';
 import { Breadcrumb, Button, Card, Col, Form, Input, Layout, message, Modal, Popconfirm, Progress, Row, Select, Space, Table, Tag, Tooltip, Typography, Upload } from 'antd';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -31,6 +31,9 @@ export default function UserDashboard() {
   const [selectedTargetFolder, setSelectedTargetFolder] = useState('');
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [publicFilter, setPublicFilter] = useState('all');
 
   // Handle responsive sidebar
   useEffect(() => {
@@ -256,6 +259,12 @@ export default function UserDashboard() {
     message.success('File URL copied to clipboard!');
   };
 
+  const copyShareUrl = (shareableId) => {
+    const url = `${window.location.origin}/share/${shareableId}`;
+    navigator.clipboard.writeText(url);
+    message.success('Share URL copied to clipboard!');
+  };
+
   const getFileIcon = (mimetype) => {
     if (mimetype.startsWith('image/')) return <FileImageOutlined style={{ fontSize: '32px', color: '#52c41a' }} />;
     if (mimetype.includes('pdf')) return <FilePdfOutlined style={{ fontSize: '32px', color: '#ff4d4f' }} />;
@@ -268,6 +277,20 @@ export default function UserDashboard() {
     setPreviewImage(path);
     setPreviewVisible(true);
   };
+
+  const filteredFiles = files.filter((file) => {
+    const matchesSearch =
+      file.originalName?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesType = typeFilter === 'all' || file.mimetype?.startsWith(typeFilter);
+
+    const matchesPublic =
+      publicFilter === 'all' ||
+      (publicFilter === 'public' && file.isPublic) ||
+      (publicFilter === 'private' && !file.isPublic);
+
+    return matchesSearch && matchesType && matchesPublic;
+  });
 
   const columns = [
     {
@@ -353,6 +376,16 @@ export default function UserDashboard() {
       width: 150,
       render: (_, record) => (
         <Space size="small">
+          {record.isPublic && record.shareableId && (
+            <Button
+              type="text"
+              icon={<ShareAltOutlined />}
+              title="Copy Share URL"
+              onClick={() => copyShareUrl(record.shareableId)}
+              size="small"
+              style={{ color: '#1890ff' }}
+            />
+          )}
           <Tooltip title="Copy URL">
             <Button
               type="text"
@@ -869,14 +902,51 @@ export default function UserDashboard() {
               title={
                 <Space>
                   <FileOutlined />
-                  <span>Files ({files.length})</span>
+                  <span>Files ({filteredFiles.length})</span>
+                </Space>
+              }
+              extra={
+                <Space wrap>
+                  <Select
+                    placeholder="Type"
+                    value={typeFilter}
+                    onChange={setTypeFilter}
+                    style={{ width: 120 }}
+                    size="small"
+                  >
+                    <Select.Option value="all">All Types</Select.Option>
+                    <Select.Option value="image">Images</Select.Option>
+                    <Select.Option value="application/pdf">PDFs</Select.Option>
+                    <Select.Option value="video">Videos</Select.Option>
+                    <Select.Option value="text">Text</Select.Option>
+                  </Select>
+                  <Select
+                    placeholder="Status"
+                    value={publicFilter}
+                    onChange={setPublicFilter}
+                    style={{ width: 120 }}
+                    size="small"
+                  >
+                    <Select.Option value="all">All Status</Select.Option>
+                    <Select.Option value="public">Public</Select.Option>
+                    <Select.Option value="private">Private</Select.Option>
+                  </Select>
+                  <Input
+                    placeholder="Search files..."
+                    prefix={<SearchOutlined />}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    allowClear
+                    style={{ width: 200 }}
+                    size="small"
+                  />
                 </Space>
               }
               style={{ borderRadius: '8px' }}
             >
               <Table
                 columns={columns}
-                dataSource={files}
+                dataSource={filteredFiles}
                 rowKey="_id"
                 loading={loading}
                 pagination={{
