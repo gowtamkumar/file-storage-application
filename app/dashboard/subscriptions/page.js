@@ -180,7 +180,7 @@ export default function SubscriptionsPage() {
                   title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Total Subscriptions</span>}
                   value={stats.total}
                   prefix={<UserOutlined />}
-                  // valueStyle={{ color: 'white', fontWeight: 600 }}
+                  styles={{ content: { color: 'white', fontWeight: 600 } }}
                 />
               </Card>
             </Col>
@@ -198,7 +198,7 @@ export default function SubscriptionsPage() {
                   title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Active Subscriptions</span>}
                   value={stats.active}
                   prefix={<TeamOutlined />}
-                  // valueStyle={{ color: 'white', fontWeight: 600 }}
+                  styles={{ content: { color: 'white', fontWeight: 600 } }}
                 />
               </Card>
             </Col>
@@ -216,7 +216,7 @@ export default function SubscriptionsPage() {
                   title={<span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Total Revenue</span>}
                   value={stats.totalRevenue.toFixed(2)}
                   prefix={<DollarOutlined />}
-                  // valueStyle={{ color: 'white', fontWeight: 600 }}
+                  styles={{ content: { color: 'white', fontWeight: 600 } }}
                 />
               </Card>
             </Col>

@@ -163,22 +163,22 @@ export default function AdsManagementPage() {
       <Row gutter={16} className="mb-6">
         <Col span={6}>
           <Card>
-            <Statistic title="Total Ads" value={totalAds} />
+            <Statistic title="Total Ads" value={totalAds} styles={{ content: { color: '#3f8600' } }} />
           </Card>
         </Col>
         <Col span={6}>
           <Card>
-            <Statistic title="Active Ads" value={activeAds} valueStyle={{ color: '#3f8600' }} />
+            <Statistic title="Active Ads" value={activeAds} styles={{ content: { color: '#3f8600' } }} />
           </Card>
         </Col>
         <Col span={6}>
           <Card>
-            <Statistic title="Total Views" value={totalViews} />
+            <Statistic title="Total Views" value={totalViews} styles={{ content: { color: '#3f8600' } }} />
           </Card>
         </Col>
         <Col span={6}>
           <Card>
-            <Statistic title="Total Clicks" value={totalClicks} valueStyle={{ color: '#cf1322' }} />
+            <Statistic title="Total Clicks" value={totalClicks} styles={{ content: { color: '#cf1322' } }} />
           </Card>
         </Col>
       </Row>

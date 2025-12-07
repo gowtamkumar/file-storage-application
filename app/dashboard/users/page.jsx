@@ -276,7 +276,7 @@ export default function UsersPage() {
               title="Total Users"
               value={totalUsers}
               prefix={<UserOutlined />}
-              valueStyle={{ color: '#667eea' }}
+              styles={{ content: { color: '#667eea' } }}
             />
           </Card>
           <Card>
@@ -284,7 +284,7 @@ export default function UsersPage() {
               title="Active Users"
               value={stats?.activeUsers || 0}
               prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              styles={{ content: { color: '#52c41a' } }}
             />
           </Card>
           <Card>
@@ -292,11 +292,13 @@ export default function UsersPage() {
               title="Inactive Users"
               value={stats?.inactiveUsers || 0}
               prefix={<CloseCircleOutlined />}
-              valueStyle={{ color: '#f5222d' }}
+              styles={{ content: { color: '#f5222d' } }}
             />
           </Card>
           <Card>
-            <Statistic title="Admin Users" value={adminUsers} prefix={<CrownOutlined />} valueStyle={{ color: '#f5576c' }} />
+            <Statistic title="Admin Users" value={adminUsers} prefix={<CrownOutlined />}
+              styles={{ content: { color: '#f5576c' } }}
+            />
           </Card>
         </div>
 
@@ -314,7 +316,7 @@ export default function UsersPage() {
                     }
                     value={count}
                     suffix={`/ ${totalUsers}`}
-                    valueStyle={{ fontSize: '24px' }}
+                    styles={{ content: { fontSize: '24px' } }}
                   />
                   <Progress
                     percent={Math.round((count / totalUsers) * 100)}
@@ -341,7 +343,7 @@ export default function UsersPage() {
               title="Total Files"
               value={totalFiles}
               prefix={<FileOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              styles={{ content: { color: '#52c41a' } }}
             />
           </Card>
           <Card>
@@ -350,7 +352,7 @@ export default function UsersPage() {
               value={(totalStorage / (1024 * 1024)).toFixed(2)}
               suffix="MB"
               prefix={<DatabaseOutlined />}
-              valueStyle={{ color: '#faad14' }}
+              styles={{ content: { color: '#faad14' } }}
             />
           </Card>
         </div>

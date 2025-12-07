@@ -161,10 +161,12 @@ export default function AdminDashboard() {
                 title="Total Users"
                 value={stats?.overview?.totalUsers || 0}
                 prefix={<UserOutlined />}
-                valueStyle={{
-                  color: "#667eea",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                styles={{
+                  content: {
+                    color: "#667eea",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                  }
                 }}
               />
               <div
@@ -188,10 +190,12 @@ export default function AdminDashboard() {
                 title="Total Files"
                 value={stats?.overview?.totalFiles || 0}
                 prefix={<CloudUploadOutlined />}
-                valueStyle={{
-                  color: "#52c41a",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                styles={{
+                  content: {
+                    color: "#52c41a",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                  }
                 }}
               />
               <div
@@ -216,10 +220,12 @@ export default function AdminDashboard() {
                 value={stats?.overview?.totalStorageMB || 0}
                 suffix="MB"
                 prefix={<DatabaseOutlined />}
-                valueStyle={{
-                  color: "#faad14",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                styles={{
+                  content: {
+                    color: "#faad14",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                  }
                 }}
               />
               <div
@@ -242,10 +248,12 @@ export default function AdminDashboard() {
                 title="Subscriptions"
                 value={stats?.overview?.totalSubscriptions || 0}
                 prefix={<CrownOutlined />}
-                valueStyle={{
-                  color: "#f5576c",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                styles={{
+                  content: {
+                    color: "#f5576c",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                  }
                 }}
               />
               <div
@@ -272,10 +280,12 @@ export default function AdminDashboard() {
                 title="Total Views"
                 value={stats?.overview?.totalViews || 0}
                 prefix={<FileOutlined />}
-                valueStyle={{
-                  color: "#1890ff",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                styles={{
+                  content: {
+                    color: "#1890ff",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                  }
                 }}
               />
               <div
@@ -298,10 +308,12 @@ export default function AdminDashboard() {
                 title="Total Downloads"
                 value={stats?.overview?.totalDownloads || 0}
                 prefix={<CloudUploadOutlined />}
-                valueStyle={{
-                  color: "#13c2c2",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                styles={{
+                  content: {
+                    color: "#13c2c2",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                  }
                 }}
               />
               <div
@@ -324,10 +336,12 @@ export default function AdminDashboard() {
                 title="Public Files"
                 value={stats?.overview?.publicFiles || 0}
                 prefix={<FileOutlined />}
-                valueStyle={{
-                  color: "#722ed1",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                styles={{
+                  content: {
+                    color: "#722ed1",
+                    fontSize: "32px",
+                    fontWeight: "bold",
+                  }
                 }}
               />
               <div

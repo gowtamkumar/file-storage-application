@@ -16,7 +16,7 @@ import {
 import { Button, Layout, Menu, theme } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const { Header, Sider, Content } = Layout;
@@ -28,6 +28,22 @@ export default function DashboardLayout({ children }) {
   } = theme.useToken();
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
+
+  const getSelectedKey = () => {
+    if (pathname.startsWith('/dashboard/pages')) return ['pages'];
+    if (pathname.startsWith('/dashboard/settings')) return ['settings'];
+
+    switch (pathname) {
+      case '/dashboard': return ['1'];
+      case '/dashboard/file': return ['0'];
+      case '/dashboard/users': return ['2'];
+      case '/dashboard/subscriptions': return ['3'];
+      case '/dashboard/plans': return ['4'];
+      case '/dashboard/ads': return ['5'];
+      default: return [];
+    }
+  };
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -54,7 +70,7 @@ export default function DashboardLayout({ children }) {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          selectedKeys={getSelectedKey()}
           items={[
 
             ...(session?.user?.role === 'admin' ? [{

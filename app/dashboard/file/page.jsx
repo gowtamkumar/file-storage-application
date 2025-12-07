@@ -320,7 +320,7 @@ export default function AdminFilesPage() {
               title="Total Files"
               value={stats.total}
               prefix={<FileOutlined />}
-              valueStyle={{ color: '#667eea' }}
+              styles={{ content: { color: '#667eea' } }}
             />
           </Card>
           <Card>
@@ -328,7 +328,7 @@ export default function AdminFilesPage() {
               title="Public Files"
               value={stats.public}
               prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              styles={{ content: { color: '#52c41a' } }}
             />
           </Card>
           <Card>
@@ -336,7 +336,7 @@ export default function AdminFilesPage() {
               title="Private Files"
               value={stats.private}
               prefix={<CloseCircleOutlined />}
-              valueStyle={{ color: '#8c8c8c' }}
+              styles={{ content: { color: '#8c8c8c' } }}
             />
           </Card>
           <Card>
@@ -345,7 +345,7 @@ export default function AdminFilesPage() {
               value={(stats.totalSize / (1024 * 1024)).toFixed(2)}
               suffix="MB"
               prefix={<FileOutlined />}
-              valueStyle={{ color: '#faad14' }}
+              styles={{ content: { color: '#faad14' } }}
             />
           </Card>
           <Card>
@@ -353,7 +353,7 @@ export default function AdminFilesPage() {
               title="Total Views"
               value={stats.totalViews}
               prefix={<EyeOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              styles={{ content: { color: '#1890ff' } }}
             />
           </Card>
           <Card>
@@ -361,7 +361,7 @@ export default function AdminFilesPage() {
               title="Total Downloads"
               value={stats.totalDownloads}
               prefix={<CloudDownloadOutlined />}
-              valueStyle={{ color: '#13c2c2' }}
+              styles={{ content: { color: '#13c2c2' } }}
             />
           </Card>
         </div>
