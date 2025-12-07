@@ -20,7 +20,6 @@ const TransactionSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['sslcommerz', 'stripe', 'cod', 'none', 'unknown'],
         default: 'unknown',
     },
     transactionId: {
@@ -38,5 +37,10 @@ const TransactionSchema = new mongoose.Schema({
         default: {},
     },
 }, { timestamps: true });
+
+// Force recompilation of model in dev mode to ensure schema changes are picked up
+if (process.env.NODE_ENV === 'development') {
+    delete mongoose.models.Transaction;
+}
 
 export default mongoose.models.Transaction || mongoose.model('Transaction', TransactionSchema);

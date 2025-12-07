@@ -1,10 +1,11 @@
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import dbConnect from '@/lib/db';
-import Subscription from '@/models/Subscription';
-import { getServerSession } from 'next-auth';
-import { NextResponse } from 'next/server';
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import dbConnect from "@/lib/db";
+import Subscription from "@/models/Subscription";
+import SubscriptionPlan from "@/models/SubscriptionPlan";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
-import Transaction from '@/models/Transaction';
+import Transaction from "@/models/Transaction";
 
 // GET - Get user's subscription
 export async function GET(request) {
@@ -12,7 +13,10 @@ export async function GET(request) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 }
+    );
   }
 
   try {
@@ -22,7 +26,7 @@ export async function GET(request) {
     if (!subscription) {
       subscription = await Subscription.create({
         userId: session.user.id,
-        plan: 'free',
+        plan: "free",
         storageLimit: 100, // 100MB
         fileLimit: 50,
         features: {
@@ -35,18 +39,23 @@ export async function GET(request) {
     }
 
     // Fetch transaction history
-    const transactions = await Transaction.find({ userId: session.user.id }).sort({ createdAt: -1 });
+    const transactions = await Transaction.find({
+      userId: session.user.id,
+    }).sort({ createdAt: -1 });
 
     return NextResponse.json({
       success: true,
       data: {
         ...subscription.toObject(),
-        transactions
-      }
+        transactions,
+      },
     });
   } catch (error) {
-    console.error('Get subscription error:', error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    console.error("Get subscription error:", error);
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
   }
 }
 
@@ -56,7 +65,10 @@ export async function POST(request) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json(
+      { success: false, message: "Unauthorized" },
+      { status: 401 }
+    );
   }
 
   try {
@@ -64,54 +76,19 @@ export async function POST(request) {
     const { plan, paymentInfo } = body;
 
     // Define plan limits and features
-    const planConfig = {
-      free: {
-        storageLimit: 100, // 100MB
-        fileLimit: 50,
-        features: {
-          apiAccess: false,
-          customBranding: false,
-          prioritySupport: false,
-          analytics: false,
-        },
-      },
-      basic: {
-        storageLimit: 1024, // 1GB
-        fileLimit: 200,
-        features: {
-          apiAccess: true,
-          customBranding: false,
-          prioritySupport: false,
-          analytics: false,
-        },
-      },
-      pro: {
-        storageLimit: 10240, // 10GB
-        fileLimit: 1000,
-        features: {
-          apiAccess: true,
-          customBranding: true,
-          prioritySupport: true,
-          analytics: true,
-        },
-      },
-      enterprise: {
-        storageLimit: 102400, // 100GB
-        fileLimit: -1, // unlimited
-        features: {
-          apiAccess: true,
-          customBranding: true,
-          prioritySupport: true,
-          analytics: true,
-        },
-      },
-    };
+    // Fetch plan details from database
+    const planDetails = await SubscriptionPlan.findOne({
+      planId: plan,
+      active: true,
+    });
 
-    if (!planConfig[plan]) {
-      return NextResponse.json({ success: false, message: 'Invalid plan' }, { status: 400 });
+    if (!planDetails) {
+      return NextResponse.json(
+        { success: false, message: "Invalid plan" },
+        { status: 400 }
+      );
     }
 
-    const config = planConfig[plan];
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 1); // 1 month subscription
 
@@ -120,12 +97,12 @@ export async function POST(request) {
       { userId: session.user.id },
       {
         plan,
-        status: 'active',
+        status: "active",
         startDate: new Date(),
         endDate,
-        storageLimit: config.storageLimit,
-        fileLimit: config.fileLimit,
-        features: config.features,
+        storageLimit: planDetails?.limits?.storage,
+        fileLimit: planDetails?.limits?.files,
+        features: planDetails?.features,
         paymentInfo: paymentInfo || {},
       },
       { upsert: true, new: true }
@@ -134,10 +111,13 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       message: `Successfully subscribed to ${plan} plan`,
-      data: subscription
+      data: subscription,
     });
   } catch (error) {
-    console.error('Subscribe error:', error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    console.error("Subscribe error:", error);
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
   }
 }

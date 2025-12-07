@@ -3,6 +3,7 @@
 import {
   CrownOutlined,
   DollarOutlined,
+  HistoryOutlined,
   RocketOutlined,
   SearchOutlined,
   StarOutlined,
@@ -11,9 +12,11 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import {
+  Button,
   Card,
   Col,
   Input,
+  Modal,
   Row,
   Select,
   Space,
@@ -90,6 +93,28 @@ export default function SubscriptionsPage() {
 
     return matchesSearch && matchesStatus && matchesPlan;
   });
+
+  const [historyModalVisible, setHistoryModalVisible] = useState(false);
+  const [selectedUserTransactions, setSelectedUserTransactions] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const fetchUserHistory = async (userId, userName) => {
+    setHistoryLoading(true);
+    setSelectedUser({ name: userName });
+    setHistoryModalVisible(true);
+    try {
+      const res = await fetch(`/api/admin/transactions/${userId}`);
+      const data = await res.json();
+      if (data.success) {
+        setSelectedUserTransactions(data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch user history");
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
 
   const columns = [
     {
@@ -190,6 +215,81 @@ export default function SubscriptionsPage() {
         ) : (
           <Text type="secondary">Free</Text>
         ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Button
+          type="link"
+          icon={<HistoryOutlined />}
+          onClick={() =>
+            fetchUserHistory(record.userId._id, record.userId.name)
+          }
+        >
+          History
+        </Button>
+      ),
+    },
+  ];
+
+  const historyColumns = [
+    {
+      title: "Plan",
+      dataIndex: "planId",
+      key: "planId",
+      render: (plan) => (
+        <Tag color={getPlanColor(plan)} style={{ textTransform: "capitalize" }}>
+          {plan}
+        </Tag>
+      ),
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount, record) =>
+        `${record.currency === "USD" ? "$" : record.currency} ${amount}`,
+    },
+    {
+      title: "Method",
+      dataIndex: "paymentMethod",
+      key: "paymentMethod",
+      render: (method) => <Tag>{method}</Tag>,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag
+          color={
+            status === "success"
+              ? "green"
+              : status === "pending"
+              ? "blue"
+              : "red"
+          }
+        >
+          {status.toUpperCase()}
+        </Tag>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date) => new Date(date).toLocaleString(),
+    },
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (id) => (
+        <Text copyable style={{ fontSize: "12px" }}>
+          {id}
+        </Text>
+      ),
     },
   ];
 
@@ -405,6 +505,22 @@ export default function SubscriptionsPage() {
           />
         </Card>
       </div>
+
+      <Modal
+        title={`Transaction History - ${selectedUser?.name}`}
+        open={historyModalVisible}
+        onCancel={() => setHistoryModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <Table
+          columns={historyColumns}
+          dataSource={selectedUserTransactions}
+          rowKey="_id"
+          loading={historyLoading}
+          pagination={{ pageSize: 5 }}
+        />
+      </Modal>
 
       <style jsx global>{`
         .ant-table-thead > tr > th {
