@@ -90,6 +90,7 @@ export default function NotificationBell() {
         placement="right"
         onClose={() => setOpen(false)}
         open={open}
+        size="large"
       >
         <List
           itemLayout="horizontal"
