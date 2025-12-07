@@ -4,6 +4,7 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   CloudDownloadOutlined,
+  CopyOutlined,
   DeleteOutlined,
   EyeOutlined,
   FileImageOutlined,
@@ -26,6 +27,7 @@ import {
   Statistic,
   Table,
   Tag,
+  Tooltip,
   Typography,
 } from 'antd';
 import { useRouter } from 'next/navigation';
@@ -84,6 +86,12 @@ export default function AdminFilesPage() {
     const url = `${window.location.origin}/share/${shareableId}`;
     navigator.clipboard.writeText(url);
     message.success('Share URL copied to clipboard!');
+  };
+
+  const copyFileUrl = (path) => {
+    const fullUrl = `${window.location.origin}${path}`;
+    navigator.clipboard.writeText(fullUrl);
+    message.success('File URL copied to clipboard!');
   };
 
   const getFileIcon = (mimetype) => {
@@ -237,10 +245,19 @@ export default function AdminFilesPage() {
     {
       title: 'Actions',
       key: 'actions',
-      width: 120,
+      width: 150,
       fixed: 'right',
       render: (_, record) => (
         <Space size="small">
+          <Tooltip title="Copy URL">
+            <Button
+              type="text"
+              icon={<CopyOutlined />}
+              size="small"
+              onClick={() => copyFileUrl(record.path)}
+              style={{ color: '#1890ff' }}
+            />
+          </Tooltip>
           {record.isPublic && record.shareableId && (
             <Button
               type="text"

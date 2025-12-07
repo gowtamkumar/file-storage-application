@@ -1,5 +1,6 @@
 'use client';
 
+import AdDisplay from '@/components/AdDisplay';
 import NavBar from '@/components/NavBar';
 import PublicUpload from '@/components/PublicUpload';
 import {
@@ -87,6 +88,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <AdDisplay placement="home_top" />
 
         {/* Stats Section */}
         <section className="py-12 border-y border-gray-100 bg-white">

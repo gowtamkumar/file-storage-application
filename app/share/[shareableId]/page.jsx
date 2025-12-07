@@ -1,5 +1,6 @@
 'use client';
 
+import AdDisplay from '@/components/AdDisplay';
 import {
   CheckCircle,
   Clock,
@@ -242,6 +243,10 @@ export default function SharedFilePage() {
             <p className="mt-8 text-center sm:text-left text-xs text-gray-400">
               Total Downloads: <span className="text-gray-600 font-medium">{fileData.analytics?.downloadCount || 0}</span> • Views: <span className="text-gray-600 font-medium">{fileData.analytics?.viewCount || 0}</span>
             </p>
+
+            <div className="mt-8">
+              <AdDisplay placement="share_sidebar" />
+            </div>
           </div>
         </div>
       </div>

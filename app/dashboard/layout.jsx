@@ -8,6 +8,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  NotificationOutlined,
   TeamOutlined
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
@@ -81,6 +82,12 @@ export default function DashboardLayout({ children }) {
               icon: <DashboardOutlined />,
               label: 'Plans',
               onClick: () => router.push('/dashboard/plans'),
+            },
+            {
+              key: '5',
+              icon: <NotificationOutlined />,
+              label: 'Ads',
+              onClick: () => router.push('/dashboard/ads'),
             },
 
             ] : [])
