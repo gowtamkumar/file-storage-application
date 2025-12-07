@@ -3,6 +3,7 @@
 import {
   CrownOutlined,
   DashboardOutlined,
+  FileAddOutlined,
   FileOutlined,
   HomeOutlined,
   LogoutOutlined,
@@ -14,6 +15,7 @@ import {
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -91,10 +93,14 @@ export default function DashboardLayout({ children }) {
               onClick: () => router.push('/dashboard/ads'),
             },
             {
-              key: '6',
+              key: 'settings',
               icon: <SettingOutlined />,
-              label: 'Settings',
-              onClick: () => router.push('/dashboard/settings'),
+              label: <Link href="/dashboard/settings">Settings</Link>,
+            },
+            {
+              key: 'pages',
+              icon: <FileAddOutlined />,
+              label: <Link href="/dashboard/pages">Pages</Link>,
             },
 
             ] : [])
