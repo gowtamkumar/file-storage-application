@@ -54,7 +54,6 @@ export default function DashboardLayout({ children }) {
         breakpoint="lg"
         collapsedWidth={0}
         onBreakpoint={(broken) => {
-          // Automatically collapse on mobile/tablet
           setCollapsed(broken);
         }}
         style={{

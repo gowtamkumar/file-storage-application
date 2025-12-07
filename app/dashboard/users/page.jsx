@@ -407,7 +407,7 @@ export default function UsersPage() {
           placement="right"
           onClose={() => setDetailsVisible(false)}
           open={detailsVisible}
-          width={600}
+          size="large"
         >
           {selectedUser && (
             <div>
