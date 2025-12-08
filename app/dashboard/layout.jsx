@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BankOutlined,
   CrownOutlined,
   DashboardOutlined,
   FileAddOutlined,
@@ -12,7 +13,7 @@ import {
   MenuUnfoldOutlined,
   NotificationOutlined,
   SettingOutlined,
-  TeamOutlined,
+  TeamOutlined
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
 import { signOut, useSession } from 'next-auth/react';
@@ -99,6 +100,12 @@ export default function DashboardLayout({ children }) {
               icon: <CrownOutlined />,
               label: 'Subscriptions',
               onClick: () => router.push('/dashboard/subscriptions'),
+            },
+            {
+              key: 'transactions',
+              icon: <BankOutlined />,
+              label: 'Transactions',
+              onClick: () => router.push('/dashboard/transactions'),
             },
             {
               key: '4',

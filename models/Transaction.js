@@ -27,6 +27,11 @@ const TransactionSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    subscriptionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subscription',
+        required: true,
+    },
     status: {
         type: String,
         enum: ['pending', 'success', 'failed', 'cancelled'],

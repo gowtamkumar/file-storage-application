@@ -1,29 +1,29 @@
 "use client";
 
 import {
-  CrownOutlined,
-  DollarOutlined,
-  HistoryOutlined,
-  RocketOutlined,
-  SearchOutlined,
-  StarOutlined,
-  TeamOutlined,
-  ThunderboltOutlined,
-  UserOutlined,
+    CrownOutlined,
+    DollarOutlined,
+    HistoryOutlined,
+    RocketOutlined,
+    SearchOutlined,
+    StarOutlined,
+    TeamOutlined,
+    ThunderboltOutlined,
+    UserOutlined,
 } from "@ant-design/icons";
 import {
-  Button,
-  Card,
-  Col,
-  Input,
-  Modal,
-  Row,
-  Select,
-  Space,
-  Statistic,
-  Table,
-  Tag,
-  Typography,
+    Button,
+    Card,
+    Col,
+    Input,
+    Modal,
+    Row,
+    Select,
+    Space,
+    Statistic,
+    Table,
+    Tag,
+    Typography,
 } from "antd";
 import { useEffect, useState } from "react";
 
@@ -104,7 +104,7 @@ export default function SubscriptionsPage() {
     setSelectedUser({ name: userName });
     setHistoryModalVisible(true);
     try {
-      const res = await fetch(`/api/admin/transactions/${userId}`);
+      const res = await fetch(`/api/admin/transactions?userId=${userId}`);
       const data = await res.json();
       if (data.success) {
         setSelectedUserTransactions(data.data);
