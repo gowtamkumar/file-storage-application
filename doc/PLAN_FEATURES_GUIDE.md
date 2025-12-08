@@ -153,3 +153,19 @@ Features:
 ✔ SEO & social preview
 ✔ CDN caching
 ✔ Optimized storage
+
+
+To Scale Beyond 1,000 Users, You Need:
+Critical Upgrades:
+✅ Move to cloud storage (AWS S3, Google Cloud Storage, Cloudinary)
+Current: Local filesystem
+Upgrade: Store files in S3/cloud
+Impact: 100x more users
+⚠️ Add caching (Redis)
+Cache file metadata
+Session storage
+Impact: 3-5x performance boost
+⚠️ Background job processing
+Move compression to queue (Bull/BullMQ)
+Don't block upload responses
+Impact: 2-3x more uploads
