@@ -1,29 +1,29 @@
 "use client";
 
 import {
-    CrownOutlined,
-    DollarOutlined,
-    HistoryOutlined,
-    RocketOutlined,
-    SearchOutlined,
-    StarOutlined,
-    TeamOutlined,
-    ThunderboltOutlined,
-    UserOutlined,
+  CrownOutlined,
+  DollarOutlined,
+  HistoryOutlined,
+  RocketOutlined,
+  SearchOutlined,
+  StarOutlined,
+  TeamOutlined,
+  ThunderboltOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import {
-    Button,
-    Card,
-    Col,
-    Input,
-    Modal,
-    Row,
-    Select,
-    Space,
-    Statistic,
-    Table,
-    Tag,
-    Typography,
+  Button,
+  Card,
+  Col,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Statistic,
+  Table,
+  Tag,
+  Typography,
 } from "antd";
 import { useEffect, useState } from "react";
 
@@ -121,8 +121,11 @@ export default function SubscriptionsPage() {
       title: "User",
       key: "user",
       render: (_, record) => (
-        <div>
-          <div style={{ fontWeight: 500 }}>
+        <div
+          style={{ cursor: 'pointer' }}
+          onClick={() => window.location.href = `/dashboard/users/${record.userId?._id}`}
+        >
+          <div style={{ fontWeight: 500, color: '#1890ff' }}>
             {record.userId?.name || "Unknown"}
           </div>
           <Text type="secondary" style={{ fontSize: "12px" }}>
@@ -157,8 +160,8 @@ export default function SubscriptionsPage() {
             status === "active"
               ? "green"
               : status === "cancelled"
-              ? "orange"
-              : "red"
+                ? "orange"
+                : "red"
           }
         >
           {status.toUpperCase()}
@@ -267,8 +270,8 @@ export default function SubscriptionsPage() {
             status === "success"
               ? "green"
               : status === "pending"
-              ? "blue"
-              : "red"
+                ? "blue"
+                : "red"
           }
         >
           {status.toUpperCase()}

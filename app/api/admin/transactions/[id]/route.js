@@ -14,11 +14,11 @@ export async function GET(request, { params }) {
   }
 
   try {
-    const { id } = params;
+    const { id } = await params;
     const transaction = await Transaction.findById(id).populate('userId', 'name email image');
 
     if (!transaction) {
-        return NextResponse.json({ success: false, message: 'Transaction not found' }, { status: 404 });
+      return NextResponse.json({ success: false, message: 'Transaction not found' }, { status: 404 });
     }
 
     return NextResponse.json({

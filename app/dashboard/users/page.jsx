@@ -15,8 +15,6 @@ import {
   Badge,
   Button,
   Card,
-  Descriptions,
-  Drawer,
   Input,
   message,
   Modal,
@@ -27,7 +25,7 @@ import {
   Switch,
   Table,
   Tag,
-  Typography,
+  Typography
 } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -72,13 +70,11 @@ export default function UsersPage() {
 
     Modal.confirm({
       title: `${newStatus === "active" ? "Activate" : "Deactivate"} User?`,
-      content: `Are you sure you want to ${
-        newStatus === "active" ? "activate" : "deactivate"
-      } this user? ${
-        newStatus === "inactive"
+      content: `Are you sure you want to ${newStatus === "active" ? "activate" : "deactivate"
+        } this user? ${newStatus === "inactive"
           ? "They will not be able to log in."
           : "They will be able to log in again."
-      }`,
+        }`,
       okText: "Yes",
       cancelText: "No",
       onOk: async () => {
@@ -103,8 +99,7 @@ export default function UsersPage() {
   };
 
   const showUserDetails = (user) => {
-    setSelectedUser(user);
-    setDetailsVisible(true);
+    router.push(`/dashboard/users/${user._id}`);
   };
 
   const filteredUsers = users.filter((user) => {
@@ -215,17 +210,17 @@ export default function UsersPage() {
               record.subscription?.fileLimit === -1
                 ? 0
                 : Math.min(
-                    100,
-                    ((record.stats?.fileCount || 0) /
-                      record.subscription?.fileLimit) *
-                      100
-                  )
+                  100,
+                  ((record.stats?.fileCount || 0) /
+                    record.subscription?.fileLimit) *
+                  100
+                )
             }
             size="small"
             showInfo={false}
             status={
               (record.stats?.fileCount || 0) >=
-              record.subscription?.fileLimit * 0.9
+                record.subscription?.fileLimit * 0.9
                 ? "exception"
                 : "active"
             }
@@ -249,17 +244,17 @@ export default function UsersPage() {
               record.subscription?.storageLimit === -1
                 ? 0
                 : Math.min(
-                    100,
-                    ((parseFloat(record.stats?.storageUsedMB) || 0) /
-                      record.subscription?.storageLimit) *
-                      100
-                  )
+                  100,
+                  ((parseFloat(record.stats?.storageUsedMB) || 0) /
+                    record.subscription?.storageLimit) *
+                  100
+                )
             }
             size="small"
             showInfo={false}
             status={
               (parseFloat(record.stats?.storageUsedMB) || 0) >=
-              record.subscription?.storageLimit * 0.9
+                record.subscription?.storageLimit * 0.9
                 ? "exception"
                 : "active"
             }
@@ -403,10 +398,10 @@ export default function UsersPage() {
                       getPlanColor(plan) === "gold"
                         ? "#faad14"
                         : getPlanColor(plan) === "blue"
-                        ? "#1890ff"
-                        : getPlanColor(plan) === "green"
-                        ? "#52c41a"
-                        : "#d9d9d9"
+                          ? "#1890ff"
+                          : getPlanColor(plan) === "green"
+                            ? "#52c41a"
+                            : "#d9d9d9"
                     }
                   />
                 </Card.Grid>
@@ -486,205 +481,8 @@ export default function UsersPage() {
           />
         </Card>
 
-        {/* User Details Drawer */}
-        <Drawer
-          title="User Details"
-          placement="right"
-          onClose={() => setDetailsVisible(false)}
-          open={detailsVisible}
-        >
-          {selectedUser && (
-            <div>
-              <Descriptions title="Basic Information" bordered column={1}>
-                <Descriptions.Item label="Name">
-                  {selectedUser.name}
-                </Descriptions.Item>
-                <Descriptions.Item label="Email">
-                  {selectedUser.email}
-                </Descriptions.Item>
-                <Descriptions.Item label="Role">
-                  <Tag color={selectedUser.role === "admin" ? "red" : "blue"}>
-                    {selectedUser.role?.toUpperCase()}
-                  </Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label="Status">
-                  <Badge
-                    status={
-                      selectedUser.status === "active" ? "success" : "error"
-                    }
-                    text={selectedUser.status?.toUpperCase()}
-                  />
-                </Descriptions.Item>
-                <Descriptions.Item label="User ID">
-                  <Text
-                    copyable={{ text: selectedUser._id }}
-                    style={{ fontSize: "12px" }}
-                  >
-                    {selectedUser._id}
-                  </Text>
-                </Descriptions.Item>
-                <Descriptions.Item label="Joined">
-                  {new Date(selectedUser.createdAt).toLocaleString()}
-                </Descriptions.Item>
-              </Descriptions>
+        {/* User Details */}
 
-              <Descriptions
-                title="Subscription Details"
-                bordered
-                column={1}
-                style={{ marginTop: "24px" }}
-              >
-                <Descriptions.Item label="Plan">
-                  <Tag
-                    color={getPlanColor(selectedUser.subscription?.plan)}
-                    style={{ fontWeight: 600 }}
-                  >
-                    {selectedUser.subscription?.plan?.toUpperCase() || "FREE"}
-                  </Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label="Status">
-                  {selectedUser.subscription?.status || "active"}
-                </Descriptions.Item>
-                <Descriptions.Item label="Storage Limit">
-                  {selectedUser.subscription?.storageLimit === -1
-                    ? "Unlimited"
-                    : `${selectedUser.subscription?.storageLimit} MB`}
-                </Descriptions.Item>
-                <Descriptions.Item label="File Limit">
-                  {selectedUser.subscription?.fileLimit === -1
-                    ? "Unlimited"
-                    : selectedUser.subscription?.fileLimit}
-                </Descriptions.Item>
-              </Descriptions>
-
-              <Descriptions
-                title="Usage Statistics"
-                bordered
-                column={1}
-                style={{ marginTop: "24px" }}
-              >
-                <Descriptions.Item label="Files">
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: "8px" }}>
-                      {selectedUser.stats?.fileCount || 0} /{" "}
-                      {selectedUser.subscription?.fileLimit === -1
-                        ? "∞"
-                        : selectedUser.subscription?.fileLimit}
-                    </div>
-                    <Progress
-                      percent={
-                        selectedUser.subscription?.fileLimit === -1
-                          ? 0
-                          : Math.min(
-                              100,
-                              ((selectedUser.stats?.fileCount || 0) /
-                                selectedUser.subscription?.fileLimit) *
-                                100
-                            )
-                      }
-                      status={
-                        (selectedUser.stats?.fileCount || 0) >=
-                        selectedUser.subscription?.fileLimit * 0.9
-                          ? "exception"
-                          : "active"
-                      }
-                    />
-                  </div>
-                </Descriptions.Item>
-                <Descriptions.Item label="Storage">
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: "8px" }}>
-                      {selectedUser.stats?.storageUsedMB || 0} MB /{" "}
-                      {selectedUser.subscription?.storageLimit === -1
-                        ? "∞"
-                        : `${selectedUser.subscription?.storageLimit} MB`}
-                    </div>
-                    <Progress
-                      percent={
-                        selectedUser.subscription?.storageLimit === -1
-                          ? 0
-                          : Math.min(
-                              100,
-                              ((parseFloat(selectedUser.stats?.storageUsedMB) ||
-                                0) /
-                                selectedUser.subscription?.storageLimit) *
-                                100
-                            )
-                      }
-                      status={
-                        (parseFloat(selectedUser.stats?.storageUsedMB) || 0) >=
-                        selectedUser.subscription?.storageLimit * 0.9
-                          ? "exception"
-                          : "active"
-                      }
-                    />
-                  </div>
-                </Descriptions.Item>
-              </Descriptions>
-
-              {selectedUser.subscription?.features && (
-                <Descriptions
-                  title="Features"
-                  bordered
-                  column={1}
-                  style={{ marginTop: "24px" }}
-                >
-                  <Descriptions.Item label="API Access">
-                    {selectedUser.subscription.features.apiAccess ? (
-                      <Tag color="green">Enabled</Tag>
-                    ) : (
-                      <Tag>Disabled</Tag>
-                    )}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Custom Branding">
-                    {selectedUser.subscription.features.customBranding ? (
-                      <Tag color="green">Enabled</Tag>
-                    ) : (
-                      <Tag>Disabled</Tag>
-                    )}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Priority Support">
-                    {selectedUser.subscription.features.prioritySupport ? (
-                      <Tag color="green">Enabled</Tag>
-                    ) : (
-                      <Tag>Disabled</Tag>
-                    )}
-                  </Descriptions.Item>
-                  <Descriptions.Item label="Analytics">
-                    {selectedUser.subscription.features.analytics ? (
-                      <Tag color="green">Enabled</Tag>
-                    ) : (
-                      <Tag>Disabled</Tag>
-                    )}
-                  </Descriptions.Item>
-                </Descriptions>
-              )}
-
-              <div style={{ marginTop: "24px" }}>
-                <Button
-                  type="primary"
-                  danger={selectedUser.status === "active"}
-                  block
-                  icon={
-                    selectedUser.status === "active" ? (
-                      <StopOutlined />
-                    ) : (
-                      <CheckCircleOutlined />
-                    )
-                  }
-                  onClick={() => {
-                    toggleUserStatus(selectedUser._id, selectedUser.status);
-                    setDetailsVisible(false);
-                  }}
-                >
-                  {selectedUser.status === "active"
-                    ? "Deactivate User"
-                    : "Activate User"}
-                </Button>
-              </div>
-            </div>
-          )}
-        </Drawer>
       </div>
     </div>
   );
