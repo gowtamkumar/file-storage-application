@@ -19,6 +19,24 @@ export async function GET(request) {
       .populate('userId', 'name email')
       .sort({ createdAt: -1 });
 
+    const subscriptionsWithPayment = await Promise.all(subscriptions.map(async (sub) => {
+      const transaction = await Transaction.findOne({
+        subscriptionId: sub._id,
+        status: 'success'
+      }).sort({ createdAt: -1 });
+
+      return {
+        ...sub.toObject(),
+        paymentInfo: transaction ? {
+          amount: transaction.amount,
+          currency: transaction.currency,
+          transactionId: transaction.transactionId,
+          paymentMethod: transaction.paymentMethod,
+          lastPaymentDate: transaction.createdAt
+        } : null
+      };
+    }));
+
     // Calculate total revenue from transactions
     const totalRevenue = await Transaction.aggregate([
       { $match: { status: 'success' } },
@@ -38,7 +56,7 @@ export async function GET(request) {
 
     return NextResponse.json({
       success: true,
-      data: subscriptions,
+      data: subscriptionsWithPayment,
       stats
     });
   } catch (error) {

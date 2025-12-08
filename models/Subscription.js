@@ -59,16 +59,7 @@ const SubscriptionSchema = new mongoose.Schema(
         default: false,
       },
     },
-    paymentInfo: {
-      transactionId: String,
-      amount: Number,
-      currency: {
-        type: String,
-        default: "USD",
-      },
-      paymentMethod: String,
-      lastPaymentDate: Date,
-    },
+
   },
   { timestamps: true }
 );

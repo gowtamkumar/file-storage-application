@@ -82,10 +82,26 @@ export async function POST(request) {
       console.log("Gateway amount (BDT):", amount);
       console.log("Stored amount (USD):", usdAmount);
 
-      // Create Transaction Record
+      // Update or create subscription first to get the ID
+      const subscription = await Subscription.findOneAndUpdate(
+        { userId },
+        {
+          plan,
+          status: "active",
+          startDate: new Date(),
+          endDate,
+          storageLimit: config.storageLimit,
+          fileLimit: config.fileLimit,
+          features: config.features,
+        },
+        { upsert: true, new: true }
+      );
+
+      // Create Transaction Record with subscriptionId
       await Transaction.create({
         userId,
         planId: plan,
+        subscriptionId: subscription._id, // Link to subscription
         amount: usdAmount,
         currency: "USD",
         paymentMethod: card_type || "Unknown",
@@ -104,38 +120,6 @@ export async function POST(request) {
           },
         }
       });
-
-      // Update or create subscription
-      await Subscription.findOneAndUpdate(
-        { userId },
-        {
-          plan,
-          status: "active",
-          startDate: new Date(),
-          endDate,
-          storageLimit: config.storageLimit,
-          fileLimit: config.fileLimit,
-          features: config.features,
-          paymentInfo: {
-            transactionId: tran_id,
-            amount: usdAmount, // Store USD amount for revenue calculation
-            currency: "USD", // We treat the subscription as USD
-            gatewayAmount: parseFloat(amount), // Store original BDT amount for audit
-            gatewayCurrency: currency, // Store original currency (BDT)
-            paymentMethod: card_type || "Unknown",
-            lastPaymentDate: new Date(tran_date),
-            validationId: val_id,
-            bankTransactionId: bank_tran_id,
-            cardDetails: {
-              cardNo: card_no,
-              cardBrand: card_brand,
-              cardIssuer: card_issuer,
-              cardIssuerCountry: card_issuer_country,
-            },
-          },
-        },
-        { upsert: true, new: true }
-      );
 
       // Notify Admins
       await Notification.create({
@@ -212,10 +196,26 @@ export async function GET(request) {
         const endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 1);
 
-        // Create Transaction Record
+        // Update or create subscription first
+        const subscription = await Subscription.findOneAndUpdate(
+          { userId },
+          {
+            plan: planId,
+            status: "active",
+            startDate: new Date(),
+            endDate,
+            storageLimit: config.storageLimit,
+            fileLimit: config.fileLimit,
+            features: config.features,
+          },
+          { upsert: true, new: true }
+        );
+
+        // Create Transaction Record with subscriptionId
         await Transaction.create({
           userId,
-          planId,
+          planId: planId,
+          subscriptionId: subscription._id, // Link to subscription
           amount: amount,
           currency: currency,
           paymentMethod: "stripe",
@@ -226,32 +226,6 @@ export async function GET(request) {
             bankTransactionId: session.payment_intent,
           }
         });
-
-        // Update or create subscription
-        await Subscription.findOneAndUpdate(
-          { userId },
-          {
-            plan: planId,
-            status: "active",
-            startDate: new Date(),
-            endDate,
-            storageLimit: config.storageLimit,
-            fileLimit: config.fileLimit,
-            features: config.features,
-            paymentInfo: {
-              transactionId: transactionId,
-              amount: amount,
-              currency: currency,
-              gatewayAmount: amount,
-              gatewayCurrency: currency,
-              paymentMethod: "stripe",
-              lastPaymentDate: new Date(),
-              validationId: sessionId,
-              bankTransactionId: session.payment_intent,
-            },
-          },
-          { upsert: true, new: true }
-        );
 
         // Notify Admins
         await Notification.create({
