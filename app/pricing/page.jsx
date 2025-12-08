@@ -115,8 +115,6 @@ export default function PricingPage() {
 
       const data = await res.json();
 
-      console.log(data);
-
       if (data.success) {
         if (data.gatewayUrl) {
           window.location.href = data.gatewayUrl;
@@ -209,7 +207,7 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            style={{ textAlign: "center", marginBottom: "64px" }}
+            style={{ textAlign: "center", marginBottom: "20px" }}
           >
             <Title
               level={1}
@@ -254,7 +252,7 @@ export default function PricingPage() {
             style={{
               display: "flex",
               justifyContent: "center",
-              marginBottom: "48px",
+              marginBottom: "38px",
             }}
           >
             <div
