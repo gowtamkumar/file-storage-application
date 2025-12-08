@@ -78,28 +78,30 @@ export default function Footer() {
               <span className="text-2xl font-black">FileStore</span>
             </div>
             <p className="text-gray-400 leading-relaxed mb-6">
-              Secure, fast, and reliable file storage for modern teams. Experience the future of cloud storage.
+              Secure, fast, and reliable file storage for modern teams.
+              Experience the future of cloud storage.
             </p>
 
             {/* Social Links */}
-            {settings.socialLinks && Object.values(settings.socialLinks).some(Boolean) && (
-              <div className="flex gap-3">
-                {Object.entries(settings.socialLinks).map(([key, url]) => {
-                  if (!url) return null;
-                  return (
-                    <a
-                      key={key}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:text-white ${socialColors[key]}`}
-                    >
-                      {socialIcons[key]}
-                    </a>
-                  );
-                })}
-              </div>
-            )}
+            {settings.socialLinks &&
+              Object.values(settings.socialLinks).some(Boolean) && (
+                <div className="flex gap-3">
+                  {Object.entries(settings.socialLinks).map(([key, url]) => {
+                    if (!url) return null;
+                    return (
+                      <a
+                        key={key}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-10 h-10 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:text-white ${socialColors[key]}`}
+                      >
+                        {socialIcons[key]}
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
           </div>
 
           {/* Quick Links */}
@@ -122,13 +124,19 @@ export default function Footer() {
               {settings.footerLinks.length === 0 && (
                 <>
                   <li>
-                    <Link href="/pricing" className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                    <Link
+                      href="/pricing"
+                      className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                    >
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       Pricing
                     </Link>
                   </li>
                   <li>
-                    <Link href="/docs" className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                    <Link
+                      href="/docs"
+                      className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                    >
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       Documentation
                     </Link>
@@ -144,7 +152,8 @@ export default function Footer() {
               Stay Updated
             </h3>
             <p className="text-gray-400 text-sm mb-4">
-              Get the latest updates and exclusive offers delivered to your inbox.
+              Get the latest updates and exclusive offers delivered to your
+              inbox.
             </p>
             <div className="flex gap-2">
               <div className="flex-1 relative">
@@ -169,10 +178,16 @@ export default function Footer() {
               {settings.footerText}
             </p>
             <div className="flex items-center gap-6 text-sm">
-              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/privacy"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+              <Link
+                href="/terms"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 Terms of Service
               </Link>
             </div>
