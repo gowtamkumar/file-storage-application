@@ -82,20 +82,23 @@ export async function POST(request) {
       console.log("Gateway amount (BDT):", amount);
       console.log("Stored amount (USD):", usdAmount);
 
-      // Update or create subscription first to get the ID
-      const subscription = await Subscription.findOneAndUpdate(
-        { userId },
-        {
-          plan,
-          status: "active",
-          startDate: new Date(),
-          endDate,
-          storageLimit: config.storageLimit,
-          fileLimit: config.fileLimit,
-          features: config.features,
-        },
-        { upsert: true, new: true }
+      // Archive existing active subscription
+      await Subscription.updateMany(
+        { userId, status: 'active' },
+        { $set: { status: 'expired', endDate: new Date() } }
       );
+
+      // Create NEW subscription
+      const subscription = await Subscription.create({
+        userId,
+        plan,
+        status: "active",
+        startDate: new Date(),
+        endDate,
+        storageLimit: config.storageLimit,
+        fileLimit: config.fileLimit,
+        features: config.features,
+      });
 
       // Create Transaction Record with subscriptionId
       await Transaction.create({
@@ -196,20 +199,23 @@ export async function GET(request) {
         const endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 1);
 
-        // Update or create subscription first
-        const subscription = await Subscription.findOneAndUpdate(
-          { userId },
-          {
-            plan: planId,
-            status: "active",
-            startDate: new Date(),
-            endDate,
-            storageLimit: config.storageLimit,
-            fileLimit: config.fileLimit,
-            features: config.features,
-          },
-          { upsert: true, new: true }
+        // Archive existing active subscription
+        await Subscription.updateMany(
+          { userId, status: 'active' },
+          { $set: { status: 'expired', endDate: new Date() } }
         );
+
+        // Create NEW subscription
+        const subscription = await Subscription.create({
+          userId,
+          plan: planId,
+          status: "active",
+          startDate: new Date(),
+          endDate,
+          storageLimit: config.storageLimit,
+          fileLimit: config.fileLimit,
+          features: config.features,
+        });
 
         // Create Transaction Record with subscriptionId
         await Transaction.create({

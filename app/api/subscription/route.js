@@ -20,7 +20,7 @@ export async function GET(request) {
   }
 
   try {
-    let subscription = await Subscription.findOne({ userId: session.user.id });
+    let subscription = await Subscription.findOne({ userId: session.user.id, status: 'active' });
 
     // If no subscription exists, create a free plan
     if (!subscription) {

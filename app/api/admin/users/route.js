@@ -28,7 +28,7 @@ export async function GET() {
         const storageUsed = files.reduce((acc, file) => acc + file.size, 0);
 
         // Get subscription
-        const subscription = await Subscription.findOne({ userId: user._id });
+        const subscription = await Subscription.findOne({ userId: user._id, status: 'active' });
 
         return {
           ...user,
