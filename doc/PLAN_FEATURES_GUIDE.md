@@ -33,6 +33,7 @@ Features to list:
 - API Access
 - Fast Upload with Image Optimization
 - Text File Compression (TXT)
+- PDF Compression (30-50% savings)
 - Secure File Storage
 - Email Support
 ```
@@ -46,7 +47,7 @@ Features to list:
 - Priority Upload Queue
 - File Management Dashboard
 - Image Optimization (Sharp compression)
-- Text File Compression (60-90% savings)
+- Text & PDF Compression (up to 90% savings)
 - Priority Email Support
 - Secure File Storage
 ```

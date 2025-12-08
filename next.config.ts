@@ -1,12 +1,14 @@
-import type { NextConfig } from "next";
-
+import type { NextConfig, SizeLimit } from "next";
+const maxFileSize = process.env.MAX_FILE_SIZE 
+  ? `${process.env.MAX_FILE_SIZE}mb` 
+  : '64mb' as SizeLimit;
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   experimental: {
-    proxyClientMaxBodySize: '64mb', // Allow 64MB file uploads
+    proxyClientMaxBodySize: maxFileSize as SizeLimit, // Allow 64MB file uploads
     serverActions: {
-      bodySizeLimit: '64mb', // Increase body size limit for server actions
+      bodySizeLimit: maxFileSize as SizeLimit, // Increase body size limit for server actions
       allowedOrigins: ['*'],
     },
   },
