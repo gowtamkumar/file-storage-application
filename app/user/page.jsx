@@ -22,6 +22,7 @@ import {
   ShareAltOutlined,
   SwapOutlined,
   UploadOutlined,
+  UserOutlined
 } from "@ant-design/icons";
 import {
   Breadcrumb,
@@ -42,7 +43,7 @@ import {
   Tag,
   Tooltip,
   Typography,
-  Upload,
+  Upload
 } from "antd";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -340,6 +341,7 @@ export default function UserDashboard() {
     setPreviewImage(path);
     setPreviewVisible(true);
   };
+
 
   const filteredFiles = files.filter((file) => {
     const matchesSearch = file.originalName
@@ -717,6 +719,13 @@ export default function UserDashboard() {
               }}
             >
               <Button
+                icon={<UserOutlined />}
+                onClick={() => router.push("/user/profile")}
+                style={{ height: "36px", flex: isMobile ? "1" : "auto" }}
+              >
+                Profile
+              </Button>
+              <Button
                 onClick={() => router.push("/user/subscription")}
                 style={{ height: "36px", flex: isMobile ? "1" : "auto" }}
               >
@@ -955,12 +964,12 @@ export default function UserDashboard() {
                             subscription.storageLimit === -1
                               ? 0
                               : Math.min(
-                                  100,
-                                  (totalSize /
-                                    (1024 * 1024) /
-                                    subscription.storageLimit) *
-                                    100
-                                )
+                                100,
+                                (totalSize /
+                                  (1024 * 1024) /
+                                  subscription.storageLimit) *
+                                100
+                              )
                           }
                           size="small"
                         />
@@ -988,9 +997,9 @@ export default function UserDashboard() {
                             subscription.fileLimit === -1
                               ? 0
                               : Math.min(
-                                  100,
-                                  (files.length / subscription.fileLimit) * 100
-                                )
+                                100,
+                                (files.length / subscription.fileLimit) * 100
+                              )
                           }
                           size="small"
                           style={{ width: isMobile ? "100%" : "150px" }}
@@ -1347,6 +1356,8 @@ export default function UserDashboard() {
             ))}
           </Select>
         </Modal>
+
+
 
         <style jsx global>{`
           .ant-table-thead > tr > th {
