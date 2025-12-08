@@ -1,7 +1,16 @@
-'use client';
+"use client";
 
-import { Check, Cloud, Copy, Download, FileText, Link as LinkIcon, Sparkles, Upload } from 'lucide-react';
-import { useRef, useState } from 'react';
+import {
+  Check,
+  Cloud,
+  Copy,
+  Download,
+  FileText,
+  Link as LinkIcon,
+  Sparkles,
+  Upload,
+} from "lucide-react";
+import { useRef, useState } from "react";
 
 export default function PublicUpload() {
   const [file, setFile] = useState(null);
@@ -50,7 +59,7 @@ export default function PublicUpload() {
     e.preventDefault();
 
     if (!file) {
-      setError('Please select a file');
+      setError("Please select a file");
       return;
     }
 
@@ -58,11 +67,11 @@ export default function PublicUpload() {
     setError(null);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      const response = await fetch('/api/public-upload', {
-        method: 'POST',
+      const response = await fetch("/api/public-upload", {
+        method: "POST",
         body: formData,
       });
 
@@ -72,10 +81,10 @@ export default function PublicUpload() {
         setUploadResult(result.data);
         setFile(null);
       } else {
-        setError(result.message || 'Upload failed');
+        setError(result.message || "Upload failed");
       }
     } catch (error) {
-      setError('Network error: ' + error.message);
+      setError("Network error: " + error.message);
     } finally {
       setUploading(false);
     }
@@ -87,16 +96,16 @@ export default function PublicUpload() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
   };
 
   return (
@@ -110,10 +119,11 @@ export default function PublicUpload() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`relative border-3 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${isDragging
-              ? 'border-purple-500 bg-purple-50 scale-105 shadow-lg'
-              : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50/50'
-              }`}
+            className={`relative border-3 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${
+              isDragging
+                ? "border-purple-500 bg-purple-50 scale-105 shadow-lg"
+                : "border-gray-300 hover:border-purple-400 hover:bg-purple-50/50"
+            }`}
           >
             <input
               ref={fileInputRef}
@@ -125,13 +135,18 @@ export default function PublicUpload() {
             />
 
             <div className="flex flex-col items-center">
-              <div className={`w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mb-6 transform transition-all duration-300 ${isDragging ? 'scale-110 rotate-12' : 'scale-100'
-                }`}>
+              <div
+                className={`w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mb-6 transform transition-all duration-300 ${
+                  isDragging ? "scale-110 rotate-12" : "scale-100"
+                }`}
+              >
                 <Upload className="w-12 h-12 text-white" />
               </div>
 
               <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                {isDragging ? 'Drop your file here!' : 'Drag and Drop your file here'}
+                {isDragging
+                  ? "Drop your file here!"
+                  : "Drag and Drop your file here"}
               </h3>
               <p className="text-gray-500 mb-4">or click to browse</p>
 
@@ -141,7 +156,7 @@ export default function PublicUpload() {
               </div>
 
               <p className="mt-6 text-xs text-gray-400">
-                Images, PDFs, Documents - Max 5MB - Secure and Private
+                Images, PDFs, Documents - Max 65MB - Secure and Private
               </p>
             </div>
           </div>
@@ -154,8 +169,12 @@ export default function PublicUpload() {
                     <FileText className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="text-base font-semibold text-gray-900">{file.name}</p>
-                    <p className="text-sm text-gray-600">{formatFileSize(file.size)}</p>
+                    <p className="text-base font-semibold text-gray-900">
+                      {file.name}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {formatFileSize(file.size)}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -171,7 +190,9 @@ export default function PublicUpload() {
 
           {error && (
             <div className="mt-6 p-4 bg-red-50 rounded-2xl border-2 border-red-200 animate-shake">
-              <p className="text-sm text-red-600 font-medium">Warning: {error}</p>
+              <p className="text-sm text-red-600 font-medium">
+                Warning: {error}
+              </p>
             </div>
           )}
 
@@ -211,7 +232,9 @@ export default function PublicUpload() {
             </div>
             <div>
               <h2 className="text-3xl font-bold text-gray-900">Success!</h2>
-              <p className="text-gray-600 text-lg">Your file is ready to share</p>
+              <p className="text-gray-600 text-lg">
+                Your file is ready to share
+              </p>
             </div>
           </div>
 
@@ -252,19 +275,27 @@ export default function PublicUpload() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
                 <p className="text-xs text-gray-500 mb-1">File Name</p>
-                <p className="font-semibold text-gray-900 text-sm truncate">{uploadResult.file.originalName}</p>
+                <p className="font-semibold text-gray-900 text-sm truncate">
+                  {uploadResult.file.originalName}
+                </p>
               </div>
               <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
                 <p className="text-xs text-gray-500 mb-1">Size</p>
-                <p className="font-semibold text-gray-900 text-sm">{formatFileSize(uploadResult.file.size)}</p>
+                <p className="font-semibold text-gray-900 text-sm">
+                  {formatFileSize(uploadResult.file.size)}
+                </p>
               </div>
               <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
                 <p className="text-xs text-gray-500 mb-1">Type</p>
-                <p className="font-semibold text-gray-900 text-sm truncate">{uploadResult.file.mimetype}</p>
+                <p className="font-semibold text-gray-900 text-sm truncate">
+                  {uploadResult.file.mimetype}
+                </p>
               </div>
               <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
                 <p className="text-xs text-gray-500 mb-1">ID</p>
-                <p className="font-mono text-xs text-gray-900 truncate">{uploadResult.shareableId}</p>
+                <p className="font-mono text-xs text-gray-900 truncate">
+                  {uploadResult.shareableId}
+                </p>
               </div>
             </div>
 
@@ -280,7 +311,11 @@ export default function PublicUpload() {
                 Download File
               </a>
               <button
-                onClick={() => copyToClipboard(`${process.env.NEXT_PUBLIC_APP_URL}${uploadResult.file.path}`)}
+                onClick={() =>
+                  copyToClipboard(
+                    `${process.env.NEXT_PUBLIC_APP_URL}${uploadResult.file.path}`
+                  )
+                }
                 className="flex-1 px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all font-semibold flex items-center justify-center"
               >
                 {copied ? (

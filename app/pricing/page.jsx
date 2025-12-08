@@ -71,7 +71,8 @@ export default function PricingPage() {
   };
 
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("sslcommerz");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState("sslcommerz");
 
   const handleSubscribe = async (planId) => {
     if (!session) {
@@ -237,10 +238,11 @@ export default function PricingPage() {
                 <button
                   key={interval.value}
                   onClick={() => setSelectedInterval(interval.value)}
-                  className={`relative px-8 py-4 rounded-xl font-black text-base transition-all duration-300 ${selectedInterval === interval.value
+                  className={`relative px-8 py-4 rounded-xl font-black text-base transition-all duration-300 ${
+                    selectedInterval === interval.value
                       ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg scale-105"
                       : "bg-transparent text-gray-700 hover:bg-gray-50"
-                    }`}
+                  }`}
                 >
                   {interval.label}
                   {interval.badge && (
@@ -254,7 +256,7 @@ export default function PricingPage() {
           </motion.div>
 
           {/* Pricing Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
             {plans
               .filter((plan) => plan.interval === selectedInterval)
               .map((plan, index) => (
@@ -271,8 +273,13 @@ export default function PricingPage() {
                   )}
 
                   {/* Card */}
-                  <div className={`relative h-full bg-white/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2 ${plan.highlighted ? "border-yellow-400 border-2" : "border-white/60"
-                    }`}>
+                  <div
+                    className={`relative h-full bg-white/70 backdrop-blur-2xl rounded-3xl p-8 shadow-xl border hover:shadow-2xl transition-all duration-300 group-hover:-translate-y-2 ${
+                      plan.highlighted
+                        ? "border-yellow-400 border-2"
+                        : "border-white/60"
+                    }`}
+                  >
                     {/* Badges */}
                     {plan.highlighted && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full font-black text-sm shadow-lg flex items-center gap-2">
@@ -288,7 +295,11 @@ export default function PricingPage() {
                     )}
 
                     {/* Icon */}
-                    <div className={`w-20 h-20 bg-gradient-to-br ${getPlanGradient(plan.planId)} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <div
+                      className={`w-20 h-20 bg-gradient-to-br ${getPlanGradient(
+                        plan.planId
+                      )} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    >
                       {getPlanIcon(plan.planId)}
                     </div>
 
@@ -296,16 +307,24 @@ export default function PricingPage() {
                     <h3 className="text-3xl font-black mb-3">{plan.name}</h3>
 
                     {/* Description */}
-                    <p className="text-gray-600 mb-6 text-sm">{plan.description}</p>
+                    <p className="text-gray-600 mb-6 text-sm">
+                      {plan.description}
+                    </p>
 
                     {/* Price */}
                     <div className="mb-8">
                       <div className="flex items-baseline gap-2">
-                        <span className={`text-6xl font-black bg-gradient-to-r ${getPlanGradient(plan.planId)} bg-clip-text text-transparent`}>
+                        <span
+                          className={`text-6xl font-black bg-gradient-to-r ${getPlanGradient(
+                            plan.planId
+                          )} bg-clip-text text-transparent`}
+                        >
                           {getCurrencySymbol(plan.currency)}
                           {plan.price}
                         </span>
-                        <span className="text-gray-500 font-semibold">/{plan.interval}</span>
+                        <span className="text-gray-500 font-semibold">
+                          /{plan.interval}
+                        </span>
                       </div>
                     </div>
 
@@ -313,10 +332,16 @@ export default function PricingPage() {
                     <div className="space-y-4 mb-8">
                       {plan.features.map((feature, idx) => (
                         <div key={idx} className="flex items-start gap-3">
-                          <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${getPlanGradient(plan.planId)} flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                          <div
+                            className={`w-5 h-5 rounded-full bg-gradient-to-br ${getPlanGradient(
+                              plan.planId
+                            )} flex items-center justify-center flex-shrink-0 mt-0.5`}
+                          >
                             <Check className="w-3 h-3 text-white" />
                           </div>
-                          <span className="text-gray-700 text-sm leading-relaxed">{feature}</span>
+                          <span className="text-gray-700 text-sm leading-relaxed">
+                            {feature}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -325,10 +350,13 @@ export default function PricingPage() {
                     <button
                       onClick={() => handleSubscribe(plan.planId)}
                       disabled={currentPlan === plan.planId || loading}
-                      className={`w-full py-4 rounded-2xl font-black text-base transition-all duration-300 flex items-center justify-center gap-2 ${plan.highlighted
-                          ? `bg-gradient-to-r ${getPlanGradient(plan.planId)} text-white shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0`
+                      className={`w-full py-4 rounded-2xl font-black text-base transition-all duration-300 flex items-center justify-center gap-2 ${
+                        plan.highlighted
+                          ? `bg-gradient-to-r ${getPlanGradient(
+                              plan.planId
+                            )} text-white shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0`
                           : "bg-white border-2 border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-                        }`}
+                      }`}
                     >
                       {subscribingPlan === plan.planId && (
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -388,7 +416,9 @@ export default function PricingPage() {
                   transition={{ delay: idx * 0.1 }}
                   className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/60 hover:shadow-xl transition-all duration-300"
                 >
-                  <h3 className="font-black text-lg mb-3 text-gray-900">{faq.q}</h3>
+                  <h3 className="font-black text-lg mb-3 text-gray-900">
+                    {faq.q}
+                  </h3>
                   <p className="text-gray-600 leading-relaxed">{faq.a}</p>
                 </motion.div>
               ))}
@@ -401,14 +431,17 @@ export default function PricingPage() {
 
       {/* Payment Modal */}
       <Modal
-        title={<span className="text-xl font-black">Select Payment Method</span>}
+        title={
+          <span className="text-xl font-black">Select Payment Method</span>
+        }
         open={isPaymentModalVisible}
         onOk={handlePaymentProceed}
         onCancel={() => setIsPaymentModalVisible(false)}
         okText="Proceed to Payment"
         cancelText="Cancel"
         okButtonProps={{
-          className: "bg-gradient-to-r from-indigo-600 to-purple-600 border-none font-bold h-11 px-8"
+          className:
+            "bg-gradient-to-r from-indigo-600 to-purple-600 border-none font-bold h-11 px-8",
         }}
       >
         <Radio.Group
@@ -423,7 +456,9 @@ export default function PricingPage() {
             >
               <div>
                 <div className="font-bold text-base">SSLCommerz</div>
-                <div className="text-gray-500 text-sm mt-1">Cards, Mobile Banking, Net Banking</div>
+                <div className="text-gray-500 text-sm mt-1">
+                  Cards, Mobile Banking, Net Banking
+                </div>
               </div>
             </Radio>
             <Radio
@@ -432,7 +467,9 @@ export default function PricingPage() {
             >
               <div>
                 <div className="font-bold text-base">Stripe</div>
-                <div className="text-gray-500 text-sm mt-1">Credit/Debit Cards (International)</div>
+                <div className="text-gray-500 text-sm mt-1">
+                  Credit/Debit Cards (International)
+                </div>
               </div>
             </Radio>
           </Space>

@@ -3,18 +3,32 @@ import mongoose from "mongoose";
 const ContactSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Please provide a folder name"],
-    maxlength: [100, "Name cannot be more than 100 characters"],
+    required: [true, "Please provide your name"],
+    trim: true,
+    maxlength: [50, "Name cannot be more than 50 characters"],
   },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+  email: {
+    type: String,
+    required: [true, "Please provide your email"],
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      "Please provide a valid email",
+    ],
   },
-  parentId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Folder",
-    default: null, // null means root folder
+  subject: {
+    type: String,
+    required: [true, "Please provide a subject"],
+    maxlength: [100, "Subject cannot be more than 100 characters"],
+  },
+  message: {
+    type: String,
+    required: [true, "Please provide a message"],
+    maxlength: [1000, "Message cannot be more than 1000 characters"],
+  },
+  status: {
+    type: String,
+    enum: ["new", "read", "replied"],
+    default: "new",
   },
   createdAt: {
     type: Date,
@@ -22,8 +36,5 @@ const ContactSchema = new mongoose.Schema({
   },
 });
 
-// Compound index to prevent duplicate folder names within the same parent for the same user
-ContactSchema.index({ name: 1, userId: 1, parentId: 1 }, { unique: true });
-
-export default mongoose.models.Folder ||
-  mongoose.model("Folder", ContactSchema);
+export default mongoose.models.Contact ||
+  mongoose.model("Contact", ContactSchema);

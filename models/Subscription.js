@@ -58,7 +58,6 @@ const SubscriptionSchema = new mongoose.Schema(
         default: false,
       },
     },
-
   },
   { timestamps: true }
 );
