@@ -43,22 +43,58 @@ Features to list:
 - 2000 Files Maximum
 - API Access
 - Priority Upload Queue
-- Advanced File Management
+- File Management Dashboard
+- Image Optimization (Sharp compression)
 - Priority Email Support
+- Secure File Storage
 ```
 
-### Enterprise Plan ($39.99/month or ৳3199/month)
-```
-Features to list:
-- 100 GB Storage
-- Unlimited Files
-- API Access with Higher Limits
-- Dedicated Storage Space
-- Premium Support
-- Custom Storage Solutions
-```
+# ✅ **Recommended Yearly Pricing (With ~20% Discount)**
+
+Customers love yearly plans when they see clear savings.
+Here is a good balance:
+
+### **Free Plan**
+
+* No yearly option
+* Always free
 
 ---
+
+### **Basic Plan — Yearly**
+
+**$49.99/year** or **৳3,999/year**
+(Equivalent to $4.16/month → Customer saves **$10**)
+
+**Includes:**
+
+* 10 GB Storage
+* 500 Files Maximum
+* API Access
+* Fast Upload with Compression
+* Secure File Storage
+* Email Support
+
+---
+
+### **Pro Plan — Yearly**
+
+**$149.99/year** or **৳11,999/year**
+(Equivalent to $12.49/month → Customer saves **$30**)
+
+**Includes:**
+
+* 50 GB Storage
+* 2000 Files Maximum
+* API Access
+* Priority Upload Queue
+* File Management Dashboard
+* Image Optimization (Sharp)
+* Priority Email Support
+* Secure File Storage
+
+---
+
 
 ## 🗑️ Features to REMOVE
 
