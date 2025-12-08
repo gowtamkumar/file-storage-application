@@ -6,10 +6,15 @@ import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
 import path from 'path';
 import sharp from 'sharp';
+import { gzipSync } from 'zlib';
 import { z } from 'zod';
 import { authOptions } from '../auth/[...nextauth]/route';
 
-const MAX_FILE_SIZE = (Number(process.env.MAX_FILE_SIZE) || 5) * 1024 * 1024; // Default 5MB
+// Route segment config for App Router - increase body size limit
+export const maxDuration = 60; // 60 seconds max
+export const dynamic = 'force-dynamic';
+
+const MAX_FILE_SIZE = (Number(process.env.MAX_FILE_SIZE) || 64) * 1024 * 1024; // Default 64MB
 const ALLOWED_FILE_TYPES = [
   'image/jpeg',
   'image/png',
@@ -51,10 +56,31 @@ export async function POST(request) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 
+  let data, file, folderId;
 
-  const data = await request.formData();
-  const file = data.get('file');
-  const folderId = data.get('folderId');
+  // Add error handling for FormData parsing
+  try {
+    data = await request.formData();
+  } catch (formDataError) {
+    console.error('FormData parse error:', formDataError);
+    return NextResponse.json({
+      success: false,
+      message: 'Invalid request format. Please ensure you are sending multipart/form-data.',
+      error: formDataError.message
+    }, { status: 400 });
+  }
+
+  try {
+    file = data.get('file');
+    folderId = data.get('folderId');
+  } catch (extractError) {
+    console.error('Data extraction error:', extractError);
+    return NextResponse.json({
+      success: false,
+      message: 'Failed to extract data from request.',
+      error: extractError.message
+    }, { status: 400 });
+  }
 
   if (!file) {
     return NextResponse.json({ success: false, message: 'No file uploaded' }, { status: 400 });
@@ -64,11 +90,11 @@ export async function POST(request) {
   if (folderId) {
     const Folder = (await import('@/models/Folder')).default;
     const folder = await Folder.findById(folderId);
-    
+
     if (!folder) {
       return NextResponse.json({ success: false, message: 'Folder not found' }, { status: 404 });
     }
-    
+
     // Check folder ownership
     if (folder.userId.toString() !== userId) {
       return NextResponse.json({ success: false, message: 'Folder does not belong to you' }, { status: 403 });
@@ -89,6 +115,7 @@ export async function POST(request) {
   const bytes = await file.arrayBuffer();
   let buffer = Buffer.from(bytes);
   let fileSize = file.size;
+  let isCompressed = false;
 
   // Image Optimization & Security (Strip Metadata)
   if (file.type.startsWith('image/')) {
@@ -106,10 +133,28 @@ export async function POST(request) {
     }
   }
 
+  // Text File Compression (60-90% size reduction)
+  if (file.type === 'text/plain') {
+    try {
+      buffer = gzipSync(buffer);
+      fileSize = buffer.length;
+      isCompressed = true;
+    } catch (error) {
+      console.error('Text compression error:', error);
+      // Continue without compression if it fails
+      isCompressed = false;
+    }
+  }
+
   // Create unique filename
   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
   const filename = file.name.replace(/\s+/g, '-');
-  const uniqueFilename = `${uniqueSuffix}-${filename}`;
+  let uniqueFilename = `${uniqueSuffix}-${filename}`;
+
+  // Append .gz extension for compressed files
+  if (isCompressed) {
+    uniqueFilename += '.gz';
+  }
 
   const uploadDir = path.join(process.cwd(), 'public/uploads');
 
@@ -125,6 +170,7 @@ export async function POST(request) {
       mimetype: file.type,
       userId: userId,
       folderId: folderId || null,
+      isCompressed: isCompressed,
     });
 
     return NextResponse.json({ success: true, data: newFile });

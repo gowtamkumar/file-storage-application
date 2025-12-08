@@ -57,6 +57,10 @@ const FileSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  isCompressed: {
+    type: Boolean,
+    default: false, // True if file is compressed with gzip
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -3,6 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  experimental: {
+    proxyClientMaxBodySize: '64mb', // Allow 64MB file uploads
+    serverActions: {
+      bodySizeLimit: '64mb', // Increase body size limit for server actions
+      allowedOrigins: ['*'],
+    },
+  },
   async headers() {
     return [
       {

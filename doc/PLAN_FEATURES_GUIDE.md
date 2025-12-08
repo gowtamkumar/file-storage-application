@@ -31,7 +31,8 @@ Features to list:
 - 10 GB Storage
 - 500 Files Maximum  
 - API Access
-- Fast Upload with Compression
+- Fast Upload with Image Optimization
+- Text File Compression (TXT)
 - Secure File Storage
 - Email Support
 ```
@@ -45,6 +46,7 @@ Features to list:
 - Priority Upload Queue
 - File Management Dashboard
 - Image Optimization (Sharp compression)
+- Text File Compression (60-90% savings)
 - Priority Email Support
 - Secure File Storage
 ```
