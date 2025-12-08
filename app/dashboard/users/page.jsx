@@ -176,6 +176,21 @@ export default function UsersPage() {
         { text: "Inactive", value: "inactive" },
       ],
       onFilter: (value, record) => record.status === value,
+      onFilter: (value, record) => record.status === value,
+    },
+    {
+      title: "Verified",
+      key: "verified",
+      render: (_, record) => (
+        <Tag color={record.verified ? "green" : "red"}>
+          {record.verified ? "YES" : "NO"}
+        </Tag>
+      ),
+      filters: [
+        { text: "Verified", value: true },
+        { text: "Not Verified", value: false },
+      ],
+      onFilter: (value, record) => record.verified === value,
     },
     {
       title: "Subscription",

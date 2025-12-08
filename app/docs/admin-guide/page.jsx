@@ -430,7 +430,7 @@ export default function AdminGuidePage() {
                     </Row>
 
                     <Alert
-                      message="Real-Time Updates"
+                      title="Real-Time Updates"
                       description="All statistics on the admin dashboard update in real-time as users upload files, create accounts, or purchase subscriptions."
                       type="info"
                       showIcon

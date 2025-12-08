@@ -107,8 +107,8 @@ export default function UserProfilePage() {
             <Descriptions bordered column={1} size="middle" style={{ marginBottom: 32 }}>
               <Descriptions.Item label="Email">
                 {user?.email}{" "}
-                <Tag color={user?.emailVerified ? "success" : "default"}>
-                  {user?.emailVerified ? "Verified" : "Unverified"}
+                <Tag color={user?.verified ? "success" : "default"}>
+                  {user?.verified ? "Verified" : "Unverified"}
                 </Tag>
               </Descriptions.Item>
               <Descriptions.Item label="Account Status">

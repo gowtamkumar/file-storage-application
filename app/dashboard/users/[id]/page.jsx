@@ -228,6 +228,11 @@ export default function UserDetailsPage() {
                 <Descriptions.Item label="Name">{user.name}</Descriptions.Item>
                 <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
                 <Descriptions.Item label="Role">{user.role}</Descriptions.Item>
+                <Descriptions.Item label="Verified">
+                  <Tag color={user.verified ? "success" : "error"}>
+                    {user.verified ? "YES" : "NO"}
+                  </Tag>
+                </Descriptions.Item>
                 <Descriptions.Item label="Provider">{user.provider || 'credentials'}</Descriptions.Item>
                 <Descriptions.Item label="Account Created">{new Date(user.createdAt).toLocaleString()}</Descriptions.Item>
                 <Descriptions.Item label="Last Updated">{new Date(user.updatedAt).toLocaleString()}</Descriptions.Item>
