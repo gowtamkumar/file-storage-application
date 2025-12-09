@@ -1,6 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -53,5 +54,10 @@ export class AuthService {
       message: 'User registered successfully',
       data: result
     };
+  }
+  async generateApiKey(userId: string) {
+    const apiKey = 'sk_' + crypto.randomBytes(24).toString('hex');
+    await this.usersService.update(userId, { apiKey });
+    return { success: true, apiKey };
   }
 }

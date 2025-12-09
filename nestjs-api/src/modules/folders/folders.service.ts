@@ -1,13 +1,17 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { File } from '../../entities/file.entity';
 import { Folder } from '../../entities/folder.entity';
 
 @Injectable()
 export class FoldersService {
   constructor(
     @InjectRepository(Folder)
+    @InjectRepository(Folder)
     private folderRepository: Repository<Folder>,
+    @InjectRepository(File)
+    private fileRepository: Repository<File>,
   ) {}
 
   async create(userId: string, createFolderDto: any) {
@@ -58,8 +62,10 @@ export class FoldersService {
 
   async delete(id: string, userId: string) {
     const folder = await this.findOne(id, userId);
-    // Note: Recursive delete logic usually needed here for real apps
-    // Cascading delete might handle it if configured in DB, otherwise manual cleanup needed
+    
+    // Move all files in this folder to root (set folderId to null)
+    await this.fileRepository.update({ folderId: id }, { folderId: null as any });
+
     return await this.folderRepository.remove(folder);
   }
 }

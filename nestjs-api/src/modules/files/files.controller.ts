@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { FilesService } from './files.service';
@@ -43,5 +43,11 @@ export class FilesController {
   async remove(@Request() req, @Param('id') id: string) {
     await this.filesService.delete(id, req.user.id);
     return { success: true, message: 'File deleted successfully' };
+  }
+
+  @Put(':id/move')
+  async move(@Request() req, @Param('id') id: string, @Body('folderId') folderId: string) {
+    const file = await this.filesService.moveFile(id, req.user.id, folderId);
+    return { success: true, data: file };
   }
 }

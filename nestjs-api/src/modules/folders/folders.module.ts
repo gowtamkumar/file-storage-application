@@ -5,7 +5,7 @@ import { FoldersController } from './folders.controller';
 import { FoldersService } from './folders.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Folder])],
+  imports: [TypeOrmModule.forFeature([Folder, File])],
   controllers: [FoldersController],
   providers: [FoldersService],
   exports: [FoldersService],

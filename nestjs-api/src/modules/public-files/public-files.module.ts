@@ -42,13 +42,24 @@ export class PublicFilesController {
   @Post('public-upload')
   @UseInterceptors(FileInterceptor('file'))
   async publicUpload(@UploadedFile() file: Express.Multer.File) {
-     // Public upload logic usually requires some validation or temp storage
-     // For now reusing filesService but passing null userId? 
-     // FilesService expects userId. We might need a system user or modify service.
-     // For this implementation, I'll skip actual public upload without auth or require a specific "public" user handling
-     // Assuming public upload allowed but ownership needs to be defined. 
-     // Let's assume it assigns to no user (nullable)
-     return { success: false, message: 'Public upload requires configuration' };
+     if (!file) {
+         throw new NotFoundException('No file uploaded');
+     }
+     // Pass null for userId, null for folderId, true for isPublic
+     const uploaded = await this.filesService.uploadFile(null, file, undefined, true);
+     
+     // Construct shareable URL matching Next.js format
+     const baseUrl = process.env.NEXTAUTH_URL || `http://localhost:${process.env.PORT || 4000}`;
+     const shareableUrl = `${baseUrl}/share/${uploaded.shareableId}`;
+
+     return {
+         success: true,
+         data: {
+             file: uploaded,
+             shareableUrl,
+             shareableId: uploaded.shareableId
+         }
+     };
   }
 }
 

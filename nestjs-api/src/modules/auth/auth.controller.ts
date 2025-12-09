@@ -27,4 +27,10 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('apikey')
+  async generateApiKey(@Request() req) {
+    return this.authService.generateApiKey(req.user.id);
+  }
 }

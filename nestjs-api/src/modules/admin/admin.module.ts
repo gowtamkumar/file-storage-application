@@ -1,4 +1,4 @@
-import { Body, CanActivate, Controller, Delete, ExecutionContext, Get, Injectable, Module, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, CanActivate, Controller, Delete, ExecutionContext, Get, Injectable, Module, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -57,6 +57,30 @@ export class AdminController {
   async deleteUser(@Param('id') id: string) {
     await this.userRepo.delete(id);
     return { success: true };
+  }
+
+  // Files Management
+  @Get('files')
+  async getFiles() {
+    const files = await this.fileRepo.find({
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
+    return { success: true, data: files };
+  }
+
+  // Transactions Management
+  @Get('transactions')
+  async getTransactions(@Query('userId') userId?: string) {
+    const query: any = {
+      order: { createdAt: 'DESC' },
+      relations: ['user'],
+    };
+    if (userId) {
+      query.where = { userId };
+    }
+    const transactions = await this.txRepo.find(query);
+    return { success: true, data: transactions };
   }
 
   // Plans Management

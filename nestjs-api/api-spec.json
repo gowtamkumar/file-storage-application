@@ -78,6 +78,20 @@
         ]
       }
     },
+    "/auth/apikey": {
+      "post": {
+        "operationId": "AuthController_generateApiKey",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/user": {
       "get": {
         "operationId": "UsersController_getProfile",
@@ -193,6 +207,29 @@
       },
       "delete": {
         "operationId": "FilesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      }
+    },
+    "/files/{id}/move": {
+      "put": {
+        "operationId": "FilesController_move",
         "parameters": [
           {
             "name": "id",
@@ -395,6 +432,43 @@
         ]
       }
     },
+    "/admin/files": {
+      "get": {
+        "operationId": "AdminController_getFiles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/transactions": {
+      "get": {
+        "operationId": "AdminController_getTransactions",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
     "/admin/plans": {
       "get": {
         "operationId": "AdminController_getPlans",
@@ -516,10 +590,32 @@
         "tags": [
           "Notifications"
         ]
+      },
+      "post": {
+        "operationId": "NotificationsController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
       }
     },
     "/notifications/{id}/read": {
-      "post": {
+      "put": {
         "operationId": "NotificationsController_markAsRead",
         "parameters": [
           {
@@ -532,7 +628,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
@@ -598,6 +694,85 @@
         "parameters": [
           {
             "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/pages": {
+      "get": {
+        "operationId": "PagesController_findAll",
+        "parameters": [
+          {
+            "name": "public",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      },
+      "post": {
+        "operationId": "PagesController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/pages/{id}": {
+      "put": {
+        "operationId": "PagesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      },
+      "delete": {
+        "operationId": "PagesController_remove",
+        "parameters": [
+          {
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -815,6 +990,56 @@
           "lastDownloaded",
           "isCompressed",
           "createdAt"
+        ]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "info",
+              "success",
+              "warning",
+              "error"
+            ]
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "readBy": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "message",
+          "type",
+          "recipient",
+          "readBy",
+          "createdAt",
+          "updatedAt"
         ]
       }
     }

@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   // Swagger Configuration
   const config = new DocumentBuilder()
     .setTitle('File Storage API')
@@ -15,12 +15,15 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  
+
   // Write the API spec to a file
   fs.writeFileSync('api-spec.json', JSON.stringify(document, null, 2));
 
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT || 3000, () => console.log(`Application is running on port ${process.env.PORT}`)  );
+  app.enableCors();
+  await app.listen(process.env.PORT || 4000, () =>
+    console.log(`Application is running on port ${process.env.PORT || 4000}`),
+  );
 }
 bootstrap();

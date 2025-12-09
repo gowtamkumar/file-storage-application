@@ -12,6 +12,7 @@ import { FilesModule } from './modules/files/files.module';
 import { FoldersModule } from './modules/folders/folders.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PagesModule } from './modules/pages/pages.module';
+import { PaymentModule } from './modules/payment/payment.module';
 import { PublicFilesModule } from './modules/public-files/public-files.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
@@ -39,6 +40,7 @@ import { UsersModule } from './modules/users/users.module';
     ContactsModule,
     PagesModule,
     SettingsModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
