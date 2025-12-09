@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -22,7 +27,12 @@ export class FilesService {
     }
   }
 
-  async uploadFile(userId: string, file: Express.Multer.File, folderId?: string, isPublic = false) {
+  async uploadFile(
+    userId: string,
+    file: Express.Multer.File,
+    folderId?: string,
+    isPublic = false,
+  ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
@@ -45,7 +55,7 @@ export class FilesService {
         size: file.size,
         mimetype: file.mimetype,
         userId: userId,
-        folderId: folderId || null,
+        folderId: folderId,
         isPublic: isPublic,
       });
 
@@ -57,7 +67,8 @@ export class FilesService {
   }
 
   async findAll(userId: string, folderId: string | null = null) {
-    const query = this.fileRepository.createQueryBuilder('file')
+    const query = this.fileRepository
+      .createQueryBuilder('file')
       .leftJoinAndSelect('file.folder', 'folder')
       .where('file.userId = :userId', { userId });
 
@@ -80,7 +91,7 @@ export class FilesService {
 
   async delete(id: string, userId: string) {
     const file = await this.findOne(id, userId);
-    
+
     // Delete from disk
     if (fs.existsSync(file.path)) {
       fs.unlinkSync(file.path);

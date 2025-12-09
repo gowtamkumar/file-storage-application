@@ -1,0 +1,822 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/user": {
+      "get": {
+        "operationId": "UsersController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_updateProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/files/upload": {
+      "post": {
+        "operationId": "FilesController_uploadFile",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      }
+    },
+    "/files": {
+      "get": {
+        "operationId": "FilesController_findAll",
+        "parameters": [
+          {
+            "name": "folderId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      }
+    },
+    "/files/{id}": {
+      "get": {
+        "operationId": "FilesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      },
+      "patch": {
+        "operationId": "FilesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      },
+      "delete": {
+        "operationId": "FilesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Files"
+        ]
+      }
+    },
+    "/folders": {
+      "post": {
+        "operationId": "FoldersController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Folders"
+        ]
+      },
+      "get": {
+        "operationId": "FoldersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Folders"
+        ]
+      }
+    },
+    "/folders/{id}": {
+      "get": {
+        "operationId": "FoldersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Folders"
+        ]
+      },
+      "patch": {
+        "operationId": "FoldersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Folders"
+        ]
+      },
+      "delete": {
+        "operationId": "FoldersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Folders"
+        ]
+      }
+    },
+    "/subscription": {
+      "get": {
+        "operationId": "SubscriptionsController_getSubscription",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subscriptions"
+        ]
+      },
+      "post": {
+        "operationId": "SubscriptionsController_subscribe",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/subscription/plans": {
+      "get": {
+        "operationId": "SubscriptionsController_getPlans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Subscriptions"
+        ]
+      }
+    },
+    "/admin/dashboard": {
+      "get": {
+        "operationId": "AdminController_getDashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "AdminController_getUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/users/{id}": {
+      "delete": {
+        "operationId": "AdminController_deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/plans": {
+      "get": {
+        "operationId": "AdminController_getPlans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "operationId": "AdminController_createPlan",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/plans/{id}": {
+      "patch": {
+        "operationId": "AdminController_updatePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/public-files/{shareableId}": {
+      "get": {
+        "operationId": "PublicFilesController_getPublicFile",
+        "parameters": [
+          {
+            "name": "shareableId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "PublicFiles"
+        ]
+      }
+    },
+    "/public-files/{shareableId}/download": {
+      "get": {
+        "operationId": "PublicFilesController_downloadPublicFile",
+        "parameters": [
+          {
+            "name": "shareableId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "PublicFiles"
+        ]
+      }
+    },
+    "/public-upload": {
+      "post": {
+        "operationId": "PublicFilesController_publicUpload",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "PublicFiles"
+        ]
+      }
+    },
+    "/notifications": {
+      "get": {
+        "operationId": "NotificationsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/notifications/{id}/read": {
+      "post": {
+        "operationId": "NotificationsController_markAsRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/ads/public": {
+      "get": {
+        "operationId": "AdvertisementsController_getPublicAds",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Advertisements"
+        ]
+      }
+    },
+    "/ads/track/{id}": {
+      "post": {
+        "operationId": "AdvertisementsController_trackAd",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Advertisements"
+        ]
+      }
+    },
+    "/contact": {
+      "post": {
+        "operationId": "ContactsController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Contacts"
+        ]
+      }
+    },
+    "/pages/public/{slug}": {
+      "get": {
+        "operationId": "PagesController_getPage",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/settings/site": {
+      "get": {
+        "operationId": "SettingsController_getSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "File Storage API",
+    "description": "API documentation for the File Storage Share Application",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "verified": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ]
+          },
+          "apiKey": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "password",
+          "role",
+          "verified",
+          "status",
+          "apiKey",
+          "createdAt"
+        ]
+      },
+      "Folder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/Folder"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "userId",
+          "user",
+          "parentId",
+          "parent",
+          "createdAt"
+        ]
+      },
+      "File": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "originalName": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "mimetype": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "folderId": {
+            "type": "string"
+          },
+          "folder": {
+            "$ref": "#/components/schemas/Folder"
+          },
+          "isPublic": {
+            "type": "boolean"
+          },
+          "shareableId": {
+            "type": "string"
+          },
+          "viewCount": {
+            "type": "number"
+          },
+          "downloadCount": {
+            "type": "number"
+          },
+          "lastViewed": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "lastDownloaded": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isCompressed": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "filename",
+          "originalName",
+          "path",
+          "size",
+          "mimetype",
+          "userId",
+          "user",
+          "folderId",
+          "folder",
+          "isPublic",
+          "shareableId",
+          "viewCount",
+          "downloadCount",
+          "lastViewed",
+          "lastDownloaded",
+          "isCompressed",
+          "createdAt"
+        ]
+      }
+    }
+  }
+}
