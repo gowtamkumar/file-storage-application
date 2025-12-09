@@ -2,7 +2,6 @@
 
 import {
   CopyOutlined,
-  DatabaseOutlined,
   DeleteOutlined,
   DownloadOutlined,
   FileImageOutlined,
@@ -15,14 +14,11 @@ import {
   FolderOutlined,
   HomeOutlined,
   KeyOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   RocketOutlined,
   SearchOutlined,
   ShareAltOutlined,
   SwapOutlined,
-  UploadOutlined,
-  UserOutlined
+  UploadOutlined
 } from "@ant-design/icons";
 import {
   Breadcrumb,
@@ -49,7 +45,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Footer from "../../components/Footer";
-import NavBar from "../../components/NavBar";
+import DashboardNavbar from "./components/DashboardNavbar";
 
 const { Title, Text, Paragraph } = Typography;
 const { Header, Sider, Content } = Layout;
@@ -556,198 +552,18 @@ export default function UserDashboard() {
 
   return (
     <>
-      <NavBar />
-      <Layout style={{ minHeight: "100vh", marginTop: "64px" }}>
-        {/* Header */}
-        <Header
-          style={{
-            background: "#fff",
-            padding: isMobile ? "12px 16px" : "16px 24px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            alignItems: isMobile ? "stretch" : "center",
-            justifyContent: "space-between",
-            position: "sticky",
-            top: isMobile ? 0 : 64,
-            zIndex: 100,
-            gap: isMobile ? "12px" : 0,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{ fontSize: "16px" }}
-            />
-            <Title
-              level={4}
-              style={{
-                margin: 0,
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              My Files
-            </Title>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              gap: isMobile ? "12px" : "16px",
-              width: isMobile ? "100%" : "auto",
-              flexWrap: "wrap",
-            }}
-          >
-            {/* Stats Container */}
-            <div
-              style={{
-                display: "flex",
-                gap: "12px",
-                flexWrap: "wrap",
-                flex: isMobile ? "1" : "auto",
-              }}
-            >
-              {/* Files Stat Card */}
-              <div
-                style={{
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                  borderRadius: "10px",
-                  boxShadow: "0 4px 12px rgba(102, 126, 234, 0.3)",
-                  color: "white",
-                  flex: isMobile ? "1" : "auto",
-                  minWidth: isMobile ? "0" : "120px",
-                }}
-              >
-                <div style={{ padding: isMobile ? "0px 3px" : "1px 20px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    <FileOutlined
-                      style={{
-                        fontSize: isMobile ? "20px" : "24px",
-                        opacity: 0.9,
-                      }}
-                    />
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        opacity: 0.9,
-                        marginBottom: "2px",
-                      }}
-                    >
-                      Files
-                    </div>
-                    <div
-                      style={{
-                        fontSize: isMobile ? "18px" : "20px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {files.length}
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <Layout style={{ minHeight: "100vh" }}>
+        {/* Dashboard Navbar */}
+        <DashboardNavbar
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+          files={files}
+          session={session}
+          totalSize={files.reduce((acc, file) => acc + file.size, 0)}
+        />
 
-              {/* Storage Stat Card */}
-              <div
-                style={{
-                  background:
-                    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                  borderRadius: "10px",
-                  boxShadow: "0 4px 12px rgba(245, 87, 108, 0.3)",
-                  color: "white",
-                  flex: isMobile ? "1" : "auto",
-                  minWidth: isMobile ? "0" : "120px",
-                }}
-              >
-                <div style={{ padding: isMobile ? "0px 3px" : "1px 20px" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    <DatabaseOutlined
-                      style={{
-                        fontSize: isMobile ? "20px" : "24px",
-                        opacity: 0.9,
-                      }}
-                    />
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        opacity: 0.9,
-                        marginBottom: "2px",
-                      }}
-                    >
-                      Storage
-                    </div>
-                    <div
-                      style={{
-                        fontSize: isMobile ? "18px" : "20px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {(totalSize / (1024 * 1024)).toFixed(1)}{" "}
-                      <span style={{ fontSize: "12px", fontWeight: "normal" }}>
-                        MB
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div
-              style={{
-                display: "flex",
-                gap: "8px",
-                flexWrap: "wrap",
-                width: isMobile ? "100%" : "auto",
-              }}
-            >
-              <Button
-                icon={<UserOutlined />}
-                onClick={() => router.push("/user/profile")}
-                style={{ height: "36px", flex: isMobile ? "1" : "auto" }}
-              >
-                Profile
-              </Button>
-              <Button
-                onClick={() => router.push("/user/subscription")}
-                style={{ height: "36px", flex: isMobile ? "1" : "auto" }}
-              >
-                Subscription
-              </Button>
-              <Button
-                onClick={() => router.push("/pricing")}
-                style={{ height: "36px", flex: isMobile ? "1" : "auto" }}
-              >
-                Pricing
-              </Button>
-              <Button
-                href="/api/auth/signout"
-                style={{ height: "36px", flex: isMobile ? "1" : "auto" }}
-              >
-                Logout
-              </Button>
-            </div>
-          </div>
-        </Header>
-
-        <Layout>
+        <Layout style={{ marginTop: "72px" }}>
           {/* Sidebar */}
           <Sider
             collapsible
