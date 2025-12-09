@@ -802,6 +802,77 @@
         "tags": [
           "Settings"
         ]
+      },
+      "post": {
+        "operationId": "SettingsController_updateSettings",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Settings"
+        ]
+      }
+    },
+    "/payment/init": {
+      "post": {
+        "operationId": "PaymentController_initPayment",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payment"
+        ]
+      }
+    },
+    "/payment/success": {
+      "get": {
+        "operationId": "PaymentController_handleSuccess",
+        "parameters": [
+          {
+            "name": "session_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "payment_method",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payment"
+        ]
       }
     }
   },
@@ -857,6 +928,19 @@
           "apiKey": {
             "type": "string"
           },
+          "subscriptionPlan": {
+            "type": "string"
+          },
+          "subscriptionStatus": {
+            "type": "string"
+          },
+          "storageLimit": {
+            "type": "number"
+          },
+          "subscriptionEndDate": {
+            "format": "date-time",
+            "type": "string"
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string"
@@ -871,6 +955,10 @@
           "verified",
           "status",
           "apiKey",
+          "subscriptionPlan",
+          "subscriptionStatus",
+          "storageLimit",
+          "subscriptionEndDate",
           "createdAt"
         ]
       },

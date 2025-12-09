@@ -7,9 +7,11 @@ import { User } from '../../entities/user.entity';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
 
+import { Subscription } from '../../entities/subscription.entity';
+
 @Module({
   imports: [
-    TypeOrmModule.forFeature([SubscriptionPlan, Transaction, User]),
+    TypeOrmModule.forFeature([SubscriptionPlan, Transaction, User, Subscription]),
     ConfigModule,
   ],
   controllers: [PaymentController],
